@@ -1,0 +1,579 @@
+// Worth The Wait — platform schema.
+//
+// The shape follows the product's guiding principle: an account owns events, an
+// event's type decides which modules it may enable, and everything guest-facing
+// hangs off those modules. Adding an event type should be seed data plus a
+// definition in @wtw/shared, never a new set of tables.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Prisma 7 takes the migrate/introspect connection URL from prisma.config.ts,
+// and the runtime connection from the pg driver adapter in PrismaService.
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Enums — kept in step with the contracts exported from @wtw/shared.
+// ---------------------------------------------------------------------------
+
+enum EventTypeKey {
+  wedding
+  birthday
+  baby_shower
+  graduation
+  anniversary
+  bridal_shower
+  corporate
+}
+
+enum EventModuleKey {
+  invitation
+  event_details
+  rsvp
+  website
+  our_story
+  timeline
+  venue_map
+  registry
+  faq
+  dress_code
+  accommodation
+  countdown
+  sharing
+  games
+  gallery
+}
+
+enum EventStatus {
+  draft
+  published
+  archived
+}
+
+enum EventVisibility {
+  public
+  unlisted
+  private
+}
+
+enum RsvpStatus {
+  pending
+  attending
+  not_attending
+  maybe
+}
+
+enum InvitationChannel {
+  whatsapp
+  sms
+  email
+  link
+}
+
+enum InvitationStatus {
+  draft
+  sent
+  opened
+  responded
+  revoked
+}
+
+enum AccountType {
+  personal
+  professional
+}
+
+enum AccountRole {
+  owner
+  admin
+  editor
+  viewer
+}
+
+enum VendorCategoryKey {
+  venues
+  decor_and_rentals
+  catering_and_cakes
+  photo_and_video
+  beauty
+  entertainment
+  fashion
+  event_planners
+}
+
+enum VendorStatus {
+  pending_review
+  approved
+  suspended
+}
+
+enum RegistryItemStatus {
+  available
+  reserved
+  purchased
+}
+
+enum PaymentProvider {
+  mpesa
+  card
+  manual
+}
+
+enum PaymentStatus {
+  pending
+  succeeded
+  failed
+  refunded
+}
+
+enum MediaKind {
+  image
+  video
+  document
+}
+
+// ---------------------------------------------------------------------------
+// Identity and ownership
+// ---------------------------------------------------------------------------
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  passwordHash    String
+  name            String
+  phone           String?
+  avatarUrl       String?
+  emailVerifiedAt DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  memberships   AccountMember[]
+  refreshTokens RefreshToken[]
+  createdEvents Event[]         @relation("EventCreator")
+  vendors       Vendor[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  userAgent String?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+/// A workspace owning events. Every user gets a personal account on sign-up;
+/// professional accounts (planners running events for clients) reuse the same
+/// tables with extra members.
+model Account {
+  id        String      @id @default(cuid())
+  name      String
+  slug      String      @unique
+  type      AccountType @default(personal)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  members  AccountMember[]
+  events   Event[]
+  payments Payment[]
+  media    MediaAsset[]
+
+  @@map("accounts")
+}
+
+model AccountMember {
+  id        String      @id @default(cuid())
+  accountId String
+  userId    String
+  role      AccountRole @default(owner)
+  createdAt DateTime    @default(now())
+
+  account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([accountId, userId])
+  @@index([userId])
+  @@map("account_members")
+}
+
+// ---------------------------------------------------------------------------
+// Events and their modules
+// ---------------------------------------------------------------------------
+
+model Event {
+  id          String       @id @default(cuid())
+  accountId   String
+  createdById String
+  typeKey     EventTypeKey
+  themeId     String?
+
+  /// Public address of the event page, e.g. /e/amina-and-brian.
+  slug        String   @unique
+  title       String
+  tagline     String?
+  description String?
+  /// Whose celebration it is — couple, birthday guest of honour, parents-to-be.
+  hostNames   String[] @default([])
+
+  startsAt DateTime
+  endsAt   DateTime?
+  timezone String    @default("Africa/Nairobi")
+
+  venueName    String?
+  venueAddress String?
+  latitude     Float?
+  longitude    Float?
+
+  status     EventStatus     @default(draft)
+  visibility EventVisibility @default(unlisted)
+  /// Required alongside an invitation token when visibility is private.
+  accessCode String?
+
+  currency     String    @default("KES")
+  coverImageId String?
+  publishedAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  account       Account        @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  createdBy     User           @relation("EventCreator", fields: [createdById], references: [id])
+  theme         Theme?         @relation(fields: [themeId], references: [id])
+  modules       EventModule[]
+  guests        Guest[]
+  invitations   Invitation[]
+  rsvps         RsvpResponse[]
+  registryItems RegistryItem[]
+  games         GameInstance[]
+  media         MediaAsset[]
+  payments      Payment[]
+
+  @@index([accountId])
+  @@index([typeKey, status])
+  @@index([startsAt])
+  @@map("events")
+}
+
+/// One row per capability an event has switched on. `config` is validated
+/// against that module's zod schema in @wtw/shared before it is written.
+model EventModule {
+  id       String         @id @default(cuid())
+  eventId  String
+  key      EventModuleKey
+  enabled  Boolean        @default(true)
+  /// Render order of the public section.
+  position Int            @default(0)
+  config   Json           @default("{}")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, key])
+  @@index([eventId, enabled])
+  @@map("event_modules")
+}
+
+model Theme {
+  id           String       @id @default(cuid())
+  key          String       @unique
+  name         String
+  /// Heading the theme sits under in the picker, e.g. "Kenyan inspired".
+  group        String
+  eventTypeKey EventTypeKey
+  /// Design tokens the template renders from.
+  palette      Json         @default("{}")
+  previewImageUrl String?
+  isPremium    Boolean      @default(false)
+  sortOrder    Int          @default(0)
+  isActive     Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  events Event[]
+
+  @@index([eventTypeKey, sortOrder])
+  @@map("themes")
+}
+
+// ---------------------------------------------------------------------------
+// Guests, invitations and responses
+// ---------------------------------------------------------------------------
+
+model Guest {
+  id        String  @id @default(cuid())
+  eventId   String
+  firstName String
+  lastName  String?
+  email     String?
+  phone     String?
+  /// Host-defined grouping, e.g. "Bride's family" or "Table 4".
+  groupLabel String?
+  /// Upper bound on the party this guest may bring, including themselves.
+  maxPartySize Int  @default(1)
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event      Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  invitation Invitation?
+  rsvp       RsvpResponse?
+  claims     RegistryClaim[]
+  gameSubmissions GameSubmission[]
+
+  @@index([eventId])
+  @@map("guests")
+}
+
+/// The tokenised link a guest opens. Guests never hold an account; possession
+/// of the token is what authorises them to view and respond.
+model Invitation {
+  id      String @id @default(cuid())
+  eventId String
+  guestId String @unique
+
+  /// Only the hash is stored; the raw token lives in the shared link.
+  tokenHash String            @unique
+  channel   InvitationChannel @default(link)
+  status    InvitationStatus  @default(draft)
+
+  sentCount   Int       @default(0)
+  sentAt      DateTime?
+  openedAt    DateTime?
+  respondedAt DateTime?
+  revokedAt   DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  guest Guest @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  rsvp  RsvpResponse?
+
+  @@index([eventId, status])
+  @@map("invitations")
+}
+
+model RsvpResponse {
+  id           String     @id @default(cuid())
+  eventId      String
+  guestId      String     @unique
+  invitationId String?    @unique
+  status       RsvpStatus @default(pending)
+
+  /// Total attending under this response, including the invited guest.
+  partySize     Int      @default(1)
+  attendeeNames String[] @default([])
+  dietaryNotes  String?
+  message       String?
+  /// Answers to the host's custom questions, keyed by question id.
+  answers       Json     @default("{}")
+
+  respondedAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  event      Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  guest      Guest       @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  invitation Invitation? @relation(fields: [invitationId], references: [id], onDelete: SetNull)
+
+  @@index([eventId, status])
+  @@map("rsvp_responses")
+}
+
+// ---------------------------------------------------------------------------
+// Registry, games, vendors, payments and media.
+// Modelled now so the modular architecture holds; endpoints are still thin.
+// ---------------------------------------------------------------------------
+
+model RegistryItem {
+  id          String             @id @default(cuid())
+  eventId     String
+  name        String
+  description String?
+  imageUrl    String?
+  /// Minor units of the event currency, e.g. cents of KES.
+  price       Int?
+  quantity    Int                @default(1)
+  quantityClaimed Int            @default(0)
+  externalUrl String?
+  status      RegistryItemStatus @default(available)
+  position    Int                @default(0)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  event  Event           @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  claims RegistryClaim[]
+
+  @@index([eventId, status])
+  @@map("registry_items")
+}
+
+model RegistryClaim {
+  id             String  @id @default(cuid())
+  registryItemId String
+  guestId        String?
+  guestName      String
+  guestEmail     String?
+  quantity       Int     @default(1)
+  message        String?
+  isCashGift     Boolean @default(false)
+  amount         Int?
+  paymentId      String?
+
+  createdAt DateTime @default(now())
+
+  registryItem RegistryItem @relation(fields: [registryItemId], references: [id], onDelete: Cascade)
+  guest        Guest?       @relation(fields: [guestId], references: [id], onDelete: SetNull)
+  payment      Payment?     @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+
+  @@index([registryItemId])
+  @@map("registry_claims")
+}
+
+model GameInstance {
+  id      String  @id @default(cuid())
+  eventId String
+  /// Matches a GameKey in @wtw/shared.
+  gameKey String
+  enabled Boolean @default(true)
+  /// Host-supplied content, e.g. quiz questions and answers.
+  config  Json    @default("{}")
+  position Int    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event       Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  submissions GameSubmission[]
+
+  @@unique([eventId, gameKey])
+  @@map("game_instances")
+}
+
+model GameSubmission {
+  id             String  @id @default(cuid())
+  gameInstanceId String
+  guestId        String?
+  guestName      String
+  /// Shape depends on the game's response kind; validated in @wtw/shared.
+  payload        Json
+  createdAt      DateTime @default(now())
+
+  gameInstance GameInstance @relation(fields: [gameInstanceId], references: [id], onDelete: Cascade)
+  guest        Guest?       @relation(fields: [guestId], references: [id], onDelete: SetNull)
+
+  @@index([gameInstanceId])
+  @@map("game_submissions")
+}
+
+model Vendor {
+  id          String  @id @default(cuid())
+  ownerUserId String?
+  name        String
+  slug        String  @unique
+  tagline     String?
+  description String?
+
+  /// A single profile serves every category and event type it selects, so a
+  /// vendor is never duplicated across weddings, birthdays and baby showers.
+  categories VendorCategoryKey[] @default([])
+  eventTypes EventTypeKey[]      @default([])
+
+  city    String?
+  county  String?
+  country String  @default("KE")
+
+  phone          String?
+  email          String?
+  whatsappNumber String?
+  websiteUrl     String?
+  instagramUrl   String?
+
+  priceFrom Int?
+  currency  String       @default("KES")
+  status    VendorStatus @default(pending_review)
+  isFeatured Boolean     @default(false)
+
+  logoUrl     String?
+  coverImageUrl String?
+  rating      Float?
+  reviewCount Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner   User?          @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
+  reviews VendorReview[]
+
+  @@index([status, isFeatured])
+  @@index([county])
+  @@map("vendors")
+}
+
+model VendorReview {
+  id         String @id @default(cuid())
+  vendorId   String
+  authorName String
+  rating     Int
+  body       String?
+  createdAt  DateTime @default(now())
+
+  vendor Vendor @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([vendorId])
+  @@map("vendor_reviews")
+}
+
+model Payment {
+  id         String          @id @default(cuid())
+  accountId  String
+  eventId    String?
+  provider   PaymentProvider
+  providerRef String?
+  /// Minor units of `currency`.
+  amount     Int
+  currency   String          @default("KES")
+  status     PaymentStatus   @default(pending)
+  /// What the payment is for, e.g. "plan_upgrade" or "cash_gift".
+  purpose    String
+  metadata   Json            @default("{}")
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  account Account         @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  event   Event?          @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  claims  RegistryClaim[]
+
+  @@index([accountId, status])
+  @@map("payments")
+}
+
+model MediaAsset {
+  id         String    @id @default(cuid())
+  accountId  String
+  eventId    String?
+  kind       MediaKind @default(image)
+  url        String
+  storageKey String
+  mimeType   String
+  sizeBytes  Int
+  width      Int?
+  height     Int?
+  createdAt  DateTime  @default(now())
+
+  account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  event   Event?  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([accountId])
+  @@map("media_assets")
+}

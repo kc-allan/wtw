@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+@theme {
+  /* Surfaces */
+  --color-canvas: #e9e7e0;
+  --color-sand: #eaddc0;
+  --color-shell: #e9e7e1;
+  --color-ivory: #fbf7ee;
+  --color-bright: #f7f7f7;
+
+  /* Greens */
+  --color-forest: #0f3c3e;
+  --color-forest-deep: #113f38;
+  --color-pine: #2e603e;
+
+  /* Warm accents */
+  --color-ember: #b8472a;
+  --color-gold: #b8894a;
+  --color-clay: #8a6a38;
+  --color-bark: #6b5b45;
+
+  /* Text */
+  --color-ink: #1e1f1f;
+  --color-ink-strong: #101828;
+  --color-muted: #919190;
+  --color-chalk: #d2d2d2;
+
+  /* Rules */
+  --color-rule: #c7c6c5;
+  --color-rule-inverse: #037847;
+
+  /* Type */
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-cormorant), ui-serif, Georgia, serif;
+  --font-accent: var(--font-jost), var(--font-poppins), ui-sans-serif, sans-serif;
+
+  /* Display sizes track the 1440px canvas and scale down fluidly */
+  --text-display: clamp(2.25rem, 1.2rem + 4.2vw, 4rem);
+  --text-section: clamp(1.75rem, 1.1rem + 2.1vw, 2.5rem);
+
+  /* Every text layer in the design uses the font's own line height, so the
+     size utilities pair with `normal` instead of Tailwind's fixed defaults. */
+  --text-xs--line-height: normal;
+  --text-sm--line-height: normal;
+  --text-base--line-height: normal;
+  --text-lg--line-height: normal;
+  --text-xl--line-height: normal;
+  --text-2xl--line-height: normal;
+  --text-3xl--line-height: normal;
+  --text-4xl--line-height: normal;
+  --text-5xl--line-height: normal;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: #000;
+    font-family: var(--font-sans);
+    /* Matches the "Auto" line height the design uses on every text layer:
+       ~1.5 for Poppins, ~1.2 for Cormorant Garamond, ~1.44 for Jost. */
+    line-height: normal;
+  }
+
+  /* The type scale is set in 0.02em increments across the design. */
+  h1,
+  h2,
+  h3 {
+    letter-spacing: 0.02em;
+  }
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
