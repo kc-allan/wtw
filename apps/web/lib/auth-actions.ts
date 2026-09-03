@@ -2,18 +2,14 @@
 
 import { redirect } from "next/navigation";
 import { api } from "./api";
+import { readDraft } from "./create-draft";
 import { toFormState, type FormState } from "./form-state";
+import { safeNext } from "./safe-next";
 import { clearSession, readRefreshToken, writeSession, type TokenPair } from "./session";
 import type { CurrentUser } from "./types";
 
 interface AuthResult extends TokenPair {
   user: CurrentUser;
-}
-
-/** Keeps `?next=` pointing inside this app, so it cannot become an open redirect. */
-function safeNext(value: FormDataEntryValue | null): string {
-  const next = typeof value === "string" ? value : "";
-  return next.startsWith("/") && !next.startsWith("//") ? next : "/events";
 }
 
 export async function signIn(
@@ -27,13 +23,13 @@ export async function signIn(
       method: "POST",
       auth: false,
       body: {
-        email: formData.get("email"),
+        identifier: formData.get("identifier"),
         password: formData.get("password"),
       },
     });
     await writeSession(result);
   } catch (error) {
-    return toFormState(error, "That email and password did not match");
+    return toFormState(error, "Those details did not match an account");
   }
 
   redirect(next);
@@ -44,17 +40,28 @@ export async function signUp(
   formData: FormData,
 ): Promise<FormState> {
   const next = safeNext(formData.get("next"));
-  const phone = formData.get("phone");
+  const number = formData.get("phone");
+  const diallingCode = formData.get("diallingCode");
+  // Someone signing up mid-flow already told us their name on the first step.
+  const draft = await readDraft();
 
   try {
     const result = await api<AuthResult>("/auth/register", {
       method: "POST",
       auth: false,
       body: {
-        name: formData.get("name"),
         email: formData.get("email"),
         password: formData.get("password"),
-        ...(typeof phone === "string" && phone.trim() ? { phone: phone.trim() } : {}),
+        ...(draft ? { name: draft.fullName } : {}),
+        // The two phone fields are one value; an empty number sends neither.
+        ...(typeof number === "string" && number.trim()
+          ? {
+              phone: {
+                diallingCode: typeof diallingCode === "string" ? diallingCode : "+254",
+                number: number.trim(),
+              },
+            }
+          : {}),
       },
     });
     await writeSession(result);

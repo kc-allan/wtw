@@ -1,21 +1,37 @@
 import type { Metadata } from "next";
+import { CredentialsForm } from "@/app/_components/credentials-form";
 import { signUp } from "@/lib/auth-actions";
-import { AuthForm } from "../_auth-form";
+import { googleClientId } from "@/lib/google-oauth";
+import { safeNext } from "@/lib/safe-next";
 
-export const metadata: Metadata = { title: "Create an account — Worth the Wait" };
+export const metadata: Metadata = { title: "Sign up — Worth the Wait" };
 
 export default async function SignUpPage({ searchParams }: PageProps<"/sign-up">) {
   const { next } = await searchParams;
+  const destination = safeNext(next, "/create");
+  const clientId = await googleClientId();
 
   return (
-    <AuthForm
-      action={signUp}
-      title="Create your account"
-      lead="No credit card to start. You only pay when you publish."
-      submitLabel="Create account"
-      next={typeof next === "string" ? next : "/events/new"}
-      showName
-      footer={{ prompt: "Already have an account?", label: "Sign in", href: "/sign-in" }}
-    />
+    <div className="w-full max-w-[594px]">
+      <h1 className="text-3xl font-semibold text-black sm:text-4xl">Sign up</h1>
+      <p className="mt-2 text-base text-ink/80">
+        One account for every celebration you&rsquo;ll ever host. This one, and the next one.
+      </p>
+
+      <div className="mt-8">
+        <CredentialsForm
+          mode="register"
+          action={signUp}
+          submitLabel="Sign up"
+          next={destination}
+          googleHref={
+            clientId
+              ? `/auth/google/start?next=${encodeURIComponent(destination)}`
+              : undefined
+          }
+          footer={{ prompt: "Already have an account?", label: "Log in", href: "/sign-in" }}
+        />
+      </div>
+    </div>
   );
 }

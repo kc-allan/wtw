@@ -6,6 +6,7 @@ import { formatEventDate, formatEventTime } from "@/lib/event-display";
 import type { PublicEvent } from "@/lib/types";
 import { InvitationCard, nameLines } from "@/app/_components/invitation-card";
 import { FALLBACK_PALETTE } from "@/app/_data/templates";
+import { CeremonyProgramme } from "./ceremony-programme";
 import { EventSections } from "./event-sections";
 import { RsvpForm } from "./rsvp-form";
 
@@ -57,7 +58,7 @@ export default async function PublicEventPage({ params, searchParams }: PageProp
     notFound();
   }
 
-  const { event, modules, guest } = data;
+  const { event, ceremonies, modules, guest } = data;
   const palette = event.theme?.palette ?? FALLBACK_PALETTE;
   const names = nameLines(event.hostNames, event.title);
 
@@ -86,9 +87,12 @@ export default async function PublicEventPage({ params, searchParams }: PageProp
 
         <div className="mx-auto mt-8 max-w-[640px] text-center">
           <p className="text-lg" style={{ color: palette.ink }}>
-            {formatEventDate(event.startsAt, event.timezone)}
-            {" · "}
-            {formatEventTime(event.startsAt, event.timezone)}
+            {[
+              formatEventDate(event.startsAt, event.timezone),
+              formatEventTime(event.startsAt, event.timezone),
+            ]
+              .filter(Boolean)
+              .join(" · ")}
           </p>
           {event.venueName || event.city ? (
             <p className="mt-1 text-base" style={{ color: palette.muted }}>
@@ -102,6 +106,12 @@ export default async function PublicEventPage({ params, searchParams }: PageProp
           ) : null}
         </div>
       </header>
+
+      <CeremonyProgramme
+        ceremonies={ceremonies}
+        timezone={event.timezone}
+        palette={palette}
+      />
 
       <EventSections event={event} modules={modules} palette={palette} />
 

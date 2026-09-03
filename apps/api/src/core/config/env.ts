@@ -6,6 +6,16 @@ const csv = (value: string): string[] =>
     .map((entry) => entry.trim())
     .filter(Boolean);
 
+/**
+ * A setting that is simply not configured. An empty value counts as absent, so
+ * a key left blank in a copied .env reads the same as one that is not there.
+ */
+const unset = z
+  .string()
+  .trim()
+  .optional()
+  .transform((value) => (value === '' ? undefined : value));
+
 export const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.number().int().positive().default(4100),
@@ -24,6 +34,10 @@ export const envSchema = z.object({
     .string()
     .default('http://localhost:3000')
     .transform(csv),
+
+  /** Absent until the credentials exist; the sign-in button follows suit. */
+  GOOGLE_CLIENT_ID: unset,
+  GOOGLE_CLIENT_SECRET: unset,
 
   /** Where uploaded images are written, and the path they are served from. */
   MEDIA_STORAGE_DIR: z.string().default('var/media'),

@@ -33,7 +33,7 @@ export default async function MyEventsPage() {
 
         <li className="flex">
           <Link
-            href="/events/new"
+            href="/create"
             className="flex w-full flex-col items-center justify-center rounded-xl bg-white p-6 text-center outline-offset-2"
           >
             <span className="flex w-full flex-col items-center rounded-lg border border-dashed border-rule px-8 py-14">

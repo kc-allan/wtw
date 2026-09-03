@@ -100,8 +100,48 @@ export class PublicEventsService {
     });
 
     const modules = await this.modules.listEnabledPublic(eventId);
+    const ceremonies = await this.ceremoniesFor(eventId, guest?.id);
 
-    return { event, modules, guest };
+    return { event, ceremonies, modules, guest };
+  }
+
+  /**
+   * The ceremonies this visitor is asked to. A guest we can identify sees only
+   * theirs; anyone arriving without an invitation sees the whole programme,
+   * since there is no one to narrow it down to.
+   */
+  private async ceremoniesFor(eventId: string, guestId: string | undefined) {
+    const assigned =
+      guestId === undefined
+        ? []
+        : await this.prisma.guestCeremony.findMany({
+            where: { guestId },
+            select: { ceremonyId: true },
+          });
+
+    return this.prisma.ceremony.findMany({
+      where: {
+        eventId,
+        ...(assigned.length > 0 ? { id: { in: assigned.map((row) => row.ceremonyId) } } : {}),
+      },
+      select: {
+        id: true,
+        key: true,
+        name: true,
+        startsAt: true,
+        endsAt: true,
+        venueName: true,
+        venueAddress: true,
+        city: true,
+        latitude: true,
+        longitude: true,
+        description: true,
+        dressCode: true,
+        position: true,
+        theme: { select: { key: true, name: true, palette: true } },
+      },
+      orderBy: { position: 'asc' },
+    });
   }
 
   /** Verifies an invitation token and marks the invitation opened. */

@@ -1,4 +1,5 @@
 import type {
+  CeremonyKey,
   EventModuleKey,
   EventStatus,
   EventTypeKey,
@@ -39,6 +40,24 @@ export interface EventModuleView {
   config: Record<string, unknown>;
 }
 
+/** One gathering within an event, with its own date, place and design. */
+export interface Ceremony {
+  id: string;
+  key: CeremonyKey;
+  name: string;
+  startsAt: string | null;
+  endsAt: string | null;
+  venueName: string | null;
+  venueAddress: string | null;
+  city: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  description: string | null;
+  dressCode: string | null;
+  position: number;
+  theme: Pick<Theme, "key" | "name" | "palette"> | null;
+}
+
 export interface EventSummary {
   id: string;
   slug: string;
@@ -47,7 +66,8 @@ export interface EventSummary {
   description: string | null;
   hostNames: string[];
   typeKey: EventTypeKey;
-  startsAt: string;
+  /** Null while the host is still deciding when. */
+  startsAt: string | null;
   endsAt: string | null;
   timezone: string;
   expectedGuests: number | null;
@@ -68,6 +88,7 @@ export interface EventSummary {
 
 export interface EventDetail extends EventSummary {
   modules: EventModuleView[];
+  ceremonies: Ceremony[];
 }
 
 /** Matches the API's envelope: rows under `data`, paging under `meta`. */
@@ -83,6 +104,8 @@ export interface Guest {
   email: string | null;
   phone: string | null;
   groupLabel: string | null;
+  /** Empty means asked to every ceremony. */
+  ceremonyKeys: CeremonyKey[];
   maxPartySize: number;
   notes: string | null;
   createdAt: string;
@@ -125,6 +148,8 @@ export interface PublicEvent {
   event: Omit<EventSummary, "coverImageId" | "publishedAt" | "createdAt" | "updatedAt"> & {
     theme: Pick<Theme, "key" | "name" | "group" | "palette"> | null;
   };
+  /** Narrowed to the ceremonies this guest is asked to, when we know them. */
+  ceremonies: Ceremony[];
   modules: EventModuleView[];
   guest: {
     id: string;

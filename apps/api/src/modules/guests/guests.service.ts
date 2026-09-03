@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { RsvpStatus } from '@wtw/shared';
-import { toDbRsvpStatus } from '../../core/prisma/enums';
+import { CEREMONIES, CeremonyKey, RsvpStatus } from '@wtw/shared';
+import { fromDbCeremonyKey, toDbCeremonyKey, toDbRsvpStatus } from '../../core/prisma/enums';
 import { PrismaService } from '../../core/prisma/prisma.service';
 import { paginate, skipTake, type Paginated } from '../../common/pagination';
 import { EventsService } from '../events/events.service';
@@ -32,7 +32,24 @@ const guestSelect = {
     },
   },
   invitation: { select: { status: true, channel: true, sentAt: true, openedAt: true } },
+  ceremonies: { select: { ceremony: { select: { key: true } } } },
 } satisfies Prisma.GuestSelect;
+
+/** The spreadsheet spells ceremonies out rather than exporting their keys. */
+const CEREMONY_LABELS: Record<string, string> = Object.fromEntries(
+  Object.values(CEREMONIES).map((ceremony) => [ceremony.key, ceremony.name]),
+);
+
+type GuestRow = Prisma.GuestGetPayload<{ select: typeof guestSelect }>;
+
+/** Flattens the join rows into the list of keys the clients work in. */
+function withCeremonyKeys(guest: GuestRow) {
+  const { ceremonies, ...rest } = guest;
+  return {
+    ...rest,
+    ceremonyKeys: ceremonies.map((row) => fromDbCeremonyKey(row.ceremony.key)),
+  };
+}
 
 @Injectable()
 export class GuestsService {
@@ -60,7 +77,7 @@ export class GuestsService {
       this.prisma.guest.count({ where }),
     ]);
 
-    return paginate(rows, total, query);
+    return paginate(rows.map(withCeremonyKeys), total, query);
   }
 
 
@@ -72,6 +89,9 @@ export class GuestsService {
     return {
       eventId,
       ...(query.groupLabel ? { groupLabel: query.groupLabel } : {}),
+      ...(query.ceremonyKey
+        ? { ceremonies: { some: { ceremony: { key: toDbCeremonyKey(query.ceremonyKey) } } } }
+        : {}),
       ...(query.status
         ? query.status === RsvpStatus.PENDING
           ? { OR: [{ rsvp: { is: null } }, { rsvp: { status: 'pending' } }] }
@@ -121,6 +141,10 @@ export class GuestsService {
       party: guest.rsvp?.partySize ?? '',
       meal: guest.rsvp?.mealChoice ?? '',
       dietaryNotes: guest.rsvp?.dietaryNotes ?? '',
+      invitedTo:
+        guest.ceremonies.length === 0
+          ? 'All ceremonies'
+          : guest.ceremonies.map((row) => CEREMONY_LABELS[row.ceremony.key]).join(', '),
       invitedVia: guest.invitation?.channel ?? '',
       invitationStatus: guest.invitation?.status ?? 'not sent',
     }));
@@ -128,17 +152,23 @@ export class GuestsService {
 
   async create(userId: string, eventId: string, input: GuestInput) {
     await this.events.assertCanManage(userId, eventId);
-    return this.prisma.guest.create({
-      data: { eventId, ...input },
+    const { ceremonyKeys, ...guest } = input;
+    const created = await this.prisma.guest.create({
+      data: {
+        eventId,
+        ...guest,
+        ceremonies: { create: await this.ceremonyLinks(eventId, ceremonyKeys) },
+      },
       select: guestSelect,
     });
+    return withCeremonyKeys(created);
   }
 
   /** Bulk entry for hosts pasting a list rather than typing one at a time. */
   async createMany(userId: string, eventId: string, input: BulkGuestsInput) {
     await this.events.assertCanManage(userId, eventId);
     const result = await this.prisma.guest.createMany({
-      data: input.guests.map((guest) => ({ eventId, ...guest })),
+      data: input.guests.map(({ ceremonyKeys: _ceremonies, ...guest }) => ({ eventId, ...guest })),
     });
     return { created: result.count };
   }
@@ -146,11 +176,38 @@ export class GuestsService {
   async update(userId: string, eventId: string, guestId: string, input: UpdateGuestInput) {
     await this.events.assertCanManage(userId, eventId);
     await this.assertBelongs(eventId, guestId);
-    return this.prisma.guest.update({
+    const { ceremonyKeys, ...guest } = input;
+
+    // Sending the list at all replaces it; omitting it leaves it untouched.
+    const updated = await this.prisma.guest.update({
       where: { id: guestId },
-      data: input,
+      data: {
+        ...guest,
+        ...(ceremonyKeys === undefined
+          ? {}
+          : {
+              ceremonies: {
+                deleteMany: {},
+                create: await this.ceremonyLinks(eventId, ceremonyKeys),
+              },
+            }),
+      },
       select: guestSelect,
     });
+    return withCeremonyKeys(updated);
+  }
+
+  /**
+   * Turns the ceremony keys a host chose into join rows, dropping any that do
+   * not belong to this event. An empty result means "asked to everything".
+   */
+  private async ceremonyLinks(eventId: string, keys: readonly CeremonyKey[] | undefined) {
+    if (!keys || keys.length === 0) return [];
+    const rows = await this.prisma.ceremony.findMany({
+      where: { eventId, key: { in: keys.map(toDbCeremonyKey) } },
+      select: { id: true },
+    });
+    return rows.map((row) => ({ ceremonyId: row.id }));
   }
 
   async remove(userId: string, eventId: string, guestId: string): Promise<void> {

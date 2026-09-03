@@ -10,6 +10,14 @@ import {
 const API_URL = process.env.API_URL ?? "http://localhost:4100/api/v1";
 
 /**
+ * The setup flow is walked by people who have no account yet, so a missing
+ * session there is the normal case rather than a reason to send anyone away.
+ */
+function sessionIsRequired(pathname: string): boolean {
+  return !pathname.startsWith("/create");
+}
+
+/**
  * Keeps the session alive without the browser ever holding a token. The access
  * cookie is short-lived, so when it expires this quietly spends the refresh
  * cookie for a new pair and lets the request continue — the page render behind
@@ -21,9 +29,10 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  const required = sessionIsRequired(request.nextUrl.pathname);
   const refreshToken = request.cookies.get(REFRESH_COOKIE)?.value;
   if (!refreshToken) {
-    return redirectToSignIn(request);
+    return required ? redirectToSignIn(request) : NextResponse.next();
   }
 
   const refreshed = await fetch(`${API_URL}/auth/refresh`, {
@@ -33,8 +42,8 @@ export async function proxy(request: NextRequest) {
   }).catch(() => null);
 
   if (!refreshed?.ok) {
-    // The refresh token is spent or revoked; make them sign in again.
-    const response = redirectToSignIn(request);
+    // The refresh token is spent or revoked; either way it is worth nothing now.
+    const response = required ? redirectToSignIn(request) : NextResponse.next();
     response.cookies.delete(ACCESS_COOKIE);
     response.cookies.delete(REFRESH_COOKIE);
     return response;
@@ -69,7 +78,7 @@ function redirectToSignIn(request: NextRequest) {
 }
 
 export const config = {
-  // Only the host-facing area needs a session; marketing pages and the guest
-  // event pages must stay reachable signed out.
-  matcher: ["/events/:path*", "/account/:path*"],
+  // The host-facing area needs a session; the setup flow only wants one kept
+  // alive if it is already there. Marketing and guest pages are left alone.
+  matcher: ["/events/:path*", "/account/:path*", "/create/:path*"],
 };

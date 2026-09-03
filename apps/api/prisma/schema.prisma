@@ -47,6 +47,24 @@ enum EventModuleKey {
   gallery
 }
 
+/// The gatherings a wedding is made up of, in the order they usually happen.
+enum CeremonyKey {
+  introductions
+  dowry
+  traditional
+  religious
+  reception
+  send_off
+}
+
+/// Where the person setting up the event stands in relation to it.
+enum HostRole {
+  bride
+  groom
+  planner
+  other
+}
+
 enum EventStatus {
   draft
   published
@@ -142,15 +160,18 @@ enum MediaKind {
 model User {
   id              String    @id @default(cuid())
   email           String    @unique
-  passwordHash    String
+  /// Absent for accounts that only ever sign in through a provider.
+  passwordHash    String?
   name            String
-  phone           String?
+  /// Doubles as a sign-in handle, so it has to identify one person.
+  phone           String?   @unique
   avatarUrl       String?
   emailVerifiedAt DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
   memberships   AccountMember[]
+  identities    UserIdentity[]
   refreshTokens RefreshToken[]
   createdEvents Event[]         @relation("EventCreator")
   vendors       Vendor[]
@@ -226,12 +247,16 @@ model Event {
   /// Whose celebration it is — couple, birthday guest of honour, parents-to-be.
   hostNames   String[] @default([])
 
-  startsAt DateTime
+  /// Absent while the couple is still deciding; they publish a date later.
+  startsAt DateTime?
   endsAt   DateTime?
   timezone String    @default("Africa/Nairobi")
 
   /// Rough headcount the host gives before there is a guest list.
   expectedGuests Int?
+
+  /// How the person who set the event up relates to it.
+  hostRole HostRole?
 
   city         String?
   venueName    String?
@@ -254,6 +279,7 @@ model Event {
   createdBy     User           @relation("EventCreator", fields: [createdById], references: [id])
   theme         Theme?         @relation(fields: [themeId], references: [id])
   modules       EventModule[]
+  ceremonies    Ceremony[]
   guests        Guest[]
   invitations   Invitation[]
   rsvps         RsvpResponse[]
@@ -290,22 +316,23 @@ model EventModule {
 }
 
 model Theme {
-  id           String       @id @default(cuid())
-  key          String       @unique
-  name         String
+  id              String       @id @default(cuid())
+  key             String       @unique
+  name            String
   /// Heading the theme sits under in the picker, e.g. "Kenyan inspired".
-  group        String
-  eventTypeKey EventTypeKey
+  group           String
+  eventTypeKey    EventTypeKey
   /// Design tokens the template renders from.
-  palette      Json         @default("{}")
+  palette         Json         @default("{}")
   previewImageUrl String?
-  isPremium    Boolean      @default(false)
-  sortOrder    Int          @default(0)
-  isActive     Boolean      @default(true)
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  isPremium       Boolean      @default(false)
+  sortOrder       Int          @default(0)
+  isActive        Boolean      @default(true)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
 
-  events Event[]
+  events     Event[]
+  ceremonies Ceremony[]
 
   @@index([eventTypeKey, sortOrder])
   @@map("themes")
@@ -316,24 +343,25 @@ model Theme {
 // ---------------------------------------------------------------------------
 
 model Guest {
-  id        String  @id @default(cuid())
-  eventId   String
-  firstName String
-  lastName  String?
-  email     String?
-  phone     String?
+  id           String   @id @default(cuid())
+  eventId      String
+  firstName    String
+  lastName     String?
+  email        String?
+  phone        String?
   /// Host-defined grouping, e.g. "Bride's family" or "Table 4".
-  groupLabel String?
+  groupLabel   String?
   /// Upper bound on the party this guest may bring, including themselves.
-  maxPartySize Int  @default(1)
-  notes     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  maxPartySize Int      @default(1)
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  event      Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  invitation Invitation?
-  rsvp       RsvpResponse?
-  claims     RegistryClaim[]
+  event           Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  invitation      Invitation?
+  ceremonies      GuestCeremony[]
+  rsvp            RsvpResponse?
+  claims          RegistryClaim[]
   gameSubmissions GameSubmission[]
 
   @@index([eventId])
@@ -361,8 +389,8 @@ model Invitation {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  guest Guest @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  event Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  guest Guest         @relation(fields: [guestId], references: [id], onDelete: Cascade)
   rsvp  RsvpResponse?
 
   @@index([eventId, status])
@@ -403,20 +431,20 @@ model RsvpResponse {
 // ---------------------------------------------------------------------------
 
 model RegistryItem {
-  id          String             @id @default(cuid())
-  eventId     String
-  name        String
-  description String?
-  imageUrl    String?
+  id              String             @id @default(cuid())
+  eventId         String
+  name            String
+  description     String?
+  imageUrl        String?
   /// Minor units of the event currency, e.g. cents of KES.
-  price       Int?
-  quantity    Int                @default(1)
-  quantityClaimed Int            @default(0)
-  externalUrl String?
-  status      RegistryItemStatus @default(available)
-  position    Int                @default(0)
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
+  price           Int?
+  quantity        Int                @default(1)
+  quantityClaimed Int                @default(0)
+  externalUrl     String?
+  status          RegistryItemStatus @default(available)
+  position        Int                @default(0)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
 
   event  Event           @relation(fields: [eventId], references: [id], onDelete: Cascade)
   claims RegistryClaim[]
@@ -448,14 +476,14 @@ model RegistryClaim {
 }
 
 model GameInstance {
-  id      String  @id @default(cuid())
-  eventId String
+  id        String   @id @default(cuid())
+  eventId   String
   /// Matches a GameKey in @wtw/shared.
-  gameKey String
-  enabled Boolean @default(true)
+  gameKey   String
+  enabled   Boolean  @default(true)
   /// Host-supplied content, e.g. quiz questions and answers.
-  config  Json    @default("{}")
-  position Int    @default(0)
+  config    Json     @default("{}")
+  position  Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -467,7 +495,7 @@ model GameInstance {
 }
 
 model GameSubmission {
-  id             String  @id @default(cuid())
+  id             String   @id @default(cuid())
   gameInstanceId String
   guestId        String?
   guestName      String
@@ -505,15 +533,15 @@ model Vendor {
   websiteUrl     String?
   instagramUrl   String?
 
-  priceFrom Int?
-  currency  String       @default("KES")
-  status    VendorStatus @default(pending_review)
-  isFeatured Boolean     @default(false)
+  priceFrom  Int?
+  currency   String       @default("KES")
+  status     VendorStatus @default(pending_review)
+  isFeatured Boolean      @default(false)
 
-  logoUrl     String?
+  logoUrl       String?
   coverImageUrl String?
-  rating      Float?
-  reviewCount Int     @default(0)
+  rating        Float?
+  reviewCount   Int     @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -527,7 +555,7 @@ model Vendor {
 }
 
 model VendorReview {
-  id         String @id @default(cuid())
+  id         String   @id @default(cuid())
   vendorId   String
   authorName String
   rating     Int
@@ -541,20 +569,20 @@ model VendorReview {
 }
 
 model Payment {
-  id         String          @id @default(cuid())
-  accountId  String
-  eventId    String?
-  provider   PaymentProvider
+  id          String          @id @default(cuid())
+  accountId   String
+  eventId     String?
+  provider    PaymentProvider
   providerRef String?
   /// Minor units of `currency`.
-  amount     Int
-  currency   String          @default("KES")
-  status     PaymentStatus   @default(pending)
+  amount      Int
+  currency    String          @default("KES")
+  status      PaymentStatus   @default(pending)
   /// What the payment is for, e.g. "plan_upgrade" or "cash_gift".
-  purpose    String
-  metadata   Json            @default("{}")
-  createdAt  DateTime        @default(now())
-  updatedAt  DateTime        @updatedAt
+  purpose     String
+  metadata    Json            @default("{}")
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
 
   account Account         @relation(fields: [accountId], references: [id], onDelete: Cascade)
   event   Event?          @relation(fields: [eventId], references: [id], onDelete: SetNull)
@@ -582,4 +610,75 @@ model MediaAsset {
 
   @@index([accountId])
   @@map("media_assets")
+}
+
+/// A sign-in through an external provider, kept separate from the password so
+/// one person can use both and add another provider without a migration.
+model UserIdentity {
+  id             String   @id @default(cuid())
+  userId         String
+  /// Lowercase provider name, e.g. "google".
+  provider       String
+  /// The provider's own immutable id for the person, never their email.
+  providerUserId String
+  createdAt      DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerUserId])
+  @@index([userId])
+  @@map("user_identities")
+}
+
+/// One gathering within a wedding. It carries its own date, place and design
+/// so the introductions and the reception can look and read nothing alike
+/// while sharing a guest list, a registry and one address on the web.
+model Ceremony {
+  id      String      @id @default(cuid())
+  eventId String
+  key     CeremonyKey
+  /// Defaults to the ceremony's usual name, and the host may rename it.
+  name    String
+  themeId String?
+
+  startsAt DateTime?
+  endsAt   DateTime?
+
+  venueName    String?
+  venueAddress String?
+  city         String?
+  latitude     Float?
+  longitude    Float?
+
+  /// Shown on the ceremony's section of the event page.
+  description String?
+  dressCode   String?
+
+  /// Render order on the event page; seeded from the usual sequence.
+  position Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event  Event           @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  theme  Theme?          @relation(fields: [themeId], references: [id])
+  guests GuestCeremony[]
+
+  @@unique([eventId, key])
+  @@index([eventId, position])
+  @@map("ceremonies")
+}
+
+/// Which ceremonies a guest is asked to. A guest with no rows here is invited
+/// to everything, so a couple who never splits their list has nothing to fill in.
+model GuestCeremony {
+  guestId    String
+  ceremonyId String
+
+  guest    Guest    @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  ceremony Ceremony @relation(fields: [ceremonyId], references: [id], onDelete: Cascade)
+
+  @@id([guestId, ceremonyId])
+  @@index([ceremonyId])
+  @@map("guest_ceremonies")
 }

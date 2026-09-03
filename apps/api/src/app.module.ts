@@ -9,6 +9,7 @@ import { PrismaModule } from './core/prisma/prisma.module';
 import { AccountsModule } from './modules/accounts/accounts.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { EventTypesModule } from './modules/event-types/event-types.module';
+import { CeremoniesModule } from './modules/ceremonies/ceremonies.module';
 import { EventsModule } from './modules/events/events.module';
 import { ContactModule } from './modules/contact/contact.module';
 import { GamesModule } from './modules/games/games.module';
@@ -41,6 +42,7 @@ import { VendorsModule } from './modules/vendors/vendors.module';
     AuthModule,
     AccountsModule,
     EventsModule,
+    CeremoniesModule,
     GuestsModule,
     InvitationsModule,
     RsvpModule,

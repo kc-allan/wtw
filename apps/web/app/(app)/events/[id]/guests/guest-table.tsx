@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { RsvpStatus } from "@wtw/shared";
-import type { Guest, Paginated } from "@/lib/types";
+import type { Ceremony, Guest, Paginated } from "@/lib/types";
+import { GuestCeremonies } from "./guest-ceremonies";
 
 const RSVP_LABELS: Record<RsvpStatus, { label: string; className: string }> = {
   [RsvpStatus.ATTENDING]: { label: "Attending", className: "bg-mint text-success" },
@@ -21,10 +22,13 @@ function initials(guest: Guest): string {
 export function GuestTable({
   guests,
   eventId,
+  ceremonies,
   filters,
 }: {
   guests: Paginated<Guest>;
   eventId: string;
+  /** Empty for the event types that are one gathering, which hides the column. */
+  ceremonies: Ceremony[];
   /** Carried into the pager so turning a page keeps the current filter. */
   filters: { status?: string; group?: string };
 }) {
@@ -45,7 +49,7 @@ export function GuestTable({
   return (
     <div className="mt-4 overflow-hidden rounded-xl bg-white">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[760px] border-collapse text-start">
+        <table className="w-full min-w-[860px] border-collapse text-start">
           <thead>
             <tr className="bg-ivory text-base text-ink/60">
               <th scope="col" className="px-6 py-4 text-start font-normal">
@@ -63,6 +67,11 @@ export function GuestTable({
               <th scope="col" className="px-6 py-4 text-start font-normal">
                 Meal
               </th>
+              {ceremonies.length > 0 ? (
+                <th scope="col" className="px-6 py-4 text-start font-normal">
+                  Invited to
+                </th>
+              ) : null}
               <th scope="col" className="px-6 py-4 text-start font-normal">
                 Invited via
               </th>
@@ -112,6 +121,18 @@ export function GuestTable({
                   <td className="px-6 py-4 text-base text-ink">
                     {guest.rsvp?.mealChoice ?? "—"}
                   </td>
+
+                  {ceremonies.length > 0 ? (
+                    <td className="px-6 py-4">
+                      <GuestCeremonies
+                        eventId={eventId}
+                        guestId={guest.id}
+                        guestName={guest.firstName}
+                        ceremonies={ceremonies}
+                        selected={guest.ceremonyKeys}
+                      />
+                    </td>
+                  ) : null}
 
                   <td className="px-6 py-4 text-base text-ink capitalize">
                     {guest.invitation?.channel ?? "—"}

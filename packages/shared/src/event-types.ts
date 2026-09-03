@@ -18,6 +18,18 @@ export interface EventTypeModuleSlot {
   required?: boolean;
 }
 
+/**
+ * The extra questions a type asks on the way in, beyond the name, date and
+ * place every event needs. Each one is a screen in the create flow, so a type
+ * gains a step by listing it here rather than by branching in the UI.
+ */
+export enum CreateStepKey {
+  /** Where the host stands in relation to the day. */
+  HOST_ROLE = 'host_role',
+  /** Which gatherings the celebration is made up of. */
+  CEREMONIES = 'ceremonies',
+}
+
 export interface EventTypeDefinition {
   key: EventTypeKey;
   name: string;
@@ -30,6 +42,8 @@ export interface EventTypeDefinition {
    * public page unless the website module overrides it.
    */
   modules: EventTypeModuleSlot[];
+  /** Asked between choosing the type and picking a design. */
+  createSteps: CreateStepKey[];
 }
 
 const required = (key: EventModuleKey): EventTypeModuleSlot => ({
@@ -57,6 +71,7 @@ export const EVENT_TYPES: Record<EventTypeKey, EventTypeDefinition> = {
     plural: 'Weddings',
     description: 'The full journey: a website, registry, timeline and guest management.',
     flagship: true,
+    createSteps: [CreateStepKey.HOST_ROLE, CreateStepKey.CEREMONIES],
     modules: [
       required(EventModuleKey.INVITATION),
       required(EventModuleKey.EVENT_DETAILS),
@@ -82,6 +97,7 @@ export const EVENT_TYPES: Record<EventTypeKey, EventTypeDefinition> = {
     plural: 'Birthdays',
     description: 'Lightweight by design — an invitation, the details and an RSVP.',
     // Deliberately no registry, gallery or website sections beyond the essentials.
+    createSteps: [],
     modules: [
       required(EventModuleKey.INVITATION),
       required(EventModuleKey.EVENT_DETAILS),
@@ -97,6 +113,7 @@ export const EVENT_TYPES: Record<EventTypeKey, EventTypeDefinition> = {
     name: 'Baby shower',
     plural: 'Baby showers',
     description: 'Simple and elegant, with a wishlist and games guests play from the page.',
+    createSteps: [],
     modules: [
       required(EventModuleKey.INVITATION),
       required(EventModuleKey.EVENT_DETAILS),
@@ -114,6 +131,7 @@ export const EVENT_TYPES: Record<EventTypeKey, EventTypeDefinition> = {
     name: 'Graduation',
     plural: 'Graduations',
     description: 'Mark the milestone and get everyone to the ceremony.',
+    createSteps: [],
     modules: simpleCelebrationModules,
   },
 
@@ -122,6 +140,7 @@ export const EVENT_TYPES: Record<EventTypeKey, EventTypeDefinition> = {
     name: 'Anniversary',
     plural: 'Anniversaries',
     description: 'Celebrate the years, from the first to the diamond.',
+    createSteps: [],
     modules: simpleCelebrationModules,
   },
 
@@ -130,6 +149,7 @@ export const EVENT_TYPES: Record<EventTypeKey, EventTypeDefinition> = {
     name: 'Bridal shower',
     plural: 'Bridal showers',
     description: 'Gather the bride’s people before the day.',
+    createSteps: [],
     modules: simpleCelebrationModules,
   },
 
@@ -138,6 +158,7 @@ export const EVENT_TYPES: Record<EventTypeKey, EventTypeDefinition> = {
     name: 'Corporate event',
     plural: 'Corporate events',
     description: 'Conferences, launches, galas and end-of-year parties.',
+    createSteps: [],
     modules: simpleCelebrationModules,
   },
 };
@@ -162,6 +183,14 @@ export function isModuleRequiredForType(
   return EVENT_TYPES[typeKey].modules.some(
     (slot) => slot.key === moduleKey && slot.required === true,
   );
+}
+
+export function createStepsForType(typeKey: EventTypeKey): CreateStepKey[] {
+  return EVENT_TYPES[typeKey].createSteps;
+}
+
+export function typeAsksCreateStep(typeKey: EventTypeKey, step: CreateStepKey): boolean {
+  return EVENT_TYPES[typeKey].createSteps.includes(step);
 }
 
 export function defaultModulesForType(typeKey: EventTypeKey): EventModuleKey[] {

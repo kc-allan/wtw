@@ -12,7 +12,13 @@ type Group = { heading: string; items: Item[] };
  * an event that does not exist yet are rendered disabled rather than hidden,
  * so the shape of the job stays visible from the first screen.
  */
-export function EventSidebar({ eventId }: { eventId?: string }) {
+export function EventSidebar({
+  eventId,
+  hasCeremonies = false,
+}: {
+  eventId?: string;
+  hasCeremonies?: boolean;
+}) {
   const pathname = usePathname();
   const base = eventId ? `/events/${eventId}` : null;
 
@@ -21,7 +27,7 @@ export function EventSidebar({ eventId }: { eventId?: string }) {
       heading: "Planning",
       items: [
         { label: "My events", href: "/events", icon: <CalendarIcon /> },
-        { label: "Create events", href: "/events/new", icon: <PlusIcon /> },
+        { label: "Create events", href: "/create", icon: <PlusIcon /> },
         {
           label: "Guest lists",
           href: base ? `${base}/guests` : "/guests",
@@ -44,6 +50,10 @@ export function EventSidebar({ eventId }: { eventId?: string }) {
           icon: <PenIcon />,
           disabled: !base,
         },
+        // Only the event types made up of several gatherings have these.
+        ...(hasCeremonies && base
+          ? [{ label: "Ceremonies", href: `${base}/ceremonies`, icon: <RingsIcon /> }]
+          : []),
       ],
     },
     {
@@ -150,6 +160,16 @@ function LayoutIcon() {
     <svg viewBox="0 0 20 20" aria-hidden className={ICON}>
       <rect x="2.5" y="3.5" width="15" height="13" rx="2" {...STROKE} />
       <path d="M2.5 8h15M8 8v8.5" {...STROKE} />
+    </svg>
+  );
+}
+
+function RingsIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden>
+      <circle cx="9" cy="15" r="6" stroke="currentColor" strokeWidth="1.6" />
+      <circle cx="15" cy="15" r="6" stroke="currentColor" strokeWidth="1.6" />
+      <path d="m12 3 2 3h-4l2-3Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
     </svg>
   );
 }

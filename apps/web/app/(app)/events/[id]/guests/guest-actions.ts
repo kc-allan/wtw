@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { CeremonyKey, isCeremonyKey } from "@wtw/shared";
 import { api } from "@/lib/api";
 import { toFormState, type FormState } from "@/lib/form-state";
 
@@ -49,4 +50,26 @@ export async function addGuests(
 
   revalidatePath(`/events/${eventId}/guests`);
   return {};
+}
+
+/**
+ * Sets which ceremonies one guest is asked to. An empty list means all of
+ * them, which is what a guest starts out as.
+ */
+export async function setGuestCeremonies(
+  eventId: string,
+  guestId: string,
+  keys: CeremonyKey[],
+): Promise<{ ok: boolean; message?: string }> {
+  try {
+    await api(`/events/${eventId}/guests/${guestId}`, {
+      method: "PATCH",
+      body: { ceremonyKeys: keys.filter(isCeremonyKey) },
+    });
+  } catch {
+    return { ok: false, message: "We could not save that" };
+  }
+
+  revalidatePath(`/events/${eventId}/guests`);
+  return { ok: true };
 }

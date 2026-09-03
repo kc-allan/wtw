@@ -21,7 +21,7 @@ export function AppHeader({ user }: { user: CurrentUser | null }) {
 
           <div className="flex items-center gap-3">
             <Link
-              href="/events/new"
+              href="/create"
               aria-label="New event"
               className="inline-flex items-center gap-2 rounded-full bg-forest px-4 py-2.5 text-base font-medium whitespace-nowrap text-bright transition-colors hover:bg-forest-deep sm:px-5"
             >

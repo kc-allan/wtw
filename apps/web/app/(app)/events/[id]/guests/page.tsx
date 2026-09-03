@@ -121,6 +121,7 @@ export default async function GuestListPage({
       <GuestTable
         guests={guests}
         eventId={id}
+        ceremonies={event.ceremonies}
         filters={{ status, group: groupLabel }}
       />
     </main>

@@ -30,7 +30,7 @@ export function WizardSteps({
         {WIZARD_STEPS.map((step, index) => {
           const isDone = index < currentIndex;
           const isCurrent = index === currentIndex;
-          const href = eventId && index > 0 ? `/events/${eventId}/${step.key}` : "/events/new";
+          const href = eventId && index > 0 ? `/events/${eventId}/${step.key}` : "/create";
 
           const marker = (
             <span

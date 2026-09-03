@@ -119,7 +119,7 @@ export function CustomizeEditor({ event, themes }: { event: EventDetail; themes:
                 id="startsAt"
                 name="startsAt"
                 type="date"
-                defaultValue={event.startsAt.slice(0, 10)}
+                defaultValue={event.startsAt?.slice(0, 10) ?? ""}
                 className="bg-white"
               />
             </Field>

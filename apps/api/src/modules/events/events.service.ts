@@ -1,8 +1,10 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { EventStatus, EventTypeKey } from '@wtw/shared';
+import { CreateStepKey, EventStatus, EventTypeKey, typeAsksCreateStep } from '@wtw/shared';
 import { Prisma } from '@prisma/client';
+import { buildCeremonies } from '../ceremonies/ceremony-defaults';
 import {
   fromDbEventType,
+  toDbHostRole,
   toDbEventStatus,
   toDbEventType,
   toDbVisibility,
@@ -26,6 +28,7 @@ const eventSelect = {
   endsAt: true,
   timezone: true,
   expectedGuests: true,
+  hostRole: true,
   city: true,
   venueName: true,
   venueAddress: true,
@@ -39,6 +42,19 @@ const eventSelect = {
   createdAt: true,
   updatedAt: true,
   theme: { select: { key: true, name: true, group: true, palette: true, isPremium: true } },
+  ceremonies: {
+    select: {
+      id: true,
+      key: true,
+      name: true,
+      startsAt: true,
+      venueName: true,
+      city: true,
+      position: true,
+      theme: { select: { key: true, name: true, palette: true } },
+    },
+    orderBy: { position: 'asc' },
+  },
 } satisfies Prisma.EventSelect;
 
 @Injectable()
@@ -72,6 +88,7 @@ export class EventsService {
         endsAt: input.endsAt,
         timezone: input.timezone,
         expectedGuests: input.expectedGuests,
+        ...(input.hostRole ? { hostRole: toDbHostRole(input.hostRole) } : {}),
         city: input.city,
         venueName: input.venueName,
         venueAddress: input.venueAddress,
@@ -81,6 +98,12 @@ export class EventsService {
         currency: input.currency,
         // The type definition decides which modules the event starts with.
         modules: { create: this.modules.buildDefaultModules(input.typeKey) },
+        // …and whether it is made up of several gatherings at all.
+        ceremonies: {
+          create: typeAsksCreateStep(input.typeKey, CreateStepKey.CEREMONIES)
+            ? buildCeremonies(input.ceremonies)
+            : [],
+        },
       },
       select: eventSelect,
     });
@@ -98,7 +121,7 @@ export class EventsService {
       this.prisma.event.findMany({
         where,
         select: eventSelect,
-        orderBy: { startsAt: 'asc' },
+        orderBy: { startsAt: { sort: 'asc', nulls: 'last' } },
         ...skipTake(query),
       }),
       this.prisma.event.count({ where }),

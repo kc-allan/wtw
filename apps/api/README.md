@@ -71,21 +71,39 @@ prisma/
 
 ## What is built and what is not
 
-Working end to end: authentication, workspaces, events, the module registry,
-the theme catalogue, guests, invitations and RSVP (with host-defined meal
-options), the gift registry including guest claims, baby shower games including
-guest play and host export, image uploads, vendor search, and the contact form.
+Working end to end: authentication (password, phone or Google), workspaces,
+events, wedding ceremonies, the module registry, the theme catalogue, guests,
+invitations and RSVP (with host-defined meal options), the gift registry
+including guest claims, baby shower games including guest play and host export,
+image uploads, vendor search, and the contact form.
 
 Not built: **payments**. The `Payment` model and its relations exist, so a cash
 gift or a plan upgrade has somewhere to hang, but no provider is wired and
 nothing charges anyone.
 
-Two details worth knowing:
+A few details worth knowing:
 
 - **Registry claims are atomic.** The guard travels with the write, so two
   guests claiming the last of a gift cannot both succeed — one gets a 400.
 - **Quiz answer keys never leave the host.** `GET /e/:slug/games` strips
   `correctAnswer` from every question before the guest sees it.
+- **A wedding is several gatherings.** `Ceremony` rows hang off the event, each
+  with its own date, venue, design and guests. `GET /e/:slug` narrows the
+  programme to the ceremonies the invitation's guest is asked to; a guest with
+  no assignment is asked to all of them, and a visitor with no invitation sees
+  the whole programme. Only event types whose `createSteps` include
+  `ceremonies` may hold any — the rest get a 400.
+- **Google sign-in is lit by configuration.** `GET /auth/providers` reports
+  whether `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are set, and the web
+  app hides the button until they are. The code is exchanged server side by
+  `POST /auth/google`, so no token ever travels in a URL.
+- **An event may have no date yet.** `startsAt` is nullable, because the setup
+  flow lets a host say they are still deciding. Undated events sort last, the
+  countdown section does not render, and the date reads "Date to be announced"
+  wherever one would go.
+- **Phone numbers are a sign-in handle.** They are stored in E.164 and are
+  unique, so `POST /auth/login` accepts either an email or a number in
+  `identifier`.
 
 ## Notes for whoever picks this up
 

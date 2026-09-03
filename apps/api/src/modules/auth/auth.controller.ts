@@ -5,19 +5,25 @@ import { zodBody } from '../../core/http/zod-validation.pipe';
 import { CurrentUser, type AuthenticatedUser } from '../../core/auth/current-user.decorator';
 import { Public } from '../../core/auth/public.decorator';
 import {
+  googleAuthSchema,
   loginSchema,
   refreshSchema,
   registerSchema,
+  type GoogleAuthInput,
   type LoginInput,
   type RefreshInput,
   type RegisterInput,
 } from './auth.schemas';
 import { AuthService } from './auth.service';
+import { GoogleIdentityService } from './google-identity.service';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly auth: AuthService) {}
+  constructor(
+    private readonly auth: AuthService,
+    private readonly google: GoogleIdentityService,
+  ) {}
 
   @Public()
   @Post('register')
@@ -34,6 +40,22 @@ export class AuthController {
   @ApiZodBody(loginSchema, 'Login')
   login(@Body(zodBody(loginSchema)) body: LoginInput) {
     return this.auth.login(body);
+  }
+
+  @Public()
+  @Get('providers')
+  @ApiOperation({ summary: 'Which sign-in providers this deployment offers' })
+  providers() {
+    return { google: this.google.isConfigured, googleClientId: this.google.clientId ?? null };
+  }
+
+  @Public()
+  @Post('google')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Exchange a Google authorization code for a session' })
+  @ApiZodBody(googleAuthSchema, 'GoogleAuth')
+  signInWithGoogle(@Body(zodBody(googleAuthSchema)) body: GoogleAuthInput) {
+    return this.auth.signInWithGoogle(body);
   }
 
   @Public()

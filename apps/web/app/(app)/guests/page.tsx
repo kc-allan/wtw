@@ -30,7 +30,7 @@ export default async function GuestsHubPage() {
       {events.length === 0 ? (
         <p className="mt-10 text-base text-ink/70">
           Once you create an event, its guest list appears here.{" "}
-          <Link href="/events/new" className="underline underline-offset-4">
+          <Link href="/create" className="underline underline-offset-4">
             Create one
           </Link>
           .

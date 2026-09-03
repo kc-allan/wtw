@@ -76,6 +76,7 @@ export class GuestsController {
           'party',
           'meal',
           'dietaryNotes',
+          'invitedTo',
           'invitedVia',
           'invitationStatus',
         ]),

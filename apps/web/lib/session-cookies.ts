@@ -1,5 +1,5 @@
 /**
- * Cookie names only. Kept free of `next/headers` so middleware, which runs
+ * Cookie names only. Kept free of `next/headers` so the proxy, which runs
  * before that API exists, can import them.
  */
 export const ACCESS_COOKIE = "wtw_access";

@@ -93,6 +93,10 @@ const RENDERERS: Partial<Record<EventModuleKey, Renderer>> = {
     const target = read<string>(module.config, "targetAt") ?? event.startsAt;
     const hideWhenPassed = read<boolean>(module.config, "hideWhenPassed") ?? true;
 
+    // There is nothing to count down to until a date is settled on.
+    if (target === null) {
+      return null;
+    }
     if (hideWhenPassed && new Date(target).getTime() < Date.now()) {
       return null;
     }

@@ -78,7 +78,10 @@ export default async function PublishStepPage({ params }: PageProps<"/events/[id
 
           <dl className="mt-8 grid gap-4 border-t border-rule/50 pt-6 sm:grid-cols-2">
             <Detail label="Celebration" value={EVENT_TYPES[event.typeKey].name} />
-            <Detail label="Date" value={formatEventDate(event.startsAt, event.timezone)} />
+            <Detail
+              label="Date"
+              value={formatEventDate(event.startsAt, event.timezone, undefined, "Not set yet")}
+            />
             <Detail label="Design" value={event.theme?.name ?? "Not chosen"} />
             <Detail
               label="Sections switched on"

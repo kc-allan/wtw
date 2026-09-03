@@ -15,18 +15,31 @@ export function eventStanding(event: Pick<EventSummary, "status" | "startsAt">):
   if (event.status === EventStatus.DRAFT) {
     return { label: "Draft" };
   }
+  // An event with no date yet cannot have happened.
+  if (event.startsAt === null) {
+    return { label: "Live" };
+  }
   return new Date(event.startsAt).getTime() < Date.now() ? { label: "Past" } : { label: "Live" };
 }
 
+/** What stands in for a date the host has not settled on yet. */
+export const DATE_UNDECIDED = "Date to be announced";
+
 /**
  * Renders in the event's own timezone rather than the reader's: a Nairobi
- * wedding reads "14 February 2027" to a host checking from London too.
+ * wedding reads "14 February 2027" to a host checking from London too. A host
+ * who is still deciding has no date to render, so callers say what to put
+ * there instead rather than each one testing for null.
  */
 export function formatEventDate(
-  startsAt: string,
+  startsAt: string | null,
   timeZone: string,
   options: Intl.DateTimeFormatOptions = { day: "numeric", month: "long", year: "numeric" },
+  undecided: string = DATE_UNDECIDED,
 ): string {
+  if (startsAt === null) {
+    return undecided;
+  }
   try {
     return new Intl.DateTimeFormat("en-GB", { ...options, timeZone }).format(new Date(startsAt));
   } catch {
@@ -35,6 +48,10 @@ export function formatEventDate(
   }
 }
 
-export function formatEventTime(startsAt: string, timeZone: string): string {
-  return formatEventDate(startsAt, timeZone, { hour: "numeric", minute: "2-digit" });
+export function formatEventTime(
+  startsAt: string | null,
+  timeZone: string,
+  undecided = "",
+): string {
+  return formatEventDate(startsAt, timeZone, { hour: "numeric", minute: "2-digit" }, undecided);
 }
