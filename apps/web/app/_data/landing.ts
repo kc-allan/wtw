@@ -7,7 +7,8 @@ export const navLinks: NavLink[] = [
   { label: "Home", href: "/" },
   { label: "Templates", href: "/templates" },
   { label: "How it works", href: "/how-it-works" },
-  { label: "Find a vendor", href: "/vendors" },
+  { label: "About", href: "/about" },
+  { label: "Pricing", href: "/pricing" },
 ];
 
 export type TemplateCard = {

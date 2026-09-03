@@ -55,6 +55,11 @@ export const moduleConfigSchemas = {
     allowMaybe: z.boolean().default(true),
     collectDietary: z.boolean().default(false),
     collectMessage: z.boolean().default(true),
+    /**
+     * Meal options guests pick from. The host owns the wording, so the guest
+     * list can total them without the platform prescribing a fixed menu.
+     */
+    mealOptions: z.array(z.string().min(1).max(60)).max(10).default([]),
     /** Extra host-defined questions appended to the response form. */
     customQuestions: z
       .array(

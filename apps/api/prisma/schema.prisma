@@ -230,6 +230,10 @@ model Event {
   endsAt   DateTime?
   timezone String    @default("Africa/Nairobi")
 
+  /// Rough headcount the host gives before there is a guest list.
+  expectedGuests Int?
+
+  city         String?
   venueName    String?
   venueAddress String?
   latitude     Float?
@@ -375,6 +379,8 @@ model RsvpResponse {
   /// Total attending under this response, including the invited guest.
   partySize     Int      @default(1)
   attendeeNames String[] @default([])
+  /// One of the options the host set on the RSVP module, e.g. "Vegetarian".
+  mealChoice    String?
   dietaryNotes  String?
   message       String?
   /// Answers to the host's custom questions, keyed by question id.

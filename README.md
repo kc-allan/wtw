@@ -22,6 +22,7 @@ pnpm db:seed
 
 pnpm dev:api    # http://localhost:4100/api/v1  (docs at /api/docs)
 pnpm dev:web    # http://localhost:3000
+pnpm build      # build shared, API, and web for production
 ```
 
 `pnpm setup` starts Postgres in Docker on port **5434**, chosen to stay clear of

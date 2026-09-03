@@ -38,6 +38,37 @@ export const gameSubmissionSchemas = {
   }),
 } as const satisfies Record<GameResponseKind, z.ZodTypeAny>;
 
+/**
+ * What the host fills in before a game can run. Quiz games are the only ones
+ * that carry questions; the rest just take an optional reworded prompt, so a
+ * host can ask for advice in their own voice without a new game definition.
+ */
+const quizQuestion = z.object({
+  id: z.string().min(1).max(60),
+  prompt: z.string().min(1).max(300),
+  /** Empty means a free-text answer rather than a multiple choice. */
+  options: z.array(z.string().min(1).max(200)).max(8).default([]),
+  /** Kept host-side; used to score submissions, never sent to guests. */
+  correctAnswer: z.string().max(200).optional(),
+});
+
+const basePrompt = z.object({ prompt: z.string().max(300).optional() });
+
+export const gameConfigSchemas = {
+  date: basePrompt,
+  weight: basePrompt,
+  text: basePrompt,
+  quiz: basePrompt.extend({
+    questions: z.array(quizQuestion).min(1).max(20),
+  }),
+  predictions: basePrompt,
+} as const satisfies Record<GameResponseKind, z.ZodTypeAny>;
+
+export type GameConfig<K extends GameResponseKind> = z.infer<
+  (typeof gameConfigSchemas)[K]
+>;
+export type QuizQuestion = z.infer<typeof quizQuestion>;
+
 export type GameSubmission<K extends GameResponseKind> = z.infer<
   (typeof gameSubmissionSchemas)[K]
 >;
@@ -121,4 +152,26 @@ export const ALL_GAME_KEYS = Object.values(GameKey);
 
 export function parseGameSubmission(key: GameKey, value: unknown) {
   return gameSubmissionSchemas[GAMES[key].responseKind].parse(value);
+}
+
+/** Validates the host's setup for a game before its instance is written. */
+export function parseGameConfig(key: GameKey, value: unknown) {
+  return gameConfigSchemas[GAMES[key].responseKind].parse(value ?? {});
+}
+
+/**
+ * The questions a quiz game asks, with answers stripped. Guests are sent this
+ * rather than the raw config so the answer key never leaves the host's side.
+ */
+export function publicGameConfig(key: GameKey, config: unknown) {
+  const kind = GAMES[key].responseKind;
+  if (kind !== 'quiz') {
+    return gameConfigSchemas[kind].parse(config ?? {});
+  }
+
+  const { questions, ...rest } = gameConfigSchemas.quiz.parse(config ?? {});
+  return {
+    ...rest,
+    questions: questions.map(({ correctAnswer: _answer, ...question }) => question),
+  };
 }

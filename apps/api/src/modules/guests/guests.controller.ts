@@ -9,8 +9,10 @@ import {
   Patch,
   Post,
   Query,
+  Res,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import type { Response } from 'express';
 import { CurrentUser, type AuthenticatedUser } from '../../core/auth/current-user.decorator';
 import { ApiZodBody, ApiZodQuery } from '../../core/http/api-zod';
 import { ZodValidationPipe, zodBody } from '../../core/http/zod-validation.pipe';
@@ -24,6 +26,7 @@ import {
   type ListGuestsQuery,
   type UpdateGuestInput,
 } from './guests.schemas';
+import { toCsv } from '../../common/csv';
 import { GuestsService } from './guests.service';
 
 @ApiTags('guests')
@@ -41,6 +44,42 @@ export class GuestsController {
     @Query(new ZodValidationPipe(listGuestsSchema)) query: ListGuestsQuery,
   ) {
     return this.guests.list(user.id, eventId, query);
+  }
+
+  @Get('groups')
+  @ApiOperation({ summary: 'Group labels in use on this event' })
+  groups(@CurrentUser() user: AuthenticatedUser, @Param('eventId') eventId: string) {
+    return this.guests.groups(user.id, eventId);
+  }
+
+  @Get('export.csv')
+  @ApiOperation({ summary: 'The guest list as a spreadsheet' })
+  @ApiZodQuery(listGuestsSchema, 'ListGuests')
+  async exportCsv(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('eventId') eventId: string,
+    @Query(new ZodValidationPipe(listGuestsSchema)) query: ListGuestsQuery,
+    @Res() res: Response,
+  ): Promise<void> {
+    const rows = await this.guests.exportRows(user.id, eventId, query);
+
+    res
+      .header('Content-Type', 'text/csv; charset=utf-8')
+      .header('Content-Disposition', 'attachment; filename="guest-list.csv"')
+      .send(
+        toCsv(rows, [
+          'name',
+          'email',
+          'phone',
+          'group',
+          'rsvp',
+          'party',
+          'meal',
+          'dietaryNotes',
+          'invitedVia',
+          'invitationStatus',
+        ]),
+      );
   }
 
   @Post()

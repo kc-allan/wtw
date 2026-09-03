@@ -10,6 +10,7 @@ import { AccountsModule } from './modules/accounts/accounts.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { EventTypesModule } from './modules/event-types/event-types.module';
 import { EventsModule } from './modules/events/events.module';
+import { ContactModule } from './modules/contact/contact.module';
 import { GamesModule } from './modules/games/games.module';
 import { GuestsModule } from './modules/guests/guests.module';
 import { HealthModule } from './modules/health/health.module';
@@ -57,6 +58,7 @@ import { VendorsModule } from './modules/vendors/vendors.module';
     GamesModule,
     PaymentsModule,
     MediaModule,
+    ContactModule,
 
     HealthModule,
   ],

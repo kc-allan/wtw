@@ -7,6 +7,8 @@ export const submitRsvpSchema = z.object({
   }),
   partySize: z.number().int().min(1).max(20).default(1),
   attendeeNames: z.array(z.string().min(1).max(120)).max(20).default([]),
+  /** Must be one of the options the host set on the RSVP module. */
+  mealChoice: z.string().max(60).optional(),
   dietaryNotes: z.string().max(1000).optional(),
   message: z.string().max(2000).optional(),
   /** Answers to the host's custom questions, keyed by question id. */

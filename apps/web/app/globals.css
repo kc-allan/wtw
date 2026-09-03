@@ -29,6 +29,12 @@
   --color-rule: #c7c6c5;
   --color-rule-inverse: #037847;
 
+  /* RSVP and event states */
+  --color-success: #037847;
+  --color-success-bright: #00a434;
+  --color-mint: #cff3d2;
+  --color-blush: #f5e5e1;
+
   /* Type */
   --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-cormorant), ui-serif, Georgia, serif;

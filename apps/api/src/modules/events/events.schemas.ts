@@ -10,6 +10,9 @@ export const createEventSchema = z.object({
   startsAt: z.coerce.date(),
   endsAt: z.coerce.date().optional(),
   timezone: z.string().min(1).max(60).default('Africa/Nairobi'),
+  /** Rough headcount the host gives before there is a guest list. */
+  expectedGuests: z.number().int().min(1).max(100_000).optional(),
+  city: z.string().max(120).optional(),
   venueName: z.string().max(200).optional(),
   venueAddress: z.string().max(500).optional(),
   latitude: z.number().min(-90).max(90).optional(),
@@ -26,6 +29,8 @@ export const updateEventSchema = createEventSchema
   .partial()
   .extend({
     accessCode: z.string().min(4).max(40).nullable().optional(),
+    /** A MediaAsset on this event; null clears the cover. */
+    coverImageId: z.string().min(1).max(60).nullable().optional(),
   });
 
 export const listEventsSchema = z.object({

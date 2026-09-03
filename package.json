@@ -3,6 +3,8 @@
   "private": true,
   "packageManager": "pnpm@11.25.0",
   "scripts": {
+    "start:prod": "pnpm --filter @wtw/api start:prod",
+    "start:web": "pnpm --filter @wtw/web start",
     "dev:web": "pnpm --filter @wtw/web dev",
     "dev:api": "pnpm --filter @wtw/shared build && pnpm --filter @wtw/api start:dev",
     "build": "pnpm --filter @wtw/shared build && pnpm --filter @wtw/api build && pnpm --filter @wtw/web build",

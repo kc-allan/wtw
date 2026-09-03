@@ -19,6 +19,10 @@ export interface RsvpSummary {
   pending: number;
   totalGuests: number;
   totalAttendees: number;
+  /** Plus-ones brought by attending guests, over and above the invitees. */
+  plusOnes: number;
+  /** How many chose each meal option, for the catering headcount. */
+  meals: { choice: string; count: number }[];
 }
 
 @Injectable()
@@ -63,11 +67,19 @@ export class RsvpService {
       );
     }
 
+    if (
+      input.mealChoice !== undefined &&
+      !config.mealOptions.includes(input.mealChoice)
+    ) {
+      throw new BadRequestException('Choose one of the meal options offered');
+    }
+
     const partySize = input.status === RsvpStatus.ATTENDING ? input.partySize : 0;
     const data = {
       status: toDbRsvpStatus(input.status),
       partySize,
       attendeeNames: input.attendeeNames,
+      mealChoice: config.mealOptions.length > 0 ? input.mealChoice : undefined,
       dietaryNotes: config.collectDietary ? input.dietaryNotes : undefined,
       message: config.collectMessage ? input.message : undefined,
       answers: input.answers as Prisma.InputJsonValue,
@@ -106,6 +118,7 @@ export class RsvpService {
           status: true,
           partySize: true,
           attendeeNames: true,
+          mealChoice: true,
           dietaryNotes: true,
           message: true,
           answers: true,
@@ -128,7 +141,7 @@ export class RsvpService {
 
     // Read-only, so these run concurrently rather than in a transaction —
     // which also keeps Prisma's groupBy count typed as a plain number.
-    const [grouped, totalGuests, attendingAggregate] = await Promise.all([
+    const [grouped, totalGuests, attendingAggregate, mealGroups] = await Promise.all([
       this.prisma.rsvpResponse.groupBy({
         by: ['status'],
         where: { eventId },
@@ -140,19 +153,33 @@ export class RsvpService {
         where: { eventId, status: 'attending' },
         _sum: { partySize: true },
       }),
+      this.prisma.rsvpResponse.groupBy({
+        by: ['mealChoice'],
+        where: { eventId, status: 'attending', mealChoice: { not: null } },
+        orderBy: { mealChoice: 'asc' },
+        _count: true,
+      }),
     ]);
 
     const counts = new Map(grouped.map((row) => [row.status, row._count]));
     const responded = [...counts.values()].reduce((total, count) => total + count, 0);
 
+    const attending = counts.get('attending') ?? 0;
+    const totalAttendees = attendingAggregate._sum.partySize ?? 0;
+
     return {
-      attending: counts.get('attending') ?? 0,
+      attending,
       notAttending: counts.get('not_attending') ?? 0,
       maybe: counts.get('maybe') ?? 0,
       // Everyone invited who has not answered yet.
       pending: Math.max(0, totalGuests - responded),
       totalGuests,
-      totalAttendees: attendingAggregate._sum.partySize ?? 0,
+      totalAttendees,
+      plusOnes: Math.max(0, totalAttendees - attending),
+      meals: mealGroups.map((row) => ({
+        choice: row.mealChoice as string,
+        count: row._count,
+      })),
     };
   }
 

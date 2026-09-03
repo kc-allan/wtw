@@ -4,6 +4,10 @@ import { Throttle } from '@nestjs/throttler';
 import { Public } from '../../core/auth/public.decorator';
 import { ApiZodBody } from '../../core/http/api-zod';
 import { zodBody } from '../../core/http/zod-validation.pipe';
+import { claimRegistryItemSchema, type ClaimRegistryItemInput } from '../registry/registry.schemas';
+import { RegistryService } from '../registry/registry.service';
+import { submitGameSchema, type SubmitGameInput } from '../games/games.schemas';
+import { GamesService } from '../games/games.service';
 import { submitRsvpSchema, type SubmitRsvpInput } from '../rsvp/rsvp.schemas';
 import { RsvpService } from '../rsvp/rsvp.service';
 import { PublicEventsService } from './public-events.service';
@@ -19,6 +23,8 @@ export class PublicController {
   constructor(
     private readonly publicEvents: PublicEventsService,
     private readonly rsvp: RsvpService,
+    private readonly registry: RegistryService,
+    private readonly games: GamesService,
   ) {}
 
   @Get(':slug')
@@ -47,5 +53,69 @@ export class PublicController {
   ) {
     const { eventId, guest } = await this.publicEvents.requireGuest(slug, token);
     return this.rsvp.submit(eventId, guest.id, guest.invitationId, body);
+  }
+
+  @Get(':slug/registry')
+  @ApiOperation({ summary: 'The gift registry as guests see it' })
+  @ApiQuery({ name: 't', required: false, description: 'Guest invitation token' })
+  @ApiQuery({ name: 'code', required: false, description: 'Access code for private events' })
+  async registryItems(
+    @Param('slug') slug: string,
+    @Query('t') token?: string,
+    @Query('code') code?: string,
+  ) {
+    const { eventId } = await this.publicEvents.requireAccess(slug, token, code);
+    return this.registry.listForGuests(eventId);
+  }
+
+  @Post(':slug/registry/:itemId/claim')
+  @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  @ApiOperation({ summary: 'Reserve a gift, or record a cash contribution' })
+  @ApiQuery({ name: 't', required: false, description: 'Guest invitation token' })
+  @ApiQuery({ name: 'code', required: false, description: 'Access code for private events' })
+  @ApiZodBody(claimRegistryItemSchema, 'ClaimRegistryItem')
+  async claimRegistryItem(
+    @Param('slug') slug: string,
+    @Param('itemId') itemId: string,
+    @Body(zodBody(claimRegistryItemSchema)) body: ClaimRegistryItemInput,
+    @Query('t') token?: string,
+    @Query('code') code?: string,
+  ) {
+    // A guest without a token can still give, so long as they can reach the
+    // page at all; the claim simply carries the name they typed.
+    const { eventId, guest } = await this.publicEvents.requireAccess(slug, token, code);
+    return this.registry.claim(eventId, itemId, guest?.id ?? null, body);
+  }
+
+  @Get(':slug/games')
+  @ApiOperation({ summary: 'Games guests can play, without the answer keys' })
+  @ApiQuery({ name: 't', required: false, description: 'Guest invitation token' })
+  @ApiQuery({ name: 'code', required: false, description: 'Access code for private events' })
+  async gameList(
+    @Param('slug') slug: string,
+    @Query('t') token?: string,
+    @Query('code') code?: string,
+  ) {
+    const { eventId } = await this.publicEvents.requireAccess(slug, token, code);
+    return this.games.listForGuests(eventId);
+  }
+
+  @Post(':slug/games/:gameInstanceId')
+  @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 20, ttl: 60_000 } })
+  @ApiOperation({ summary: 'Submit an answer to one of the games' })
+  @ApiQuery({ name: 't', required: false, description: 'Guest invitation token' })
+  @ApiQuery({ name: 'code', required: false, description: 'Access code for private events' })
+  @ApiZodBody(submitGameSchema, 'SubmitGame')
+  async submitGame(
+    @Param('slug') slug: string,
+    @Param('gameInstanceId') gameInstanceId: string,
+    @Body(zodBody(submitGameSchema)) body: SubmitGameInput,
+    @Query('t') token?: string,
+    @Query('code') code?: string,
+  ) {
+    const { eventId, guest } = await this.publicEvents.requireAccess(slug, token, code);
+    return this.games.submit(eventId, gameInstanceId, guest?.id ?? null, body);
   }
 }

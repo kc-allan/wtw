@@ -25,6 +25,8 @@ const eventSelect = {
   startsAt: true,
   endsAt: true,
   timezone: true,
+  expectedGuests: true,
+  city: true,
   venueName: true,
   venueAddress: true,
   latitude: true,
@@ -32,6 +34,7 @@ const eventSelect = {
   status: true,
   visibility: true,
   currency: true,
+  coverImageId: true,
   publishedAt: true,
   createdAt: true,
   updatedAt: true,
@@ -68,6 +71,8 @@ export class EventsService {
         startsAt: input.startsAt,
         endsAt: input.endsAt,
         timezone: input.timezone,
+        expectedGuests: input.expectedGuests,
+        city: input.city,
         venueName: input.venueName,
         venueAddress: input.venueAddress,
         latitude: input.latitude,
@@ -143,6 +148,9 @@ export class EventsService {
         ...(input.startsAt !== undefined ? { startsAt: input.startsAt } : {}),
         ...(input.endsAt !== undefined ? { endsAt: input.endsAt } : {}),
         ...(input.timezone !== undefined ? { timezone: input.timezone } : {}),
+        ...(input.expectedGuests !== undefined ? { expectedGuests: input.expectedGuests } : {}),
+        ...(input.city !== undefined ? { city: input.city } : {}),
+        ...(input.coverImageId !== undefined ? { coverImageId: input.coverImageId } : {}),
         ...(input.venueName !== undefined ? { venueName: input.venueName } : {}),
         ...(input.venueAddress !== undefined ? { venueAddress: input.venueAddress } : {}),
         ...(input.latitude !== undefined ? { latitude: input.latitude } : {}),
@@ -202,7 +210,12 @@ export class EventsService {
   async assertCanManage(
     userId: string,
     eventId: string,
-  ): Promise<{ id: string; slug: string; typeKey: Prisma.EventGetPayload<object>['typeKey'] }> {
+  ): Promise<{
+    id: string;
+    slug: string;
+    accountId: string;
+    typeKey: Prisma.EventGetPayload<object>['typeKey'];
+  }> {
     const event = await this.prisma.event.findUnique({
       where: { id: eventId },
       select: { id: true, slug: true, typeKey: true, accountId: true },
@@ -219,7 +232,7 @@ export class EventsService {
       throw new ForbiddenException('You do not have access to this event');
     }
 
-    return { id: event.id, slug: event.slug, typeKey: event.typeKey };
+    return { id: event.id, slug: event.slug, accountId: event.accountId, typeKey: event.typeKey };
   }
 
   private async accountIds(userId: string): Promise<string[]> {

@@ -25,6 +25,11 @@ export const envSchema = z.object({
     .default('http://localhost:3000')
     .transform(csv),
 
+  /** Where uploaded images are written, and the path they are served from. */
+  MEDIA_STORAGE_DIR: z.string().default('var/media'),
+  MEDIA_PUBLIC_PATH: z.string().default('/media'),
+  MEDIA_MAX_BYTES: z.coerce.number().int().positive().default(8 * 1024 * 1024),
+
   THROTTLE_TTL_SECONDS: z.coerce.number().int().positive().default(60),
   THROTTLE_LIMIT: z.coerce.number().int().positive().default(120),
 });

@@ -60,8 +60,10 @@ src/
     guests/ invitations/ rsvp/    the guest pipeline
     event-types/ themes/          catalogues
     public/                       everything a guest can reach
-    registry/ games/ vendors/     scaffolded
-    payments/ media/              scaffolded
+    registry/ games/              gifts and guest games
+    media/                        uploads, behind a storage interface
+    vendors/ contact/             directory and enquiries
+    payments/                     model only, no provider
 prisma/
   schema.prisma
   seed.ts, seed-data/             119 themes, 8 sample vendors
@@ -70,18 +72,34 @@ prisma/
 ## What is built and what is not
 
 Working end to end: authentication, workspaces, events, the module registry,
-the theme catalogue, guests, invitations and RSVP, plus vendor search.
+the theme catalogue, guests, invitations and RSVP (with host-defined meal
+options), the gift registry including guest claims, baby shower games including
+guest play and host export, image uploads, vendor search, and the contact form.
 
-Scaffolded — real tables, module gating and routes, but thin logic: registry
-claims, baby shower games, payments and media. Each is marked in its service.
+Not built: **payments**. The `Payment` model and its relations exist, so a cash
+gift or a plan upgrade has somewhere to hang, but no provider is wired and
+nothing charges anyone.
+
+Two details worth knowing:
+
+- **Registry claims are atomic.** The guard travels with the write, so two
+  guests claiming the last of a gift cannot both succeed — one gets a 400.
+- **Quiz answer keys never leave the host.** `GET /e/:slug/games` strips
+  `correctAnswer` from every question before the guest sees it.
 
 ## Notes for whoever picks this up
 
 - **Guest authorisation is the invitation token**, hashed in the database. The
   raw token is returned once, by `POST /events/:id/invitations/issue`, and is
   not recoverable afterwards — reissuing mints a new one and invalidates the old.
-- **Sending is stubbed.** `InvitationSender` logs instead of delivering; bind a
-  WhatsApp or SMS provider to that token in `invitations.module.ts`.
+- **Sending is stubbed, deliberately.** `InvitationSender` and `ContactService`
+  log instead of delivering. The product shares by link — the host taps
+  WhatsApp, SMS or email on their own device — so nothing is blocked on a
+  provider account. Bind one to those tokens when automated delivery is wanted.
+- **Uploads are local disk in development.** `MediaStorage` is the seam;
+  `LocalDiskStorage` writes under `MEDIA_STORAGE_DIR` and the API serves it at
+  `MEDIA_PUBLIC_PATH`. A bucket implementation replaces the binding in
+  `media.module.ts` and nothing else changes.
 - **Prisma 7** takes its migrate URL from `prisma.config.ts` and its runtime
   connection from the `pg` driver adapter in `PrismaService`. The `url` field is
   no longer allowed in `schema.prisma`.

@@ -35,12 +35,46 @@ export class PublicEventsService {
   ) {}
 
   /**
+   * The access rules every guest route shares: the event must be published,
+   * and a private one needs either a valid invitation token or the host's
+   * access code. Returns the guest the token belongs to, when there is one.
+   */
+  async requireAccess(
+    slug: string,
+    rawToken?: string,
+    accessCode?: string,
+  ): Promise<{ eventId: string; guest: ResolvedGuest | null }> {
+    const event = await this.prisma.event.findUnique({
+      where: { slug },
+      select: { id: true, status: true, visibility: true, accessCode: true },
+    });
+
+    if (!event || event.status !== toDbEventStatus(EventStatus.PUBLISHED)) {
+      throw new NotFoundException('Event not found');
+    }
+
+    const guest = rawToken ? await this.resolveGuest(event.id, rawToken) : null;
+
+    if (
+      event.visibility === toDbVisibility(EventVisibility.PRIVATE) &&
+      !guest &&
+      (!accessCode || accessCode !== event.accessCode)
+    ) {
+      throw new ForbiddenException('This event is private');
+    }
+
+    return { eventId: event.id, guest };
+  }
+
+  /**
    * The guest-facing view of an event: its enabled public modules plus, when a
    * valid invitation token is supplied, the guest that token belongs to.
    */
   async getBySlug(slug: string, rawToken?: string, accessCode?: string) {
-    const event = await this.prisma.event.findUnique({
-      where: { slug },
+    const { eventId, guest } = await this.requireAccess(slug, rawToken, accessCode);
+
+    const event = await this.prisma.event.findUniqueOrThrow({
+      where: { id: eventId },
       select: {
         id: true,
         slug: true,
@@ -58,7 +92,6 @@ export class PublicEventsService {
         longitude: true,
         status: true,
         visibility: true,
-        accessCode: true,
         currency: true,
         theme: {
           select: { key: true, name: true, group: true, palette: true },
@@ -66,23 +99,9 @@ export class PublicEventsService {
       },
     });
 
-    if (!event || event.status !== toDbEventStatus(EventStatus.PUBLISHED)) {
-      throw new NotFoundException('Event not found');
-    }
+    const modules = await this.modules.listEnabledPublic(eventId);
 
-    const guest = rawToken ? await this.resolveGuest(event.id, rawToken) : null;
-
-    if (event.visibility === toDbVisibility(EventVisibility.PRIVATE) && !guest) {
-      // A private event needs either a guest token or the host's access code.
-      if (!accessCode || accessCode !== event.accessCode) {
-        throw new ForbiddenException('This event is private');
-      }
-    }
-
-    const modules = await this.modules.listEnabledPublic(event.id);
-    const { accessCode: _accessCode, ...publicEvent } = event;
-
-    return { event: publicEvent, modules, guest };
+    return { event, modules, guest };
   }
 
   /** Verifies an invitation token and marks the invitation opened. */
@@ -148,19 +167,11 @@ export class PublicEventsService {
     eventId: string;
     guest: ResolvedGuest;
   }> {
-    const event = await this.prisma.event.findUnique({
-      where: { slug },
-      select: { id: true, status: true },
-    });
-    if (!event || event.status !== toDbEventStatus(EventStatus.PUBLISHED)) {
-      throw new NotFoundException('Event not found');
-    }
-
-    const guest = await this.resolveGuest(event.id, rawToken);
+    const { eventId, guest } = await this.requireAccess(slug, rawToken);
     if (!guest) {
       throw new ForbiddenException('This invitation link is not valid');
     }
 
-    return { eventId: event.id, guest };
+    return { eventId, guest };
   }
 }
