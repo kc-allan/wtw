@@ -3,6 +3,7 @@ export * from './event-modules';
 export * from './event-types';
 export * from './ceremonies';
 export * from './host-roles';
+export * from './plans';
 export * from './event-status';
 export * from './rsvp';
 export * from './themes';

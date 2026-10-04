@@ -74,10 +74,27 @@ export class RsvpService {
       throw new BadRequestException('Choose one of the meal options offered');
     }
 
-    const partySize = input.status === RsvpStatus.ATTENDING ? input.partySize : 0;
+    const breakdown =
+      config.collectHeadcountBreakdown &&
+      input.adults !== undefined &&
+      input.children !== undefined
+        ? { adults: input.adults, children: input.children }
+        : null;
+
+    // A split that does not add up would make the totals on the guest list lie.
+    if (breakdown && breakdown.adults + breakdown.children !== input.partySize) {
+      throw new BadRequestException(
+        'The number of adults and children should add up to the size of your party',
+      );
+    }
+
+    const attending = input.status === RsvpStatus.ATTENDING;
+    const partySize = attending ? input.partySize : 0;
     const data = {
       status: toDbRsvpStatus(input.status),
       partySize,
+      adults: breakdown && attending ? breakdown.adults : null,
+      children: breakdown && attending ? breakdown.children : null,
       attendeeNames: input.attendeeNames,
       mealChoice: config.mealOptions.length > 0 ? input.mealChoice : undefined,
       dietaryNotes: config.collectDietary ? input.dietaryNotes : undefined,

@@ -22,6 +22,11 @@ export function EventSidebar({
   const pathname = usePathname();
   const base = eventId ? `/events/${eventId}` : null;
 
+  // The event's own page is the hub, and its rail is the navigation there.
+  if (base && pathname === base) {
+    return null;
+  }
+
   const groups: Group[] = [
     {
       heading: "Planning",

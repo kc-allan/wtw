@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { CreateStepKey, typeAsksCreateStep } from "@wtw/shared";
 import { api } from "@/lib/api";
+import { BackToEvent } from "../_hub/back-to-event";
 import type { EventDetail, Theme } from "@/lib/types";
 import { CeremonyEditor } from "./ceremony-editor";
 
@@ -24,6 +25,8 @@ export default async function CeremoniesPage({ params }: PageProps<"/events/[id]
 
   return (
     <main className="w-full px-6 py-8 lg:px-10">
+      <BackToEvent eventId={id} />
+
       <h1 className="font-serif text-section font-semibold text-black">Your ceremonies</h1>
       <p className="mt-1 max-w-[640px] text-base tracking-[0.02em] text-ink/70">
         Each one keeps its own date, place and design. Guests see only the ceremonies

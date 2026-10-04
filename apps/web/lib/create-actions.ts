@@ -122,5 +122,5 @@ export async function createEventFromDraft(): Promise<never> {
 
   await clearDraft();
   revalidatePath("/events");
-  redirect(`/events/${event.id}/template`);
+  redirect(`/events/${event.id}`);
 }

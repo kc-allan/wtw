@@ -19,7 +19,7 @@ export default async function EventLayout({ children, params }: LayoutProps<"/ev
           event !== null && typeAsksCreateStep(event.typeKey, CreateStepKey.CEREMONIES)
         }
       />
-      <div className="min-w-0 flex-1">{children}</div>
+      <div className="flex min-w-0 flex-1 flex-col">{children}</div>
     </div>
   );
 }

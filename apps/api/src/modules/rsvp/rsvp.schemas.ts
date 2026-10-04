@@ -6,6 +6,9 @@ export const submitRsvpSchema = z.object({
     message: 'Choose whether you are attending',
   }),
   partySize: z.number().int().min(1).max(20).default(1),
+  /** Only asked when the host wants the party split; they must sum to partySize. */
+  adults: z.number().int().min(0).max(20).optional(),
+  children: z.number().int().min(0).max(20).optional(),
   attendeeNames: z.array(z.string().min(1).max(120)).max(20).default([]),
   /** Must be one of the options the host set on the RSVP module. */
   mealChoice: z.string().max(60).optional(),

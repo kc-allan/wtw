@@ -16,7 +16,7 @@ export function CreateHero() {
     return (
       <div
         aria-hidden
-        className="min-h-[420px] rounded-2xl bg-gradient-to-br from-sand via-blush to-ember/40 lg:min-h-[640px] xl:min-h-[780px]"
+        className="min-h-105 rounded-2xl bg-linear-to-br from-sand via-blush to-ember/40 lg:min-h-160 xl:min-h-195"
       />
     );
   }
@@ -28,7 +28,7 @@ export function CreateHero() {
       width={658}
       height={897}
       priority
-      className="h-full max-h-[780px] w-full rounded-2xl object-cover"
+      className="h-full max-h-195 w-full rounded-2xl object-cover"
     />
   );
 }

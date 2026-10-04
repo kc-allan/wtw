@@ -99,6 +99,13 @@ enum InvitationStatus {
   revoked
 }
 
+/// What a workspace is subscribed to. Nothing moves an account off free yet.
+enum PlanKey {
+  free
+  celebration
+  professional
+}
+
 enum AccountType {
   personal
   professional
@@ -202,6 +209,7 @@ model Account {
   name      String
   slug      String      @unique
   type      AccountType @default(personal)
+  plan      PlanKey     @default(free)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 
@@ -268,6 +276,10 @@ model Event {
   visibility EventVisibility @default(unlisted)
   /// Required alongside an invitation token when visibility is private.
   accessCode String?
+
+  /// Lets people add themselves to the guest list from a link the host shares.
+  /// Off unless the host turns it on, because the link is as public as the slug.
+  guestListFormEnabled Boolean @default(false)
 
   currency     String    @default("KES")
   coverImageId String?
@@ -406,6 +418,9 @@ model RsvpResponse {
 
   /// Total attending under this response, including the invited guest.
   partySize     Int      @default(1)
+  /// How the party splits, when the host asks. They sum to partySize.
+  adults        Int?
+  children      Int?
   attendeeNames String[] @default([])
   /// One of the options the host set on the RSVP module, e.g. "Vegetarian".
   mealChoice    String?
@@ -533,6 +548,7 @@ model Vendor {
   websiteUrl     String?
   instagramUrl   String?
 
+  /// Minor units of `currency`; the lowest this vendor quotes.
   priceFrom  Int?
   currency   String       @default("KES")
   status     VendorStatus @default(pending_review)

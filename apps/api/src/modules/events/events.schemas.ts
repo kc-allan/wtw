@@ -33,6 +33,8 @@ export const createEventSchema = z.object({
   slug: z.string().min(3).max(60).regex(/^[a-z0-9-]+$/).optional(),
   themeKey: z.string().max(120).optional(),
   visibility: z.nativeEnum(EventVisibility).default(EventVisibility.UNLISTED),
+  /** Lets people add themselves to the guest list from a shared link. */
+  guestListFormEnabled: z.boolean().optional(),
   currency: z.string().length(3).default('KES'),
 });
 

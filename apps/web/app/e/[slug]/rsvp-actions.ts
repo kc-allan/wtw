@@ -22,6 +22,13 @@ export async function submitRsvp(
 
   const attending = status === RsvpStatus.ATTENDING;
   const partySize = Number(formData.get("partySize"));
+  const adults = Number(formData.get("adults"));
+  const children = Number(formData.get("children"));
+  const hasBreakdown =
+    formData.get("adults") !== null &&
+    formData.get("children") !== null &&
+    Number.isFinite(adults) &&
+    Number.isFinite(children);
 
   try {
     await api(`/e/${slug}/rsvp?t=${encodeURIComponent(token)}`, {
@@ -31,6 +38,7 @@ export async function submitRsvp(
         status,
         // Only meaningful for a yes; the API zeroes it for anything else.
         partySize: attending && Number.isFinite(partySize) ? partySize : 1,
+        ...(attending && hasBreakdown ? { adults, children } : {}),
         ...(formData.get("mealChoice") ? { mealChoice: formData.get("mealChoice") } : {}),
         ...(formData.get("dietaryNotes") ? { dietaryNotes: formData.get("dietaryNotes") } : {}),
         ...(formData.get("message") ? { message: formData.get("message") } : {}),

@@ -3,53 +3,24 @@ export type NavLink = {
   href: string;
 };
 
+/** The wordmark is the way home, so the bar itself only carries the four pages. */
 export const navLinks: NavLink[] = [
-  { label: "Home", href: "/" },
-  { label: "Templates", href: "/templates" },
-  { label: "How it works", href: "/how-it-works" },
-  { label: "About", href: "/about" },
-  { label: "Pricing", href: "/pricing" },
+  { label: "Invitations", href: "/invitations" },
+  { label: "How It Works", href: "/how-it-works" },
+  { label: "Find a Vendor", href: "/vendors" },
+  { label: "Plans", href: "/plans" },
+  { label: "Our Story", href: "/our-story" },
 ];
 
 export type TemplateCard = {
+  /** The catalogue key, so the card links straight into that design. */
   id: string;
   eyebrow: string;
   /** Rendered on its own line so couple names break the way they do in the design. */
   names: string[];
-  palette: string;
+  name: string;
   theme: "pine" | "gradient" | "ivory" | "boho";
 };
-
-const weddingTemplates: TemplateCard[] = [
-  {
-    id: "emerald-gold",
-    eyebrow: "THE WEDDING OF",
-    names: ["Amina & Brian"],
-    palette: "Emerald & Gold",
-    theme: "pine",
-  },
-  {
-    id: "kitenge-modern",
-    eyebrow: "KARIBU",
-    names: ["Wanjiru", "& Kip"],
-    palette: "KITENGE MODERN",
-    theme: "gradient",
-  },
-  {
-    id: "ivory-champagne",
-    eyebrow: "Together with their families",
-    names: ["Grace", "& Daniel"],
-    palette: "Ivory and Champage",
-    theme: "ivory",
-  },
-  {
-    id: "boho-pampas",
-    eyebrow: "SAVE THE DATE",
-    names: ["NIA", "& TOM"],
-    palette: "Boho Pampas",
-    theme: "boho",
-  },
-];
 
 export type Category = {
   id: string;
@@ -65,15 +36,162 @@ export const categories: Category[] = [
 ];
 
 /**
- * Only the wedding set has been designed so far; the remaining categories fall
- * back to it until their own card artwork exists.
+ * Four designs per celebration, drawn from the catalogue so a visitor who taps
+ * Birthdays sees birthday designs. The four card styles are the ones in the
+ * design file; each celebration borrows them in the same order, which is what
+ * keeps the band looking like one set rather than five.
  */
 export const templatesByCategory: Record<string, TemplateCard[]> = {
-  weddings: weddingTemplates,
-  birthdays: weddingTemplates,
-  graduations: weddingTemplates,
-  anniversaries: weddingTemplates,
-  "baby-shower": weddingTemplates,
+  weddings: [
+    {
+      id: "wedding-emerald-green",
+      eyebrow: "THE WEDDING OF",
+      names: ["Amina & Brian"],
+      name: "Emerald Green",
+      theme: "pine",
+    },
+    {
+      id: "wedding-kitenge-modern",
+      eyebrow: "KARIBU",
+      names: ["Wanjiru", "& Kip"],
+      name: "Kitenge Modern",
+      theme: "gradient",
+    },
+    {
+      id: "wedding-ivory-and-champagne",
+      eyebrow: "Together with their families",
+      names: ["Grace", "& Daniel"],
+      name: "Ivory & Champagne",
+      theme: "ivory",
+    },
+    {
+      id: "wedding-boho-pampas",
+      eyebrow: "SAVE THE DATE",
+      names: ["NIA", "& TOM"],
+      name: "Boho Pampas",
+      theme: "boho",
+    },
+  ],
+  birthdays: [
+    {
+      id: "birthday-cocktail-party",
+      eyebrow: "COME CELEBRATE",
+      names: ["Amara turns 30"],
+      name: "Cocktail Party",
+      theme: "pine",
+    },
+    {
+      id: "birthday-neon-party",
+      eyebrow: "DOORS OPEN AT EIGHT",
+      names: ["Jayden", "turns 15"],
+      name: "Neon Party",
+      theme: "gradient",
+    },
+    {
+      id: "birthday-brunch-party",
+      eyebrow: "Join us for brunch",
+      names: ["Nadia", "turns 28"],
+      name: "Brunch Party",
+      theme: "ivory",
+    },
+    {
+      id: "birthday-safari-animals",
+      eyebrow: "COME CELEBRATE",
+      names: ["ZAWADI", "TURNS 5"],
+      name: "Safari Animals",
+      theme: "boho",
+    },
+  ],
+  graduations: [
+    {
+      id: "graduation-black-and-gold",
+      eyebrow: "CELEBRATING",
+      names: ["Brian Otieno"],
+      name: "Black & Gold",
+      theme: "pine",
+    },
+    {
+      id: "graduation-future-begins",
+      eyebrow: "WHAT COMES NEXT",
+      names: ["Amani", "Njeri"],
+      name: "Future Begins",
+      theme: "gradient",
+    },
+    {
+      id: "graduation-university-elegance",
+      eyebrow: "With every congratulation",
+      names: ["Wanjiru"],
+      name: "University Elegance",
+      theme: "ivory",
+    },
+    {
+      id: "graduation-academic-excellence",
+      eyebrow: "SAVE THE DATE",
+      names: ["CLASS", "OF 2027"],
+      name: "Academic Excellence",
+      theme: "boho",
+    },
+  ],
+  anniversaries: [
+    {
+      id: "anniversary-gold-celebration",
+      eyebrow: "CELEBRATING",
+      names: ["David & Fatuma"],
+      name: "Gold Celebration",
+      theme: "pine",
+    },
+    {
+      id: "anniversary-elegant-dinner",
+      eyebrow: "JOIN US FOR DINNER",
+      names: ["Esther", "& Peter"],
+      name: "Elegant Dinner",
+      theme: "gradient",
+    },
+    {
+      id: "anniversary-romantic-floral",
+      eyebrow: "Ten years together",
+      names: ["Grace", "& Daniel"],
+      name: "Romantic Floral",
+      theme: "ivory",
+    },
+    {
+      id: "anniversary-silver-anniversary",
+      eyebrow: "SAVE THE DATE",
+      names: ["MARY", "& JOSEPH"],
+      name: "Silver Anniversary",
+      theme: "boho",
+    },
+  ],
+  "baby-shower": [
+    {
+      id: "baby-shower-sage-green",
+      eyebrow: "A BABY SHOWER FOR",
+      names: ["Baby Mwangi"],
+      name: "Sage Green",
+      theme: "pine",
+    },
+    {
+      id: "baby-shower-little-lion",
+      eyebrow: "A BABY SHOWER FOR",
+      names: ["Baby", "Nia"],
+      name: "Little Lion",
+      theme: "gradient",
+    },
+    {
+      id: "baby-shower-blush-bloom",
+      eyebrow: "A baby shower for",
+      names: ["Baby", "Wanjiku"],
+      name: "Blush Bloom",
+      theme: "ivory",
+    },
+    {
+      id: "baby-shower-modern-boho",
+      eyebrow: "SAVE THE DATE",
+      names: ["BABY", "KAMAU"],
+      name: "Modern Boho",
+      theme: "boho",
+    },
+  ],
 };
 
 export type Celebration = {
@@ -293,8 +411,8 @@ export const footerColumns: FooterColumn[] = [
     heading: "Product",
     links: [
       { label: "How it works", href: "/how-it-works" },
-      { label: "Templates", href: "/templates" },
-      { label: "Pricing", href: "/pricing" },
+      { label: "Invitations", href: "/invitations" },
+      { label: "Plans", href: "/plans" },
       { label: "Guest experience", href: "/guest-experience" },
     ],
   },
@@ -310,7 +428,7 @@ export const footerColumns: FooterColumn[] = [
   {
     heading: "Company",
     links: [
-      { label: "About", href: "/about" },
+      { label: "Our story", href: "/our-story" },
       { label: "Contacts", href: "/contacts" },
       { label: "For professionals", href: "/professionals" },
       { label: "Careers", href: "/careers" },

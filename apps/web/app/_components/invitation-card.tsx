@@ -1,4 +1,8 @@
-import { FALLBACK_PALETTE, templateFor } from "@/app/_data/templates";
+import {
+  FALLBACK_PALETTE,
+  templateFor,
+  type TemplateDefinition,
+} from "@/app/_data/templates";
 import type { ThemePalette } from "@/lib/types";
 
 export interface InvitationContent {
@@ -20,6 +24,7 @@ export function InvitationCard({
   eventTypeKey,
   palette,
   content,
+  footer: footerChoice,
   className = "",
 }: {
   themeKey: string | null;
@@ -27,9 +32,16 @@ export function InvitationCard({
   eventTypeKey: string;
   palette: ThemePalette | null;
   content: InvitationContent;
+  /**
+   * Overrides what the template would put under the rule. The browse grid
+   * prints the design's name beside the card, so it asks for the date here
+   * rather than showing the same name twice.
+   */
+  footer?: TemplateDefinition["footer"];
   className?: string;
 }) {
   const template = templateFor(themeKey, group, eventTypeKey);
+  const footerKind = footerChoice ?? template.footer;
   const base = palette ?? FALLBACK_PALETTE;
 
   // Most palettes describe pale paper with dark ink, so a card asking for the
@@ -51,9 +63,9 @@ export function InvitationCard({
   const muteText = onAccent || paletteIsDark;
 
   const footer =
-    template.footer === "themeName"
+    footerKind === "themeName"
       ? content.themeName
-      : template.footer === "date"
+      : footerKind === "date"
         ? content.dateLabel
         : undefined;
 

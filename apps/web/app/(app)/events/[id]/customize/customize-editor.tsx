@@ -70,7 +70,7 @@ export function CustomizeEditor({ event, themes }: { event: EventDetail; themes:
 
         <div className="flex items-center gap-3">
           <Link
-            href={`/e/${event.slug}`}
+            href={`/events/${event.id}/preview`}
             target="_blank"
             className="inline-flex items-center rounded-full border border-rule bg-white px-5 py-2.5 text-base text-forest"
           >

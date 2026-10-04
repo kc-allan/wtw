@@ -8,6 +8,22 @@ import { Countdown } from "./countdown";
  * page has no per-event-type code: a birthday simply has fewer modules than a
  * wedding, which is the whole point of the module registry.
  */
+/**
+ * Which of these sections will actually put something on the page. A module
+ * can be switched on and still have nothing in it, and a link in the page nav
+ * that jumps nowhere is worse than no link at all.
+ */
+export function renderedSectionKeys(
+  modules: EventModuleView[],
+  event: PublicEvent["event"],
+  palette: ThemePalette,
+): EventModuleKey[] {
+  return modules
+    .filter((module) => RENDERERS[module.key]?.(module, event, palette))
+    .sort((a, b) => a.position - b.position)
+    .map((module) => module.key);
+}
+
 export function EventSections({
   event,
   modules,
@@ -30,13 +46,14 @@ export function EventSections({
         return (
           <section
             key={module.key}
+            id={module.key}
             aria-labelledby={`section-${module.key}`}
             // Alternating grounds keep long pages readable without a second
             // colour having to be designed per theme.
             style={{
               backgroundColor: index % 2 === 0 ? palette.surface : `${palette.background}0d`,
             }}
-            className="px-6 py-12"
+            className="scroll-mt-20 px-6 py-12"
           >
             <div className="mx-auto w-full max-w-[720px]">
               <h2

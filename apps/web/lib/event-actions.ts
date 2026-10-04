@@ -98,3 +98,24 @@ export async function publishEvent(eventId: string): Promise<void> {
   revalidatePath(`/events/${eventId}`, "layout");
   redirect(`/events/${eventId}/share`);
 }
+
+/** Opens or closes the link that lets guests add themselves to the list. */
+export async function setGuestListForm(
+  eventId: string,
+  enabled: boolean,
+): Promise<{ ok: boolean; message?: string }> {
+  try {
+    await api(`/events/${eventId}`, {
+      method: "PATCH",
+      body: { guestListFormEnabled: enabled },
+    });
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return { ok: false, message: error.message };
+    }
+    throw error;
+  }
+
+  revalidatePath(`/events/${eventId}`, "layout");
+  return { ok: true };
+}

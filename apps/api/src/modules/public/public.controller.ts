@@ -10,6 +10,7 @@ import { submitGameSchema, type SubmitGameInput } from '../games/games.schemas';
 import { GamesService } from '../games/games.service';
 import { submitRsvpSchema, type SubmitRsvpInput } from '../rsvp/rsvp.schemas';
 import { RsvpService } from '../rsvp/rsvp.service';
+import { joinGuestListSchema, type JoinGuestListInput } from './public.schemas';
 import { PublicEventsService } from './public-events.service';
 
 /**
@@ -53,6 +54,32 @@ export class PublicController {
   ) {
     const { eventId, guest } = await this.publicEvents.requireGuest(slug, token);
     return this.rsvp.submit(eventId, guest.id, guest.invitationId, body);
+  }
+
+  @Post(':slug/guest-list')
+  @HttpCode(HttpStatus.OK)
+  // Anyone with the link can post here, so the budget is the tightest we have.
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
+  @ApiOperation({ summary: 'Add yourself to a guest list the host opened' })
+  @ApiZodBody(joinGuestListSchema, 'JoinGuestList')
+  joinGuestList(
+    @Param('slug') slug: string,
+    @Body(zodBody(joinGuestListSchema)) body: JoinGuestListInput,
+  ) {
+    return this.publicEvents.addSelfToGuestList(slug, body);
+  }
+
+  @Get(':slug/gallery')
+  @ApiOperation({ summary: 'Photos on a published event' })
+  @ApiQuery({ name: 't', required: false, description: 'Guest invitation token' })
+  @ApiQuery({ name: 'code', required: false, description: 'Access code for private events' })
+  async gallery(
+    @Param('slug') slug: string,
+    @Query('t') token?: string,
+    @Query('code') code?: string,
+  ) {
+    const { eventId } = await this.publicEvents.requireAccess(slug, token, code);
+    return this.publicEvents.gallery(eventId);
   }
 
   @Get(':slug/registry')

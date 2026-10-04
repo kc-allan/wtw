@@ -7,6 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService, type JwtSignOptions } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
+import { PlanKey } from '@wtw/shared';
 import type { Env } from '../../core/config/env';
 import { generateRawToken, hashToken } from '../../core/crypto/tokens';
 import { PrismaService } from '../../core/prisma/prisma.service';
@@ -23,6 +24,9 @@ export interface AuthTokens {
 export interface AuthResult extends AuthTokens {
   user: { id: string; email: string; name: string };
 }
+
+/** Most generous first, so picking the best of several is a find. */
+const PLAN_ORDER = [PlanKey.PROFESSIONAL, PlanKey.CELEBRATION, PlanKey.FREE];
 
 /**
  * A stand-in for someone who signed up without giving a name — the local part
@@ -157,6 +161,32 @@ export class AuthService {
       where: { tokenHash: hashToken(rawRefreshToken), revokedAt: null },
       data: { revokedAt: new Date() },
     });
+  }
+
+  /**
+   * The signed-in host, with the plan their workspace is on. A host who
+   * belongs to several takes the most generous of them, so being added to a
+   * professional workspace never costs them what they already had.
+   */
+  async me(userId: string) {
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        phone: true,
+        avatarUrl: true,
+        memberships: { select: { account: { select: { plan: true } } } },
+      },
+    });
+
+    const { memberships, ...rest } = user;
+    const plans = memberships.map((membership) => membership.account.plan);
+    const best =
+      PLAN_ORDER.find((plan) => plans.includes(plan)) ?? PlanKey.FREE;
+
+    return { ...rest, plan: best };
   }
 
   /** Resolves the one field the sign-in form offers to an account. */

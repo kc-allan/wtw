@@ -78,6 +78,6 @@ export class AuthController {
   @Get('me')
   @ApiOperation({ summary: 'The signed-in host' })
   me(@CurrentUser() user: AuthenticatedUser) {
-    return user;
+    return this.auth.me(user.id);
   }
 }

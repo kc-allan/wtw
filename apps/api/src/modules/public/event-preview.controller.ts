@@ -1,0 +1,44 @@
+import { Controller, Get, Param } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { EventModuleKey } from '@wtw/shared';
+import { CurrentUser, type AuthenticatedUser } from '../../core/auth/current-user.decorator';
+import { EventsService } from '../events/events.service';
+import { RegistryService } from '../registry/registry.service';
+import { PublicEventsService } from './public-events.service';
+
+/**
+ * A host looking at their own event exactly as a guest will, before anyone
+ * else can reach it. Publishing is what opens an event up, so without this a
+ * host cannot see their work until it is already public.
+ */
+@ApiTags('events')
+@ApiBearerAuth()
+@Controller('events/:eventId/preview')
+export class EventPreviewController {
+  constructor(
+    private readonly events: EventsService,
+    private readonly publicEvents: PublicEventsService,
+    private readonly registry: RegistryService,
+  ) {}
+
+  @Get()
+  @ApiOperation({ summary: 'The guest-facing page of an event, published or not' })
+  async preview(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('eventId') eventId: string,
+  ) {
+    await this.events.assertCanManage(user.id, eventId);
+
+    const view = await this.publicEvents.previewForHost(eventId);
+    const enabled = new Set(view.modules.map((module) => module.key));
+
+    const [registry, gallery] = await Promise.all([
+      enabled.has(EventModuleKey.REGISTRY)
+        ? this.registry.listForGuests(eventId).catch(() => null)
+        : null,
+      enabled.has(EventModuleKey.GALLERY) ? this.publicEvents.gallery(eventId) : null,
+    ]);
+
+    return { ...view, registry, gallery };
+  }
+}

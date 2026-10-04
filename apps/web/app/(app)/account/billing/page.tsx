@@ -22,7 +22,7 @@ export default function BillingPage() {
         </p>
 
         <div className="mt-6 flex flex-wrap gap-3">
-          <ButtonLink href="/pricing" variant="ghost">
+          <ButtonLink href="/plans" variant="ghost">
             Compare plans
           </ButtonLink>
         </div>
@@ -30,7 +30,7 @@ export default function BillingPage() {
 
       <p className="mt-6 text-base text-ink/70">
         Card and M-Pesa payments are not switched on yet. To upgrade in the meantime,{" "}
-        <Link href="/about#contact" className="underline underline-offset-4">
+        <Link href="/our-story#contact" className="underline underline-offset-4">
           talk to us
         </Link>
         .

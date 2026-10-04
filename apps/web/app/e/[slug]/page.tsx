@@ -2,13 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { EventModuleKey } from "@wtw/shared";
 import { api, ApiError } from "@/lib/api";
-import { formatEventDate, formatEventTime } from "@/lib/event-display";
-import type { PublicEvent } from "@/lib/types";
-import { InvitationCard, nameLines } from "@/app/_components/invitation-card";
-import { FALLBACK_PALETTE } from "@/app/_data/templates";
-import { CeremonyProgramme } from "./ceremony-programme";
-import { EventSections } from "./event-sections";
-import { RsvpForm } from "./rsvp-form";
+import type { GalleryPhoto, PublicEvent, RegistryForGuests } from "@/lib/types";
+import { EventPageView } from "./event-page-view";
 
 async function load(slug: string, token?: string, code?: string) {
   const query = new URLSearchParams();
@@ -59,95 +54,38 @@ export default async function PublicEventPage({ params, searchParams }: PageProp
   }
 
   const { event, ceremonies, modules, guest } = data;
-  const palette = event.theme?.palette ?? FALLBACK_PALETTE;
-  const names = nameLines(event.hostNames, event.title);
+  const enabledKeys = new Set(modules.map((module) => module.key));
 
-  const enabled = new Set(modules.map((module) => module.key));
-  const rsvpModule = modules.find((module) => module.key === EventModuleKey.RSVP);
+  const access = new URLSearchParams();
+  if (token) access.set("t", token);
+  if (code) access.set("code", code);
+  const suffix = access.toString() ? `?${access}` : "";
 
+  const [registry, photos] = await Promise.all([
+    enabledKeys.has(EventModuleKey.REGISTRY)
+      ? api<RegistryForGuests>(`/e/${slug}/registry${suffix}`, {
+          auth: false,
+          revalidate: 30,
+        }).catch(() => null)
+      : null,
+    enabledKeys.has(EventModuleKey.GALLERY)
+      ? api<GalleryPhoto[]>(`/e/${slug}/gallery${suffix}`, {
+          auth: false,
+          revalidate: 30,
+        }).catch(() => [] as GalleryPhoto[])
+      : null,
+  ]);
   return (
-    <div
-      className="min-h-dvh"
-      style={{ backgroundColor: palette.surface, color: palette.ink }}
-    >
-      {/* The invitation itself, full bleed, in the theme's own colours. */}
-      <header className="px-6 py-10 sm:py-16">
-        <InvitationCard
-          themeKey={event.theme?.key ?? null}
-          group={event.theme?.group ?? null}
-          eventTypeKey={event.typeKey}
-          palette={palette}
-          content={{
-            names,
-            themeName: event.theme?.name ?? "",
-            dateLabel: formatEventDate(event.startsAt, event.timezone),
-          }}
-          className="mx-auto w-full max-w-[520px] aspect-[520/660]"
-        />
-
-        <div className="mx-auto mt-8 max-w-[640px] text-center">
-          <p className="text-lg" style={{ color: palette.ink }}>
-            {[
-              formatEventDate(event.startsAt, event.timezone),
-              formatEventTime(event.startsAt, event.timezone),
-            ]
-              .filter(Boolean)
-              .join(" · ")}
-          </p>
-          {event.venueName || event.city ? (
-            <p className="mt-1 text-base" style={{ color: palette.muted }}>
-              {[event.venueName, event.city].filter(Boolean).join(", ")}
-            </p>
-          ) : null}
-          {event.tagline ? (
-            <p className="mt-4 font-serif text-xl" style={{ color: palette.ink }}>
-              {event.tagline}
-            </p>
-          ) : null}
-        </div>
-      </header>
-
-      <CeremonyProgramme
-        ceremonies={ceremonies}
-        timezone={event.timezone}
-        palette={palette}
-      />
-
-      <EventSections event={event} modules={modules} palette={palette} />
-
-      {enabled.has(EventModuleKey.RSVP) ? (
-        <section
-          id="rsvp"
-          aria-labelledby="rsvp-heading"
-          className="scroll-mt-8 px-6 py-12"
-          style={{ backgroundColor: palette.background, color: palette.ink }}
-        >
-          <div className="mx-auto max-w-[560px]">
-            <h2
-              id="rsvp-heading"
-              className="text-center font-serif text-section font-semibold"
-            >
-              Will you be there?
-            </h2>
-
-            <RsvpForm
-              slug={slug}
-              token={token}
-              guest={guest}
-              config={rsvpModule?.config ?? {}}
-              palette={palette}
-            />
-          </div>
-        </section>
-      ) : null}
-
-      <footer
-        className="px-6 py-10 text-center text-sm"
-        style={{ color: palette.muted }}
-      >
-        Made with Worth the Wait
-      </footer>
-    </div>
+    <EventPageView
+      slug={slug}
+      token={token}
+      event={event}
+      ceremonies={ceremonies}
+      modules={modules}
+      guest={guest}
+      registry={registry}
+      photos={photos}
+    />
   );
 }
 

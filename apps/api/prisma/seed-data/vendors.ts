@@ -9,6 +9,10 @@ export interface SeedVendor {
   city: string;
   county: string;
   priceFrom: number;
+  /** Reachable on WhatsApp, which is how hosts here actually get in touch. */
+  whatsappNumber: string;
+  phone: string;
+  email: string;
   status: VendorStatus;
   isFeatured: boolean;
 }
@@ -28,6 +32,9 @@ export const seedVendors: SeedVendor[] = [
     city: 'Nairobi',
     county: 'Nairobi',
     priceFrom: 15000000,
+    whatsappNumber: '+254720100000',
+    phone: '+254720100000',
+    email: 'hello@karuragardens.co.ke',
     status: VendorStatus.APPROVED,
     isFeatured: true,
   },
@@ -45,6 +52,9 @@ export const seedVendors: SeedVendor[] = [
     city: 'Nairobi',
     county: 'Nairobi',
     priceFrom: 4500000,
+    whatsappNumber: '+254721111111',
+    phone: '+254721111111',
+    email: 'hello@sanaadecor.co.ke',
     status: VendorStatus.APPROVED,
     isFeatured: true,
   },
@@ -63,6 +73,9 @@ export const seedVendors: SeedVendor[] = [
     city: 'Nairobi',
     county: 'Kiambu',
     priceFrom: 180000,
+    whatsappNumber: '+254722122222',
+    phone: '+254722122222',
+    email: 'hello@mamanjericatering.co.ke',
     status: VendorStatus.APPROVED,
     isFeatured: false,
   },
@@ -75,6 +88,9 @@ export const seedVendors: SeedVendor[] = [
     city: 'Diani',
     county: 'Kwale',
     priceFrom: 9000000,
+    whatsappNumber: '+254723133333',
+    phone: '+254723133333',
+    email: 'hello@pwaniframes.co.ke',
     status: VendorStatus.APPROVED,
     isFeatured: true,
   },
@@ -87,6 +103,9 @@ export const seedVendors: SeedVendor[] = [
     city: 'Nairobi',
     county: 'Nairobi',
     priceFrom: 2500000,
+    whatsappNumber: '+254724144444',
+    phone: '+254724144444',
+    email: 'hello@glowbyamina.co.ke',
     status: VendorStatus.APPROVED,
     isFeatured: false,
   },
@@ -104,6 +123,9 @@ export const seedVendors: SeedVendor[] = [
     city: 'Nairobi',
     county: 'Nairobi',
     priceFrom: 6000000,
+    whatsappNumber: '+254725155555',
+    phone: '+254725155555',
+    email: 'hello@djkesh.co.ke',
     status: VendorStatus.APPROVED,
     isFeatured: false,
   },
@@ -116,6 +138,9 @@ export const seedVendors: SeedVendor[] = [
     city: 'Nairobi',
     county: 'Nairobi',
     priceFrom: 12000000,
+    whatsappNumber: '+254726166666',
+    phone: '+254726166666',
+    email: 'hello@atelierwanjiru.co.ke',
     status: VendorStatus.APPROVED,
     isFeatured: false,
   },
@@ -133,6 +158,9 @@ export const seedVendors: SeedVendor[] = [
     city: 'Nakuru',
     county: 'Nakuru',
     priceFrom: 20000000,
+    whatsappNumber: '+254727177777',
+    phone: '+254727177777',
+    email: 'hello@sikuevents.co.ke',
     status: VendorStatus.APPROVED,
     isFeatured: true,
   },

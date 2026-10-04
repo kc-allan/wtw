@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useId, useState } from "react";
 import { navLinks } from "@/app/_data/landing";
 
 export function MobileNav() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const panelId = useId();
 
@@ -56,7 +58,7 @@ export function MobileNav() {
         <nav aria-label="Main">
           <ul className="flex flex-col gap-1">
             {navLinks.map((link) => {
-              const isCurrent = link.href === "/";
+              const isCurrent = pathname.startsWith(link.href);
               return (
                 <li key={link.href}>
                   <Link
@@ -87,7 +89,7 @@ export function MobileNav() {
             onClick={() => setOpen(false)}
             className="flex items-center justify-center rounded-[10px] bg-forest px-3 py-2 text-base font-medium text-bright"
           >
-            Create your event
+            Create Yours
           </Link>
         </div>
       </div>

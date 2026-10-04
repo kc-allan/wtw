@@ -36,6 +36,7 @@ const eventSelect = {
   longitude: true,
   status: true,
   visibility: true,
+  guestListFormEnabled: true,
   currency: true,
   coverImageId: true,
   publishedAt: true,
@@ -173,6 +174,9 @@ export class EventsService {
         ...(input.timezone !== undefined ? { timezone: input.timezone } : {}),
         ...(input.expectedGuests !== undefined ? { expectedGuests: input.expectedGuests } : {}),
         ...(input.city !== undefined ? { city: input.city } : {}),
+        ...(input.guestListFormEnabled !== undefined
+          ? { guestListFormEnabled: input.guestListFormEnabled }
+          : {}),
         ...(input.coverImageId !== undefined ? { coverImageId: input.coverImageId } : {}),
         ...(input.venueName !== undefined ? { venueName: input.venueName } : {}),
         ...(input.venueAddress !== undefined ? { venueAddress: input.venueAddress } : {}),

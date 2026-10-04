@@ -17,9 +17,9 @@ export const howItWorksSteps: HowItWorksStep[] = [
       "Wedding, birthday, baby shower or another celebration. This decides which tools you get; a wedding unlocks the registry and timeline; a birthday keeps things simple",
   },
   {
-    title: "Select a template",
+    title: "Choose your design",
     description:
-      "Browse by style; Classic & Elegant, Luxury, Nature or Kenyan Inspired, and preview it with your own names before you commit.",
+      "Browse by celebration and by style, including designs inspired by Kenya, and preview one with your own names before you commit.",
   },
   {
     title: "Customize it",
@@ -56,7 +56,7 @@ export const howItWorksSteps: HowItWorksStep[] = [
 export type AboutCard = { emoji: string; title: string; body: string };
 
 export const aboutIntro =
-  "Aunties who confirm the week of. Cousins flying from three countries. A guest list that somehow grows by forty people. We grew up around these celebrations, so we built something that works the way they really happen; not the way an app somewhere else assumed they would.";
+  "Aunties who confirm the week off. Cousins flying from three countries. A guest list that somehow grows by forty people. We grew up around these celebrations, so we built something that works the way they really happen.";
 
 export const aboutCards: AboutCard[] = [
   {
@@ -137,7 +137,7 @@ export const pricingPlans: PricingPlan[] = [
       "Advanced guest analytics",
       "Priority support",
     ],
-    cta: { label: "Talk to us", href: "/about#contact" },
+    cta: { label: "Talk to us", href: "/our-story#contact" },
   },
 ];
 

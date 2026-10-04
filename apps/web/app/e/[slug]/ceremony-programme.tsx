@@ -19,8 +19,9 @@ export function CeremonyProgramme({
 
   return (
     <section
+      id="ceremonies"
       aria-labelledby="ceremonies-heading"
-      className="px-6 py-12"
+      className="scroll-mt-20 px-6 py-12"
       style={{ backgroundColor: palette.surface, color: palette.ink }}
     >
       <div className="mx-auto w-full max-w-[720px]">

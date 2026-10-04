@@ -12,7 +12,7 @@ export function TypeTabs({ active }: { active: EventTypeKey }) {
         return (
           <Link
             key={key}
-            href={`/templates?type=${key}`}
+            href={`/invitations?type=${key}`}
             aria-current={isActive ? "page" : undefined}
             className={`rounded-full px-6 py-2.5 text-base whitespace-nowrap transition-colors ${
               isActive ? "bg-forest text-bright" : "bg-white text-ink hover:bg-ivory"

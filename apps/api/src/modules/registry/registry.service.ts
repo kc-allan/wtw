@@ -78,6 +78,7 @@ export class RegistryService {
     return {
       allowCashGifts: config.allowCashGifts,
       cashGiftNote: config.cashGiftNote ?? null,
+      cashGiftMethods: config.allowCashGifts ? config.cashGiftMethods : [],
       externalRegistries: config.externalRegistries,
       currency: config.currency,
       items: items.map((item) => ({

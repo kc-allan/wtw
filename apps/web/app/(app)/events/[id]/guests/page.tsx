@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { RsvpStatus } from "@wtw/shared";
 import { api } from "@/lib/api";
+import { BackToEvent } from "../_hub/back-to-event";
 import type { EventDetail, Guest, Paginated, RsvpSummary } from "@/lib/types";
 import { AddGuests } from "./add-guests";
 import { GuestFilters } from "./guest-filters";
@@ -58,6 +59,8 @@ export default async function GuestListPage({
 
   return (
     <main className="w-full px-6 py-8 lg:px-10">
+      <BackToEvent eventId={id} />
+
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="font-serif text-section font-semibold text-black">Guest list</h1>

@@ -3,11 +3,11 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { EventStatus } from "@wtw/shared";
 import { api } from "@/lib/api";
+import { BackToEvent } from "../_hub/back-to-event";
 import { formatEventDate } from "@/lib/event-display";
 import { SITE_ORIGIN } from "@/lib/site";
 import type { EventDetail } from "@/lib/types";
 import { InvitationCard, nameLines } from "@/app/_components/invitation-card";
-import { WizardSteps } from "../../../_components/wizard-steps";
 import { SharePanel } from "./share-panel";
 
 export const metadata: Metadata = { title: "Share — Worth the Wait" };
@@ -30,7 +30,7 @@ export default async function ShareStepPage({ params }: PageProps<"/events/[id]/
 
   return (
     <main className="w-full px-6 py-8 lg:px-10">
-      <WizardSteps current="share" eventId={id} />
+      <BackToEvent eventId={id} />
 
       <h1 className="mt-8 font-serif text-section font-semibold text-black">You&rsquo;re live</h1>
       <p className="mt-1 text-base tracking-[0.02em] text-ink/70">

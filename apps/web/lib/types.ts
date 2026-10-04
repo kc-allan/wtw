@@ -5,7 +5,9 @@ import type {
   EventTypeKey,
   EventVisibility,
   InvitationChannel,
+  PlanKey,
   RsvpStatus,
+  VendorCategoryKey,
 } from "@wtw/shared";
 
 /** Design tokens a theme renders from; every template reads these five. */
@@ -78,6 +80,8 @@ export interface EventSummary {
   longitude: number | null;
   status: EventStatus;
   visibility: EventVisibility;
+  /** Whether people can add themselves to the guest list from a shared link. */
+  guestListFormEnabled: boolean;
   currency: string;
   coverImageId: string | null;
   publishedAt: string | null;
@@ -141,6 +145,8 @@ export interface CurrentUser {
   name: string;
   phone: string | null;
   avatarUrl: string | null;
+  /** The most generous plan among the workspaces they belong to. */
+  plan: PlanKey;
 }
 
 /** The guest-facing view returned by `GET /e/:slug`. */
@@ -160,8 +166,80 @@ export interface PublicEvent {
     rsvp: {
       status: RsvpStatus;
       partySize: number;
+      /** Null unless the host asked how the party splits. */
+      adults: number | null;
+      children: number | null;
       attendeeNames: string[];
       message: string | null;
     } | null;
   } | null;
+}
+
+/** A vendor as the directory lists them; the profile carries more. */
+export interface VendorSummary {
+  id: string;
+  slug: string;
+  name: string;
+  tagline: string | null;
+  categories: VendorCategoryKey[];
+  eventTypes: EventTypeKey[];
+  city: string | null;
+  county: string | null;
+  /** Minor units of `currency`; the lowest a vendor quotes. */
+  priceFrom: number | null;
+  currency: string;
+  logoUrl: string | null;
+  coverImageUrl: string | null;
+  rating: number | null;
+  reviewCount: number;
+  isFeatured: boolean;
+}
+
+export interface VendorProfile extends VendorSummary {
+  description: string | null;
+  phone: string | null;
+  email: string | null;
+  whatsappNumber: string | null;
+  websiteUrl: string | null;
+  instagramUrl: string | null;
+  reviews: {
+    authorName: string;
+    rating: number;
+    body: string | null;
+    createdAt: string;
+  }[];
+}
+
+/** One gift on the list, as a guest sees it. */
+export interface RegistryItem {
+  id: string;
+  name: string;
+  description: string | null;
+  imageUrl: string | null;
+  /** Minor units of the registry's currency. */
+  price: number | null;
+  quantity: number;
+  quantityClaimed: number;
+  externalUrl: string | null;
+  status: string;
+}
+
+/** Everything the gifting section needs, in one guest-facing payload. */
+export interface RegistryForGuests {
+  allowCashGifts: boolean;
+  cashGiftNote: string | null;
+  cashGiftMethods: {
+    kind: "mobile_money" | "bank" | "international";
+    label: string;
+    detail?: string;
+  }[];
+  externalRegistries: { label: string; url: string }[];
+  currency: string;
+  items: (RegistryItem & { remaining: number })[];
+}
+
+export interface GalleryPhoto {
+  id: string;
+  url: string;
+  createdAt: string;
 }

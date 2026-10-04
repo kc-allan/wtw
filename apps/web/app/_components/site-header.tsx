@@ -51,7 +51,7 @@ export function SiteHeader() {
                 href="/create"
                 className="flex items-center justify-center rounded-[10px] bg-forest px-3 py-2 text-base font-medium whitespace-nowrap text-bright"
               >
-                Create your event
+                Create Yours
               </Link>
             </div>
           </div>

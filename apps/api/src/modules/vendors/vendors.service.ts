@@ -63,6 +63,17 @@ export class VendorsService {
     return paginate(rows, total, query);
   }
 
+  /** The places that actually have vendors, for the location filter. */
+  async counties(): Promise<string[]> {
+    const rows = await this.prisma.vendor.findMany({
+      where: { status: 'approved', county: { not: null } },
+      distinct: ['county'],
+      select: { county: true },
+      orderBy: { county: 'asc' },
+    });
+    return rows.flatMap((row) => (row.county ? [row.county] : []));
+  }
+
   async findBySlug(slug: string) {
     const vendor = await this.prisma.vendor.findUnique({
       where: { slug },

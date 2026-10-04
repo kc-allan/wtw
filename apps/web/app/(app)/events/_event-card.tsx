@@ -20,7 +20,7 @@ export function EventCard({
 
   return (
     <Link
-      href={`/events/${event.id}/guests`}
+      href={`/events/${event.id}`}
       className="flex w-full flex-col overflow-hidden rounded-xl bg-white outline-offset-2"
     >
       <div

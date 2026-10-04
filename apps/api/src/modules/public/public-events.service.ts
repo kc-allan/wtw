@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { EventStatus, EventVisibility, InvitationStatus } from '@wtw/shared';
 import { hashToken } from '../../core/crypto/tokens';
 import {
@@ -26,6 +27,30 @@ export interface ResolvedGuest {
     message: string | null;
   } | null;
 }
+
+/** Everything a guest sees about the event itself. */
+const EVENT_VIEW_SELECT = {
+  id: true,
+  slug: true,
+  title: true,
+  tagline: true,
+  description: true,
+  hostNames: true,
+  typeKey: true,
+  startsAt: true,
+  endsAt: true,
+  timezone: true,
+  venueName: true,
+  venueAddress: true,
+  latitude: true,
+  longitude: true,
+  status: true,
+  visibility: true,
+  currency: true,
+  theme: {
+    select: { key: true, name: true, group: true, palette: true },
+  },
+} satisfies Prisma.EventSelect;
 
 @Injectable()
 export class PublicEventsService {
@@ -75,34 +100,94 @@ export class PublicEventsService {
 
     const event = await this.prisma.event.findUniqueOrThrow({
       where: { id: eventId },
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-        tagline: true,
-        description: true,
-        hostNames: true,
-        typeKey: true,
-        startsAt: true,
-        endsAt: true,
-        timezone: true,
-        venueName: true,
-        venueAddress: true,
-        latitude: true,
-        longitude: true,
-        status: true,
-        visibility: true,
-        currency: true,
-        theme: {
-          select: { key: true, name: true, group: true, palette: true },
-        },
-      },
+      select: EVENT_VIEW_SELECT,
     });
 
     const modules = await this.modules.listEnabledPublic(eventId);
     const ceremonies = await this.ceremoniesFor(eventId, guest?.id);
 
     return { event, ceremonies, modules, guest };
+  }
+
+  /**
+   * The same view, for the host, before anyone else can reach it. Publishing
+   * is what opens an event to guests, so a draft has to be previewable some
+   * other way or a host cannot see their own work until it is public.
+   */
+  async previewForHost(eventId: string) {
+    const event = await this.prisma.event.findUniqueOrThrow({
+      where: { id: eventId },
+      select: EVENT_VIEW_SELECT,
+    });
+
+    const modules = await this.modules.listEnabledPublic(eventId);
+    const ceremonies = await this.ceremoniesFor(eventId, undefined);
+
+    return { event, ceremonies, modules, guest: null };
+  }
+
+  /**
+   * Adds someone to the guest list from the link a host shared. The event has
+   * to be published and have the form switched on, and a name that is already
+   * on the list is matched rather than duplicated, so a guest who submits
+   * twice does not appear twice.
+   */
+  async addSelfToGuestList(
+    slug: string,
+    input: { firstName: string; lastName?: string; email?: string; phone?: string },
+  ) {
+    const event = await this.prisma.event.findUnique({
+      where: { slug },
+      select: { id: true, status: true, guestListFormEnabled: true },
+    });
+
+    if (!event || event.status !== 'published' || !event.guestListFormEnabled) {
+      throw new NotFoundException('That list is not open');
+    }
+
+    const existing = await this.prisma.guest.findFirst({
+      where: {
+        eventId: event.id,
+        firstName: { equals: input.firstName, mode: 'insensitive' },
+        ...(input.lastName
+          ? { lastName: { equals: input.lastName, mode: 'insensitive' } }
+          : {}),
+      },
+      select: { id: true },
+    });
+
+    if (existing) {
+      await this.prisma.guest.update({
+        where: { id: existing.id },
+        data: {
+          ...(input.email ? { email: input.email } : {}),
+          ...(input.phone ? { phone: input.phone } : {}),
+        },
+      });
+      return { added: false };
+    }
+
+    await this.prisma.guest.create({
+      data: {
+        eventId: event.id,
+        firstName: input.firstName,
+        lastName: input.lastName,
+        email: input.email,
+        phone: input.phone,
+        groupLabel: 'Added themselves',
+      },
+    });
+    return { added: true };
+  }
+
+  /** The photos on a published event, for the gallery section. */
+  async gallery(eventId: string) {
+    return this.prisma.mediaAsset.findMany({
+      where: { eventId, kind: 'image' },
+      select: { id: true, url: true, createdAt: true },
+      orderBy: { createdAt: 'desc' },
+      take: 200,
+    });
   }
 
   /**
@@ -165,6 +250,8 @@ export class PublicEventsService {
               select: {
                 status: true,
                 partySize: true,
+                adults: true,
+                children: true,
                 attendeeNames: true,
                 message: true,
               },

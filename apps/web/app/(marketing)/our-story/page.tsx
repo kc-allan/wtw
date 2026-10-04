@@ -12,15 +12,15 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <>
-      <section className="mx-auto flex w-full max-w-[1340px] flex-col gap-12 px-6 py-12">
+      <section className="mx-auto flex w-full max-w-335 flex-col gap-12 px-6 py-12">
         <PageHeading eyebrow="About us" title="We know how we celebrate here." lead={aboutIntro} />
 
         <ul className="grid gap-6 md:grid-cols-3">
           {aboutCards.map((card) => (
             <li key={card.title} className="flex flex-col rounded-2xl bg-bright p-6">
-              <span aria-hidden className="grid size-10 place-items-center rounded-lg bg-canvas text-xl">
+              {/* <span aria-hidden className="grid size-10 place-items-center rounded-lg bg-canvas text-xl">
                 {card.emoji}
-              </span>
+              </span> */}
               <h2 className="mt-6 text-base font-semibold text-black">{card.title}</h2>
               <p className="mt-2 text-base tracking-[0.02em] text-ink/80">{card.body}</p>
             </li>

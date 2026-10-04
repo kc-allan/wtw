@@ -26,6 +26,8 @@ const guestSelect = {
     select: {
       status: true,
       partySize: true,
+      adults: true,
+      children: true,
       mealChoice: true,
       dietaryNotes: true,
       respondedAt: true,

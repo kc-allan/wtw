@@ -55,6 +55,8 @@ export const moduleConfigSchemas = {
     allowMaybe: z.boolean().default(true),
     collectDietary: z.boolean().default(false),
     collectMessage: z.boolean().default(true),
+    /** Asks how much of the party are adults and how many are children. */
+    collectHeadcountBreakdown: z.boolean().default(false),
     /**
      * Meal options guests pick from. The host owns the wording, so the guest
      * list can total them without the platform prescribing a fixed menu.
@@ -127,6 +129,21 @@ export const moduleConfigSchemas = {
     currency: z.string().length(3).default('KES'),
     allowCashGifts: z.boolean().default(true),
     cashGiftNote: z.string().max(1000).optional(),
+    /**
+     * Where a guest sends money, in the host's own words — a paybill, a bank
+     * account, a code for anyone sending from abroad. Nothing is processed
+     * here; the details are shown and the guest pays their own way.
+     */
+    cashGiftMethods: z
+      .array(
+        z.object({
+          kind: z.enum(['mobile_money', 'bank', 'international']).default('bank'),
+          label: z.string().min(1).max(80),
+          detail: z.string().max(120).optional(),
+        }),
+      )
+      .max(6)
+      .default([]),
     /** Registries hosted elsewhere that guests should still see. */
     externalRegistries: z.array(link).default([]),
     hideClaimedItems: z.boolean().default(false),
@@ -189,6 +206,8 @@ export const moduleConfigSchemas = {
   [EventModuleKey.GALLERY]: z.object({
     maxPhotos: z.number().int().min(1).max(500).default(50),
     allowGuestUploads: z.boolean().default(false),
+    /** Stands in for the photos until there are any, e.g. when to come back. */
+    pendingNote: z.string().max(300).optional(),
   }),
 } as const satisfies Record<EventModuleKey, z.ZodTypeAny>;
 

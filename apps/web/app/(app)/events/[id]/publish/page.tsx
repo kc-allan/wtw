@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { EventStatus, EVENT_TYPES } from "@wtw/shared";
 import { api } from "@/lib/api";
+import { BackToEvent } from "../_hub/back-to-event";
 import { formatEventDate } from "@/lib/event-display";
 import type { EventDetail } from "@/lib/types";
 import { InvitationCard, nameLines } from "@/app/_components/invitation-card";
-import { WizardSteps } from "../../../_components/wizard-steps";
 import { PublishPanel } from "./publish-panel";
 
 export const metadata: Metadata = { title: "Publish — Worth the Wait" };
@@ -42,7 +42,7 @@ export default async function PublishStepPage({ params }: PageProps<"/events/[id
 
   return (
     <main className="w-full px-6 py-8 lg:px-10">
-      <WizardSteps current="publish" eventId={id} />
+      <BackToEvent eventId={id} />
 
       <h1 className="mt-8 font-serif text-section font-semibold text-black">
         Ready when you are

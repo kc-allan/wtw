@@ -15,7 +15,7 @@ export function ContactForm() {
     return (
       <div
         role="status"
-        className="mx-auto w-full max-w-[760px] rounded-2xl border border-rule p-8 text-center"
+        className="mx-auto w-full max-w-190 rounded-2xl border border-rule p-8 text-center"
       >
         <h3 className="font-serif text-xl font-semibold text-black">Thank you</h3>
         <p className="mt-2 text-base text-ink/80">
@@ -28,7 +28,7 @@ export function ContactForm() {
   return (
     <form
       action={action}
-      className="mx-auto flex w-full max-w-[760px] flex-col gap-5 rounded-2xl border border-rule p-8"
+      className="mx-auto flex w-full max-w-190 flex-col gap-5 rounded-2xl border-2 border-rule p-8"
     >
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Your name" htmlFor="contact-name" error={state.fieldErrors?.name}>

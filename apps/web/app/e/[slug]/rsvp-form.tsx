@@ -27,6 +27,8 @@ export function RsvpForm({
   const [status, setStatus] = useState<RsvpStatus | null>(
     (guest?.rsvp?.status as RsvpStatus) ?? null,
   );
+  // The split is offered against the party size, so it has to follow it.
+  const [partySize, setPartySize] = useState(guest?.rsvp?.partySize ?? 1);
 
   // Without a token we cannot tell the API who is replying, so the honest
   // thing is to ask them to open their own link rather than fail on submit.
@@ -53,6 +55,8 @@ export function RsvpForm({
   const mealOptions = (config.mealOptions as string[] | undefined) ?? [];
   const collectDietary = (config.collectDietary as boolean | undefined) ?? false;
   const collectMessage = (config.collectMessage as boolean | undefined) ?? true;
+  const collectBreakdown =
+    (config.collectHeadcountBreakdown as boolean | undefined) ?? false;
   const ceiling = Math.min(
     guest.maxPartySize,
     (config.maxPartySize as number | undefined) ?? guest.maxPartySize,
@@ -113,7 +117,10 @@ export function RsvpForm({
                 name="partySize"
                 min={1}
                 max={ceiling}
-                defaultValue={guest.rsvp?.partySize ?? 1}
+                value={partySize}
+                onChange={(nativeEvent) =>
+                  setPartySize(Number(nativeEvent.target.value) || 1)
+                }
                 className="rounded-lg border px-4 py-3"
                 style={controlStyle}
               />
@@ -121,6 +128,35 @@ export function RsvpForm({
           ) : (
             <input type="hidden" name="partySize" value={1} />
           )}
+
+          {collectBreakdown && partySize > 1 ? (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="flex flex-col gap-1.5 text-base">
+                Adults
+                <input
+                  type="number"
+                  name="adults"
+                  min={0}
+                  max={partySize}
+                  defaultValue={guest.rsvp?.adults ?? partySize}
+                  className="rounded-lg border px-4 py-3"
+                  style={controlStyle}
+                />
+              </label>
+              <label className="flex flex-col gap-1.5 text-base">
+                Children
+                <input
+                  type="number"
+                  name="children"
+                  min={0}
+                  max={partySize}
+                  defaultValue={guest.rsvp?.children ?? 0}
+                  className="rounded-lg border px-4 py-3"
+                  style={controlStyle}
+                />
+              </label>
+            </div>
+          ) : null}
 
           {mealOptions.length > 0 ? (
             <label className="flex flex-col gap-1.5 text-base">

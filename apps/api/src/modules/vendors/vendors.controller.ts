@@ -20,6 +20,13 @@ export class VendorsController {
   }
 
   @Public()
+  @Get('counties')
+  @ApiOperation({ summary: 'The places vendors are listed in' })
+  counties() {
+    return this.vendors.counties();
+  }
+
+  @Public()
   @Get()
   @ApiOperation({ summary: 'Search the vendor directory' })
   @ApiZodQuery(listVendorsSchema, 'ListVendors')

@@ -101,6 +101,13 @@ A few details worth knowing:
   flow lets a host say they are still deciding. Undated events sort last, the
   countdown section does not render, and the date reads "Date to be announced"
   wherever one would go.
+- **Gifting has two modes.** The registry module carries both a gift list and
+  the cash details a host writes out — a paybill, a bank account, a code for
+  anyone sending from abroad. Nothing is processed here; the details are shown
+  and the guest pays their own way.
+- **Guests can add themselves.** `POST /e/:slug/guest-list` is off until a host
+  sets `guestListFormEnabled`, needs the event published, is throttled to five
+  a minute, and matches a name already on the list rather than duplicating it.
 - **Phone numbers are a sign-in handle.** They are stored in E.164 and are
   unique, so `POST /auth/login` accepts either an email or a number in
   `identifier`.
