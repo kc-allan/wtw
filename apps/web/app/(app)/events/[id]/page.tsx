@@ -1,42 +1,111 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CreateStepKey, EventModuleKey, EventStatus, typeAsksCreateStep } from "@wtw/shared";
+import { EventStatus, EventTypeKey } from "@wtw/shared";
 import { api } from "@/lib/api";
 import { SITE_URL } from "@/lib/env";
-import type { EventDetail, Guest, Paginated } from "@/lib/types";
-import { EventRail, type RailSection } from "./_hub/event-rail";
+import { eventSurfaceLabel, publicPageSections } from "@/lib/event-public-sections";
+import type { EventDetail, GalleryPhoto, Guest, Paginated, PublicEvent, RegistryForGuests } from "@/lib/types";
+import { EventRail, type NextTask, type RailSection } from "./_hub/event-rail";
 import { CeremoniesPanel, GuestListPanel, InvitationsPanel, Panel } from "./_hub/panels";
 import { WebsitePages, type WebsitePage } from "./_hub/website-pages";
 
-export const metadata: Metadata = { title: "Your event — Worth the Wait" };
+export const metadata: Metadata = { title: "Your event | Worth the Wait" };
 
 interface InvitationRow {
   guestId: string;
   status: string;
 }
 
-/** The sections the site is made of, named as a guest reads them. */
-const PAGE_LABELS: Partial<Record<EventModuleKey, string>> = {
-  [EventModuleKey.OUR_STORY]: "Our Story",
-  [EventModuleKey.RSVP]: "RSVP",
-  [EventModuleKey.GALLERY]: "Moments",
-  [EventModuleKey.VENUE_MAP]: "Venues",
-  [EventModuleKey.REGISTRY]: "Registry",
-  [EventModuleKey.TIMELINE]: "The day",
-  [EventModuleKey.FAQ]: "Questions",
-  [EventModuleKey.DRESS_CODE]: "What to wear",
-  [EventModuleKey.ACCOMMODATION]: "Staying over",
-};
+interface EventPreview extends Omit<PublicEvent, "guest"> {
+  guest: null;
+  registry: RegistryForGuests | null;
+  gallery: GalleryPhoto[] | null;
+}
+
+function hasText(value: string | null | undefined): boolean {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function nextTaskForEvent({
+  event,
+  guestCount,
+  isLive,
+}: {
+  event: EventDetail;
+  guestCount: number;
+  isLive: boolean;
+}): NextTask {
+  if (!event.theme) {
+    return {
+      label: "Choose a design so the invitation has a finished look.",
+      href: `/events/${event.id}/template`,
+      action: "Choose design",
+    };
+  }
+
+  if (!hasText(event.title) || event.hostNames.length === 0) {
+    return {
+      label: "Add the names guests should see first.",
+      href: `/events/${event.id}/customize`,
+      action: "Add details",
+    };
+  }
+
+  if (!event.startsAt) {
+    return {
+      label: "Set the date, or mark it as to be announced.",
+      href: `/events/${event.id}/customize`,
+      action: "Set date",
+    };
+  }
+
+  if (!hasText(event.venueName) && !hasText(event.city) && !hasText(event.venueAddress)) {
+    return {
+      label: "Add the place guests should plan around.",
+      href: `/events/${event.id}/customize`,
+      action: "Add location",
+    };
+  }
+
+  if (guestCount === 0) {
+    return {
+      label: "Add guests or open address collection before you publish.",
+      href: `/events/${event.id}?section=guests`,
+      action: "Add guests",
+    };
+  }
+
+  if (!isLive) {
+    return {
+      label: "Preview the saved invitation, then publish when it reads right.",
+      href: `/events/${event.id}/publish`,
+      action: "Preview and publish",
+    };
+  }
+
+  return {
+    label: "Share the live link with guests.",
+    href: `/events/${event.id}/share`,
+    action: "Share invitation",
+  };
+}
+
+function sectionForTask(task: NextTask): string {
+  if (task.href.includes("section=guests")) return "guests";
+  if (task.href.includes("share")) return "invitations";
+  return "invitation";
+}
 
 export default async function EventHubPage({ params, searchParams }: PageProps<"/events/[id]">) {
   const { id } = await params;
   const { section } = await searchParams;
 
-  const [event, guests, invitations] = await Promise.all([
+  const [event, guests, invitations, preview] = await Promise.all([
     api<EventDetail>(`/events/${id}`).catch(() => null),
     api<Paginated<Guest>>(`/events/${id}/guests?perPage=1`).catch(() => null),
     api<InvitationRow[]>(`/events/${id}/invitations`).catch(() => [] as InvitationRow[]),
+    api<EventPreview>(`/events/${id}/preview`).catch(() => null),
   ]);
   if (!event) notFound();
 
@@ -46,57 +115,77 @@ export default async function EventHubPage({ params, searchParams }: PageProps<"
   ).length;
   const isLive = event.status === EventStatus.PUBLISHED;
   const publicHref = `${SITE_URL}/e/${event.slug}`;
-  const hasCeremonies = typeAsksCreateStep(event.typeKey, CreateStepKey.CEREMONIES);
+  const hasCeremonies = event.typeKey === EventTypeKey.WEDDING;
+  const surfaceLabel = eventSurfaceLabel(event);
+  const hasRegistry = Boolean(
+    preview?.registry &&
+      (preview.registry.items.length > 0 || preview.registry.cashGiftMethods.length > 0),
+  );
 
-  const websitePages: WebsitePage[] = [
-    { anchor: "top", label: "Home" },
-    ...event.modules
-      .filter((module) => module.enabled && PAGE_LABELS[module.key])
-      .sort((a, b) => a.position - b.position)
-      .map((module) => ({
-        anchor: module.key === EventModuleKey.VENUE_MAP ? "ceremonies" : module.key,
-        label: PAGE_LABELS[module.key] as string,
-        moduleKey: module.key,
-      })),
-  ];
+  const websitePages: WebsitePage[] = publicPageSections({
+    event,
+    modules: event.modules,
+    ceremoniesCount: event.ceremonies.length,
+    hasGallery: preview?.gallery !== null && preview?.gallery !== undefined,
+    hasRegistry,
+  }).map((page) => ({
+    anchor: page.id,
+    label: page.label,
+    moduleKey: page.moduleKey,
+  }));
+  const nextTask = nextTaskForEvent({ event, guestCount, isLive });
 
   const sections: RailSection[] = [
     ...(hasCeremonies
       ? [
           {
             id: "ceremonies",
-            label: "Ceremonies",
+            label: "Gatherings",
             status: String(event.ceremonies.length),
           },
         ]
       : []),
     {
-      id: "website",
-      label: "Invitation",
+      id: "invitation",
+      label: surfaceLabel,
       status: isLive ? "Live" : "Not live",
-      children: <WebsitePages pages={websitePages} href={isLive ? publicHref : `/events/${id}/preview`} />,
+      children: (
+        <WebsitePages
+          pages={websitePages}
+          href={isLive ? publicHref : `/events/${id}/preview`}
+          editHref={`/events/${id}/customize`}
+        />
+      ),
     },
     {
       id: "guests",
-      label: "Guest List",
+      label: "Guests",
       status: `${guestCount} ${guestCount === 1 ? "Guest" : "Guests"}`,
     },
     {
       id: "invitations",
-      label: "Invitations",
-      status: sentCount === 0 ? "Not sent" : `${sentCount} sent`,
+      label: "Sharing",
+      status: sentCount === 0 ? "Not shared" : `${sentCount} shared`,
     },
   ];
 
+  const requestedSection = section === "website" ? "invitation" : section;
   const current =
-    typeof section === "string" && sections.some((entry) => entry.id === section)
-      ? section
-      : sections[0].id;
+    typeof requestedSection === "string" && sections.some((entry) => entry.id === requestedSection)
+      ? requestedSection
+      : sectionForTask(nextTask);
 
   return (
     <div className="flex flex-1 flex-col lg:flex-row">
       <div className="w-full shrink-0 border-b border-rule/40 bg-white px-6 py-10 lg:w-[450px] lg:border-r lg:border-b-0 lg:px-8">
-        <EventRail eventId={id} sections={sections} current={current} />
+        <EventRail
+          eventId={id}
+          eventTitle={event.title}
+          surfaceLabel={surfaceLabel}
+          nextTask={nextTask}
+          sections={sections}
+          current={current}
+        />
       </div>
 
       <div className="relative min-w-0 flex-1 overflow-hidden bg-canvas px-6 py-12 lg:px-10">
@@ -106,13 +195,13 @@ export default async function EventHubPage({ params, searchParams }: PageProps<"
             <CeremoniesPanel eventId={id} ceremonies={event.ceremonies} />
           ) : null}
 
-          {current === "website" ? (
+          {current === "invitation" ? (
             <Panel
-              heading={isLive ? "Your invitation is live" : "Your invitation"}
+              heading={isLive ? `Your ${surfaceLabel.toLowerCase()} is live` : `Your ${surfaceLabel.toLowerCase()}`}
               lead={
                 isLive
-                  ? "Guests can open your invitation and reply."
-                  : "Add the essentials, preview it, then publish when it reads right."
+                  ? "Guests can open the saved page and reply."
+                  : "Add the essentials, save your changes, preview it, then publish when it reads right."
               }
             >
               <div className="flex flex-wrap items-center justify-center gap-3">
@@ -120,7 +209,14 @@ export default async function EventHubPage({ params, searchParams }: PageProps<"
                   href={`/events/${id}/customize`}
                   className="rounded-full bg-forest px-8 py-3.5 text-base font-medium text-bright transition-colors hover:bg-forest-deep"
                 >
-                  Edit invitation
+                  Edit {surfaceLabel.toLowerCase()}
+                </Link>
+                <Link
+                  href={`/events/${id}/preview`}
+                  target="_blank"
+                  className="rounded-full border border-forest px-8 py-3.5 text-base text-forest transition-colors hover:bg-forest/5"
+                >
+                  Preview
                 </Link>
                 <Link
                   href={`/events/${id}/${isLive ? "share" : "publish"}`}

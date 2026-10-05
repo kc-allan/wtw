@@ -16,10 +16,12 @@ export interface WebsitePage {
 export function WebsitePages({
   pages,
   href,
+  editHref,
 }: {
   pages: WebsitePage[];
   /** The live page once published, the host's own preview before that. */
   href: string;
+  editHref: string;
 }) {
   return (
     <ul className="mt-2 overflow-hidden rounded-xl bg-white">
@@ -38,7 +40,7 @@ export function WebsitePages({
       ))}
       <li className="border-t border-rule/40">
         <Link
-          href="./customize"
+          href={editHref}
           className="flex items-center justify-between gap-3 px-4 py-3 text-base text-forest transition-colors hover:bg-ivory"
         >
           Edit the content

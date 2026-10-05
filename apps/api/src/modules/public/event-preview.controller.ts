@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { EventModuleKey } from '@wtw/shared';
 import { CurrentUser, type AuthenticatedUser } from '../../core/auth/current-user.decorator';
@@ -26,10 +26,11 @@ export class EventPreviewController {
   async preview(
     @CurrentUser() user: AuthenticatedUser,
     @Param('eventId') eventId: string,
+    @Query('guestId') guestId?: string,
   ) {
     await this.events.assertCanManage(user.id, eventId);
 
-    const view = await this.publicEvents.previewForHost(eventId);
+    const view = await this.publicEvents.previewForHost(eventId, guestId);
     const enabled = new Set(view.modules.map((module) => module.key));
 
     const [registry, gallery] = await Promise.all([

@@ -10,28 +10,49 @@ export interface RailSection {
   children?: ReactNode;
 }
 
+export interface NextTask {
+  label: string;
+  href: string;
+  action: string;
+}
+
 /**
- * The spine of an event. Everything a host can do sits here with its current
- * state beside it, so the first screen answers "where did I get to" before it
- * asks anything.
+ * The spine of an event. It starts with the saved state and the next useful
+ * task so hosts know what to do without reading every option first.
  */
 export function EventRail({
   eventId,
+  eventTitle,
+  surfaceLabel,
+  nextTask,
   sections,
   current,
 }: {
   eventId: string;
+  eventTitle: string;
+  surfaceLabel: string;
+  nextTask: NextTask;
   sections: RailSection[];
   current: string;
 }) {
   return (
     <nav aria-label="This event" className="w-full">
-      <h1 className="text-2xl font-semibold text-black sm:text-3xl">
-        Choose what you want to do first
+      <p className="text-sm tracking-[0.12em] text-muted uppercase">{surfaceLabel}</p>
+      <h1 className="mt-2 text-2xl font-semibold text-black sm:text-3xl">
+        {eventTitle}
       </h1>
-      <p className="mt-3 max-w-[420px] text-base text-ink/70">
-        There&rsquo;s no right order. Everything saves as you go, so you can leave
-        anything half-done and come back to it.
+      <div className="mt-5 rounded-2xl bg-canvas p-4">
+        <p className="text-sm font-medium text-forest">Next step</p>
+        <p className="mt-1 text-base text-black">{nextTask.label}</p>
+        <Link
+          href={nextTask.href}
+          className="mt-4 inline-flex rounded-full bg-forest px-5 py-2.5 text-base font-medium text-bright transition-colors hover:bg-forest-deep"
+        >
+          {nextTask.action}
+        </Link>
+      </div>
+      <p className="mt-4 max-w-[420px] text-base text-ink/70">
+        Save each screen before previewing or publishing. You can return here whenever you need the next step.
       </p>
 
       <ul className="mt-8 flex flex-col">

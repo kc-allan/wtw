@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useMemo, useState, useTransition } from "react";
+import { useActionState, useEffect, useMemo, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
-import { EventModuleKey } from "@wtw/shared";
+import { EventModuleKey, EventTypeKey } from "@wtw/shared";
 import { InvitationCard, nameLines } from "@/app/_components/invitation-card";
 import { Button, Field, Input, Textarea } from "@/app/_components/ui";
 import { saveEventDetails, toggleModule } from "@/lib/event-actions";
+import { eventSurfaceLabel } from "@/lib/event-public-sections";
 import { formatEventDate } from "@/lib/event-display";
 import type { FormState } from "@/lib/form-state";
 import type { EventDetail, Theme } from "@/lib/types";
@@ -27,11 +28,72 @@ const SECTION_ORDER: EventModuleKey[] = [
 
 const INITIAL: FormState = {};
 
+type NameFieldConfig = {
+  primary: string;
+  secondary?: string;
+  description: string;
+  descriptionPlaceholder: string;
+};
+
+function nameFieldConfig(typeKey: EventDetail["typeKey"], websiteEnabled: boolean): NameFieldConfig {
+  switch (typeKey) {
+    case EventTypeKey.WEDDING:
+      return {
+        primary: "Partner 1",
+        secondary: "Partner 2",
+        description: websiteEnabled ? "Our story" : "Invitation note",
+        descriptionPlaceholder: "Share the note guests should read before they RSVP.",
+      };
+    case EventTypeKey.ANNIVERSARY:
+      return {
+        primary: "First name",
+        secondary: "Second name",
+        description: "Celebration note",
+        descriptionPlaceholder: "Share what you are celebrating and what guests should know.",
+      };
+    case EventTypeKey.BIRTHDAY:
+      return {
+        primary: "Birthday person",
+        description: "Invitation note",
+        descriptionPlaceholder: "Share the note guests should read before they RSVP.",
+      };
+    case EventTypeKey.BABY_SHOWER:
+      return {
+        primary: "Parent or baby name",
+        description: "Invitation note",
+        descriptionPlaceholder: "Share the note guests should read before they RSVP.",
+      };
+    case EventTypeKey.CORPORATE:
+      return {
+        primary: "Organization or host",
+        description: "Event note",
+        descriptionPlaceholder: "Share the purpose, welcome note or arrival details guests should know.",
+      };
+    default:
+      return {
+        primary: "Honoree or host",
+        description: "Invitation note",
+        descriptionPlaceholder: "Share the note guests should read before they RSVP.",
+      };
+  }
+}
+
 export function CustomizeEditor({ event, themes }: { event: EventDetail; themes: Theme[] }) {
   const save = saveEventDetails.bind(null, event.id);
-  const [state, action] = useActionState(save, INITIAL);
+  const [state, action, pending] = useActionState(save, INITIAL);
+  const [dirty, setDirty] = useState(false);
 
-  // Typing updates the preview immediately; saving persists it.
+  const surfaceLabel = eventSurfaceLabel(event);
+  const websiteEnabled = surfaceLabel === "Wedding website";
+  const fieldConfig = nameFieldConfig(event.typeKey, websiteEnabled);
+
+  useEffect(() => {
+    if (state.message === "Saved") {
+      setDirty(false);
+    }
+  }, [state.message]);
+
+  // Typing updates the card beside the form. Saving updates the preview and guest page.
   const [partner1, setPartner1] = useState(event.hostNames[0] ?? "");
   const [partner2, setPartner2] = useState(event.hostNames[1] ?? "");
   const [venueName, setVenueName] = useState(event.venueName ?? "");
@@ -54,7 +116,7 @@ export function CustomizeEditor({ event, themes }: { event: EventDetail; themes:
 
   /**
    * Colour swatches. One per distinct accent, because a palette is recognised
-   * by its accent — the backgrounds are all near-white paper.
+   * by its accent because the backgrounds are all near-white paper.
    */
   const swatches = themes.filter(
     (theme, index) =>
@@ -67,33 +129,46 @@ export function CustomizeEditor({ event, themes }: { event: EventDetail; themes:
         <div>
           <h1 className="font-serif text-section font-semibold text-black">Make it yours</h1>
           <p className="mt-1 text-base tracking-[0.02em] text-ink/70">
-            {activeTheme?.name ?? "Your design"}. Changes as you type.
+            {activeTheme?.name ?? "Your design"}. Save changes before previewing or publishing.
           </p>
+          <p className="mt-2 text-sm text-ink/60">Editing {surfaceLabel.toLowerCase()} content.</p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <Link
-            href={`/events/${event.id}/preview`}
-            target="_blank"
-            className="inline-flex items-center rounded-full border border-rule bg-white px-5 py-2.5 text-base text-forest"
-          >
-            Preview
-          </Link>
-          <Link
-            href={`/events/${event.id}/publish`}
-            className="inline-flex items-center rounded-full bg-forest px-5 py-2.5 text-base font-medium text-bright"
-          >
-            Publish event
-          </Link>
+        <div className="flex flex-wrap items-center gap-3">
+          {dirty || pending ? (
+            <span className="inline-flex items-center rounded-full border border-rule bg-white px-5 py-2.5 text-base text-ink/50">
+              Save before preview
+            </span>
+          ) : (
+            <Link
+              href={`/events/${event.id}/preview`}
+              target="_blank"
+              className="inline-flex items-center rounded-full border border-rule bg-white px-5 py-2.5 text-base text-forest"
+            >
+              Preview
+            </Link>
+          )}
+          {dirty || pending ? (
+            <span className="inline-flex items-center rounded-full bg-forest/50 px-5 py-2.5 text-base font-medium text-bright">
+              Save before publish
+            </span>
+          ) : (
+            <Link
+              href={`/events/${event.id}/publish`}
+              className="inline-flex items-center rounded-full bg-forest px-5 py-2.5 text-base font-medium text-bright"
+            >
+              Publish event
+            </Link>
+          )}
         </div>
       </div>
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,340px)_minmax(0,1fr)_minmax(0,340px)]">
-        <form action={action} className="rounded-2xl bg-white p-6">
+        <form action={action} onChange={() => setDirty(true)} className="rounded-2xl bg-white p-6">
           <h2 className="font-serif text-xl text-ink/70">Content</h2>
 
           <div className="mt-4 flex flex-col gap-4">
-            <Field label={event.typeKey === "wedding" ? "Partner 1" : "Primary name"} htmlFor="partner1">
+            <Field label={fieldConfig.primary} htmlFor="partner1">
               <Input
                 id="partner1"
                 name="partner1"
@@ -103,15 +178,19 @@ export function CustomizeEditor({ event, themes }: { event: EventDetail; themes:
               />
             </Field>
 
-            <Field label={event.typeKey === "wedding" ? "Partner 2" : "Second name"} htmlFor="partner2">
-              <Input
-                id="partner2"
-                name="partner2"
-                value={partner2}
-                onChange={(nativeEvent) => setPartner2(nativeEvent.target.value)}
-                className="bg-white"
-              />
-            </Field>
+            {fieldConfig.secondary ? (
+              <Field label={fieldConfig.secondary} htmlFor="partner2">
+                <Input
+                  id="partner2"
+                  name="partner2"
+                  value={partner2}
+                  onChange={(nativeEvent) => setPartner2(nativeEvent.target.value)}
+                  className="bg-white"
+                />
+              </Field>
+            ) : (
+              <input type="hidden" name="partner2" value="" />
+            )}
 
             <Field label="Event name" htmlFor="title" error={state.fieldErrors?.title}>
               <Input id="title" name="title" defaultValue={event.title} className="bg-white" />
@@ -193,22 +272,22 @@ export function CustomizeEditor({ event, themes }: { event: EventDetail; themes:
               <Input id="city" name="city" defaultValue={event.city ?? ""} className="bg-white" />
             </Field>
 
-            <Field label="Your story" htmlFor="description">
+            <Field label={fieldConfig.description} htmlFor="description">
               <Textarea
                 id="description"
                 name="description"
                 rows={4}
                 defaultValue={event.description ?? ""}
-                placeholder="We met in a Nairobi bookshop in 2019…"
+                placeholder={fieldConfig.descriptionPlaceholder}
                 className="bg-white"
               />
             </Field>
 
-            {state.message ? (
-              <p role="alert" className="text-sm text-ember">
-                {state.message}
-              </p>
-            ) : null}
+            <input type="hidden" name="themeKey" value={themeKey ?? ""} />
+
+            <p role="status" className={`text-sm ${state.message === "Saved" ? "text-success" : "text-ember"}`}>
+              {pending ? "Saving" : dirty ? "Unsaved changes" : state.message === "Saved" ? "Saved" : state.message}
+            </p>
 
             <SaveButton />
           </div>
@@ -238,7 +317,10 @@ export function CustomizeEditor({ event, themes }: { event: EventDetail; themes:
                 type="button"
                 aria-label={theme.name}
                 aria-pressed={theme.key === themeKey}
-                onClick={() => setThemeKey(theme.key)}
+                onClick={() => {
+                  setThemeKey(theme.key);
+                  setDirty(true);
+                }}
                 className={`size-9 rounded-full ${
                   theme.key === themeKey
                     ? "outline outline-2 outline-offset-2 outline-forest"
@@ -248,22 +330,14 @@ export function CustomizeEditor({ event, themes }: { event: EventDetail; themes:
               />
             ))}
           </div>
-          {/* Swatches preview only; the design is saved on the Template step. */}
           {themeKey !== event.theme?.key ? (
             <p className="mt-3 text-sm text-ink/70">
-              Previewing {activeTheme?.name}.{" "}
-              <Link
-                href={`/events/${event.id}/template`}
-                className="underline underline-offset-2"
-              >
-                Change the design
-              </Link>{" "}
-              to keep it.
+              Save changes to keep {activeTheme?.name}.
             </p>
           ) : null}
 
           <h2 className="mt-8 text-sm tracking-[0.08em] text-muted uppercase">
-            Website sections
+            {websiteEnabled ? "Website sections" : "Optional sections"}
           </h2>
           <ul className="mt-4 flex flex-col">
             {SECTION_ORDER.map((key) => {

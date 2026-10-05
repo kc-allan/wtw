@@ -8,36 +8,42 @@ import type { GalleryPhoto, PublicEvent, RegistryForGuests } from "@/lib/types";
 import { EventPageView } from "@/app/e/[slug]/event-page-view";
 
 export const metadata: Metadata = {
-  title: "Preview — Worth the Wait",
+  title: "Preview | Worth the Wait",
   robots: { index: false, follow: false },
 };
 
 interface EventPreview extends Omit<PublicEvent, "guest"> {
-  guest: null;
+  guest: PublicEvent["guest"];
   registry: RegistryForGuests | null;
   gallery: GalleryPhoto[] | null;
 }
 
-export default async function PreviewPage({ params }: PageProps<"/events/[id]/preview">) {
+export default async function PreviewPage({
+  params,
+  searchParams,
+}: PageProps<"/events/[id]/preview">) {
   const { id } = await params;
+  const { guestId } = await searchParams;
+  const guestQuery = typeof guestId === "string" ? `?guestId=${encodeURIComponent(guestId)}` : "";
 
-  const preview = await api<EventPreview>(`/events/${id}/preview`).catch(() => null);
+  const preview = await api<EventPreview>(`/events/${id}/preview${guestQuery}`).catch(() => null);
   if (!preview) notFound();
 
   const isLive = preview.event.status === EventStatus.PUBLISHED;
 
   return (
     <>
-      <PreviewBar eventId={id} slug={preview.event.slug} isLive={isLive} />
+      <PreviewBar eventId={id} slug={preview.event.slug} isLive={isLive} guest={preview.guest} />
 
       <EventPageView
         slug={preview.event.slug}
         event={preview.event}
         ceremonies={preview.ceremonies}
         modules={preview.modules}
-        guest={null}
+        guest={preview.guest}
         registry={preview.registry}
         photos={preview.gallery}
+        previewMode
       />
     </>
   );
@@ -51,17 +57,21 @@ function PreviewBar({
   eventId,
   slug,
   isLive,
+  guest,
 }: {
   eventId: string;
   slug: string;
   isLive: boolean;
+  guest: PublicEvent["guest"];
 }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-4 bg-forest px-6 py-3 text-bright">
       <p className="text-base">
-        {isLive
-          ? "This is your page as guests see it."
-          : "This is your page as guests will see it. Nobody else can open it yet."}
+        {guest
+          ? `Previewing as ${guest.firstName}${guest.lastName ? ` ${guest.lastName}` : ""}. Replies are not sent from this preview.`
+          : isLive
+            ? "This is your page as guests see it."
+            : "This is your page as guests will see it. Nobody else can open it yet."}
       </p>
 
       <span className="flex items-center gap-3">

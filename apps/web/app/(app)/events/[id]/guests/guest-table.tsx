@@ -143,7 +143,16 @@ export function GuestTable({
                   </td>
 
                   <td className="px-6 py-4">
-                    <GuestRowActions eventId={eventId} guest={guest} />
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Link
+                        href={`/events/${eventId}/preview?guestId=${guest.id}`}
+                        target="_blank"
+                        className="rounded-full border border-rule px-3 py-1.5 text-sm text-forest hover:bg-ivory"
+                      >
+                        Preview
+                      </Link>
+                      <GuestRowActions eventId={eventId} guest={guest} />
+                    </div>
                   </td>
                 </tr>
               );

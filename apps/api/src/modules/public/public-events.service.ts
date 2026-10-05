@@ -120,16 +120,17 @@ export class PublicEventsService {
    * is what opens an event to guests, so a draft has to be previewable some
    * other way or a host cannot see their own work until it is public.
    */
-  async previewForHost(eventId: string) {
+  async previewForHost(eventId: string, guestId?: string) {
     const event = await this.prisma.event.findUniqueOrThrow({
       where: { id: eventId },
       select: EVENT_VIEW_SELECT,
     });
 
+    const guest = guestId ? await this.guestForHostPreview(eventId, guestId) : null;
     const modules = await this.modules.listEnabledPublic(eventId);
-    const ceremonies = await this.ceremoniesFor(eventId, undefined);
+    const ceremonies = await this.ceremoniesFor(eventId, guest?.id);
 
-    return { event, ceremonies, modules, guest: null };
+    return { event, ceremonies, modules, guest };
   }
 
   /**
@@ -205,6 +206,43 @@ export class PublicEventsService {
       guestId: guest.id,
       invitationId: guest.invitation.id,
       rawToken,
+    };
+  }
+
+  /** Guest context for host preview without opening or issuing an invitation. */
+  private async guestForHostPreview(eventId: string, guestId: string): Promise<ResolvedGuest | null> {
+    const guest = await this.prisma.guest.findFirst({
+      where: { id: guestId, eventId },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        maxPartySize: true,
+        invitation: { select: { id: true } },
+        rsvp: {
+          select: {
+            status: true,
+            partySize: true,
+            adults: true,
+            children: true,
+            attendeeNames: true,
+            mealChoice: true,
+            dietaryNotes: true,
+            message: true,
+          },
+        },
+      },
+    });
+
+    if (!guest) return null;
+
+    return {
+      id: guest.id,
+      invitationId: guest.invitation?.id ?? 'preview',
+      firstName: guest.firstName,
+      lastName: guest.lastName,
+      maxPartySize: guest.maxPartySize,
+      rsvp: guest.rsvp,
     };
   }
 

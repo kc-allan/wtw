@@ -14,12 +14,14 @@ export function RsvpForm({
   guest,
   config,
   palette,
+  previewMode = false,
 }: {
   slug: string;
   token?: string;
   guest: PublicEvent["guest"];
   config: Record<string, unknown>;
   palette: ThemePalette;
+  previewMode?: boolean;
 }) {
   const action = submitRsvp.bind(null, slug, token ?? "");
   const [state, formAction] = useActionState(action, INITIAL);
@@ -84,7 +86,7 @@ export function RsvpForm({
   }
 
   return (
-    <form action={formAction} className="mt-6 flex flex-col gap-5">
+    <form action={formAction} onSubmit={previewMode ? (event) => event.preventDefault() : undefined} className="mt-6 flex flex-col gap-5">
       {guest ? (
         <p className="text-center text-base opacity-80">
           Replying as {guest.firstName}
@@ -268,13 +270,23 @@ export function RsvpForm({
         </label>
       ) : null}
 
+      {previewMode ? (
+        <p className="text-center text-sm opacity-80">
+          This preview does not send or change RSVP replies.
+        </p>
+      ) : null}
+
       {state.message ? (
         <p role="alert" className="text-base" style={{ color: palette.accent }}>
           {state.message}
         </p>
       ) : null}
 
-      <SubmitButton palette={palette} hasReplied={guest?.rsvp !== null && guest?.rsvp !== undefined} />
+      <SubmitButton
+        palette={palette}
+        hasReplied={guest?.rsvp !== null && guest?.rsvp !== undefined}
+        previewMode={previewMode}
+      />
     </form>
   );
 }
@@ -282,20 +294,22 @@ export function RsvpForm({
 function SubmitButton({
   palette,
   hasReplied,
+  previewMode,
 }: {
   palette: ThemePalette;
   hasReplied: boolean;
+  previewMode: boolean;
 }) {
   const { pending } = useFormStatus();
 
   return (
     <button
       type="submit"
-      disabled={pending}
+      disabled={pending || previewMode}
       className="rounded-full px-6 py-3.5 text-base font-medium disabled:opacity-60"
       style={{ backgroundColor: palette.accent, color: palette.background }}
     >
-      {pending ? "Sending…" : hasReplied ? "Update my reply" : "Send my reply"}
+      {previewMode ? "Preview only" : pending ? "Sending" : hasReplied ? "Update my reply" : "Send my reply"}
     </button>
   );
 }

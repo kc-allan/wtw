@@ -67,6 +67,7 @@ export async function saveEventDetails(
       body: {
         ...(hostNames.length > 0 ? { hostNames } : {}),
         ...(optionalText(formData.get("title")) ? { title: formData.get("title") } : {}),
+        ...(optionalText(formData.get("themeKey")) ? { themeKey: formData.get("themeKey") } : {}),
         startsAt: nullableDateTime(formData),
         timezone: optionalText(formData.get("timezone")) ?? "Africa/Nairobi",
         venueName: nullableText(formData.get("venueName")),
@@ -80,7 +81,7 @@ export async function saveEventDetails(
   }
 
   revalidatePath(`/events/${eventId}`, "layout");
-  return { message: undefined };
+  return { message: "Saved" };
 }
 
 /** Switches one website section on or off from the customize panel. */

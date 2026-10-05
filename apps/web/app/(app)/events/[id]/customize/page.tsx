@@ -5,7 +5,7 @@ import { BackToEvent } from "../_hub/back-to-event";
 import type { EventDetail, Theme } from "@/lib/types";
 import { CustomizeEditor } from "./customize-editor";
 
-export const metadata: Metadata = { title: "Make it yours — Worth the Wait" };
+export const metadata: Metadata = { title: "Make it yours | Worth the Wait" };
 
 export default async function CustomizeStepPage({ params }: PageProps<"/events/[id]/customize">) {
   const { id } = await params;

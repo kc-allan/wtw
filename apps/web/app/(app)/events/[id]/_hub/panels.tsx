@@ -1,6 +1,5 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { CEREMONIES } from "@wtw/shared";
 import type { Ceremony } from "@/lib/types";
 import { CollectAddresses } from "./collect-addresses";
 
@@ -64,7 +63,7 @@ export function GuestListPanel({
   return (
     <Panel
       heading="Let's build your guest list"
-      lead="Pick whichever is easiest. You can use all three, and add more people any time."
+      lead="Start with the easiest option. Most hosts add everyone together, then make separate gathering invites only when someone needs a different invite."
     >
       <ul className="grid gap-6 md:grid-cols-3">
         <ChoiceCard
@@ -80,7 +79,7 @@ export function GuestListPanel({
         <ChoiceCard
           icon={<LinkIcon />}
           title="Collect addresses"
-          body="Let guests add themselves. Share a link on WhatsApp and their details come straight to your list."
+          body="Share a link on WhatsApp so guests can add their own details to your list."
           action={
             <CollectAddresses
               eventId={eventId}
@@ -139,8 +138,7 @@ export function CeremoniesPanel({
         </ul>
       ) : (
         <p className="text-base text-ink/70">
-          {Object.values(CEREMONIES).length} to choose from, from the introductions to the
-          send off.
+          Add only the gatherings that need their own date, place or guest list.
         </p>
       )}
 
@@ -164,7 +162,7 @@ export function InvitationsPanel({
   return (
     <Panel
       heading={sent === 0 ? "Your invitations" : `${sent} invitations sent`}
-      lead="Choose a design, then send each guest their own link over WhatsApp, SMS or email."
+      lead="Choose a design, then copy each guest link into WhatsApp, SMS or email when you are ready to share."
     >
       <div className="flex flex-wrap items-center justify-center gap-3">
         <Link

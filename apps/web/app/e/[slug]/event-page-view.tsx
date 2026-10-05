@@ -4,10 +4,11 @@ import type { GalleryPhoto, PublicEvent, RegistryForGuests } from "@/lib/types";
 import { InvitationCard, nameLines } from "@/app/_components/invitation-card";
 import { FALLBACK_PALETTE } from "@/app/_data/templates";
 import { CeremonyProgramme } from "./ceremony-programme";
-import { EventSections, renderedSectionKeys } from "./event-sections";
+import { EventSections } from "./event-sections";
 import { GiftingSection } from "./gifting-section";
+import { publicPageSections } from "@/lib/event-public-sections";
 import { MomentsSection } from "./moments-section";
-import { PageNav, type PageSection } from "./page-nav";
+import { PageNav } from "./page-nav";
 import { RsvpForm } from "./rsvp-form";
 
 /**
@@ -23,6 +24,7 @@ export function EventPageView({
   guest,
   registry,
   photos,
+  previewMode = false,
 }: {
   slug: string;
   token?: string;
@@ -33,6 +35,7 @@ export function EventPageView({
   registry: RegistryForGuests | null;
   /** Null when the gallery is switched off, empty when there are no photos. */
   photos: GalleryPhoto[] | null;
+  previewMode?: boolean;
 }) {
   const palette = event.theme?.palette ?? FALLBACK_PALETTE;
   const names = nameLines(event.hostNames, event.title);
@@ -45,17 +48,13 @@ export function EventPageView({
     registry !== null &&
     (registry.items.length > 0 || registry.cashGiftMethods.length > 0);
 
-  // Only the sections with something in them earn a place in the nav.
-  const rendered = new Set(renderedSectionKeys(modules, event, palette));
-
-  const sections: PageSection[] = [
-    { id: "top", label: "Home" },
-    ...(rendered.has(EventModuleKey.OUR_STORY) ? [{ id: "our_story", label: "Our Story" }] : []),
-    ...(enabled.has(EventModuleKey.RSVP) ? [{ id: "rsvp", label: "RSVP" }] : []),
-    ...(photos !== null ? [{ id: "moments", label: "Moments" }] : []),
-    ...(ceremonies.length > 0 ? [{ id: "ceremonies", label: "Venues" }] : []),
-    ...(hasGifting ? [{ id: "registry", label: "Registry" }] : []),
-  ];
+  const sections = publicPageSections({
+    event,
+    modules,
+    ceremoniesCount: ceremonies.length,
+    hasGallery: photos !== null,
+    hasRegistry: hasGifting,
+  });
 
   return (
     <div
@@ -130,6 +129,7 @@ export function EventPageView({
               guest={guest}
               config={rsvpModule?.config ?? {}}
               palette={palette}
+              previewMode={previewMode}
             />
           </div>
         </section>
