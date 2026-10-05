@@ -4,6 +4,7 @@ import type {
   EventStatus,
   EventTypeKey,
   EventVisibility,
+  GameResponseKind,
   InvitationChannel,
   PlanKey,
   RsvpStatus,
@@ -243,5 +244,37 @@ export interface RegistryForGuests {
 export interface GalleryPhoto {
   id: string;
   url: string;
+  caption: string | null;
+  altText: string | null;
+  position: number;
   createdAt: string;
+}
+
+export interface GameQuestion {
+  id: string;
+  prompt: string;
+  options: string[];
+}
+
+export interface GameDefinitionView {
+  key: string;
+  name: string;
+  prompt: string;
+  responseKind: GameResponseKind;
+  requiresHostContent: boolean;
+  defaultConfig?: Record<string, unknown>;
+}
+
+export interface HostGame extends GameDefinitionView {
+  id: string;
+  enabled: boolean;
+  position: number;
+  config: Record<string, unknown>;
+  submissionCount: number;
+}
+
+export interface PublicGame extends GameDefinitionView {
+  id: string;
+  position: number;
+  config: Record<string, unknown> & { questions?: GameQuestion[] };
 }

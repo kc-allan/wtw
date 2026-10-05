@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { EventModuleKey } from '@wtw/shared';
 import { CurrentUser, type AuthenticatedUser } from '../../core/auth/current-user.decorator';
 import { EventsService } from '../events/events.service';
+import { GamesService } from '../games/games.service';
 import { RegistryService } from '../registry/registry.service';
 import { PublicEventsService } from './public-events.service';
 
@@ -18,6 +19,7 @@ export class EventPreviewController {
   constructor(
     private readonly events: EventsService,
     private readonly publicEvents: PublicEventsService,
+    private readonly games: GamesService,
     private readonly registry: RegistryService,
   ) {}
 
@@ -33,13 +35,16 @@ export class EventPreviewController {
     const view = await this.publicEvents.previewForHost(eventId, guestId);
     const enabled = new Set(view.modules.map((module) => module.key));
 
-    const [registry, gallery] = await Promise.all([
+    const [registry, gallery, games] = await Promise.all([
       enabled.has(EventModuleKey.REGISTRY)
         ? this.registry.listForGuests(eventId).catch(() => null)
         : null,
       enabled.has(EventModuleKey.GALLERY) ? this.publicEvents.gallery(eventId) : null,
+      enabled.has(EventModuleKey.GAMES)
+        ? this.games.listForGuests(eventId).catch(() => [] as Awaited<ReturnType<GamesService['listForGuests']>>)
+        : [],
     ]);
 
-    return { ...view, registry, gallery };
+    return { ...view, registry, gallery, games };
   }
 }

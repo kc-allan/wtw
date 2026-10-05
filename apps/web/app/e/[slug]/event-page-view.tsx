@@ -1,11 +1,12 @@
 import { EventModuleKey } from "@wtw/shared";
 import { formatEventDate, formatEventTime } from "@/lib/event-display";
-import type { GalleryPhoto, PublicEvent, RegistryForGuests } from "@/lib/types";
+import type { GalleryPhoto, PublicEvent, PublicGame, RegistryForGuests } from "@/lib/types";
 import { InvitationCard, nameLines } from "@/app/_components/invitation-card";
 import { FALLBACK_PALETTE } from "@/app/_data/templates";
 import { CeremonyProgramme } from "./ceremony-programme";
 import { EventSections } from "./event-sections";
 import { GiftingSection } from "./gifting-section";
+import { GamesSection } from "./games-section";
 import { publicPageSections } from "@/lib/event-public-sections";
 import { MomentsSection } from "./moments-section";
 import { PageNav } from "./page-nav";
@@ -18,16 +19,19 @@ import { RsvpForm } from "./rsvp-form";
 export function EventPageView({
   slug,
   token,
+  accessCode,
   event,
   ceremonies,
   modules,
   guest,
   registry,
   photos,
+  games,
   previewMode = false,
 }: {
   slug: string;
   token?: string;
+  accessCode?: string;
   event: PublicEvent["event"];
   ceremonies: PublicEvent["ceremonies"];
   modules: PublicEvent["modules"];
@@ -35,6 +39,7 @@ export function EventPageView({
   registry: RegistryForGuests | null;
   /** Null when the gallery is switched off, empty when there are no photos. */
   photos: GalleryPhoto[] | null;
+  games: PublicGame[];
   previewMode?: boolean;
 }) {
   const palette = event.theme?.palette ?? FALLBACK_PALETTE;
@@ -56,6 +61,7 @@ export function EventPageView({
     ceremoniesCount: ceremonies.length,
     hasGallery: photos !== null,
     hasRegistry: hasGifting,
+    hasGames: games.length > 0,
   });
 
   return (
@@ -147,6 +153,18 @@ export function EventPageView({
           }
           photos={photos}
           palette={palette}
+        />
+      ) : null}
+
+      {games.length > 0 ? (
+        <GamesSection
+          slug={slug}
+          token={token}
+          accessCode={accessCode}
+          guest={guest}
+          games={games}
+          palette={palette}
+          previewMode={previewMode}
         />
       ) : null}
 

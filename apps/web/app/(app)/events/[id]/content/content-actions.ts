@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { EventModuleKey } from "@wtw/shared";
+import { EventModuleKey, GAMES, GameKey } from "@wtw/shared";
 import { api, ApiError } from "@/lib/api";
 import { API_URL } from "@/lib/env";
 import { optionalNumber, optionalText } from "@/lib/form-state";
@@ -239,8 +239,91 @@ export async function uploadGalleryImage(eventId: string, formData: FormData): P
   redirect(`/events/${eventId}/content?saved=gallery`);
 }
 
+
+
+export async function updateGalleryImage(eventId: string, imageId: string, formData: FormData): Promise<never> {
+  await api(`/events/${eventId}/media/${imageId}`, {
+    method: "PATCH",
+    body: {
+      caption: nullable(formData.get("caption")) ?? null,
+      altText: nullable(formData.get("altText")) ?? null,
+      position: optionalNumber(formData.get("position")) ?? 0,
+      isHidden: formData.get("isHidden") !== null,
+    },
+  });
+  revalidatePath(`/events/${eventId}`, "layout");
+  redirect(`/events/${eventId}/content?saved=gallery`);
+}
+
 export async function deleteGalleryImage(eventId: string, imageId: string): Promise<never> {
   await api(`/events/${eventId}/media/${imageId}`, { method: "DELETE" });
   revalidatePath(`/events/${eventId}`, "layout");
   redirect(`/events/${eventId}/content?saved=gallery`);
+}
+
+function questionsFrom(formData: FormData): { id: string; prompt: string; options: string[]; correctAnswer?: string }[] {
+  const prompts = values(formData, "gameQuestionPrompt");
+  const options = values(formData, "gameQuestionOptions");
+  const answers = values(formData, "gameQuestionAnswer");
+  return presentRows(
+    prompts.map((prompt, index) => ({
+      id: `q${index + 1}`,
+      prompt,
+      options: (options[index] ?? "")
+        .split("\n")
+        .map((entry) => entry.trim())
+        .filter(Boolean),
+      ...(answers[index] ? { correctAnswer: answers[index] } : {}),
+    })),
+    (entry) => entry.prompt.length > 0,
+  );
+}
+
+function gameConfig(gameKey: GameKey, formData: FormData): Record<string, unknown> {
+  const definition = GAMES[gameKey];
+  const prompt = optionalText(formData.get("gamePrompt")) ?? definition.prompt;
+  if (definition.responseKind === "quiz") {
+    const questions = questionsFrom(formData);
+    const defaults = definition.defaultConfig as { questions?: unknown[] } | undefined;
+    return {
+      prompt,
+      questions: questions.length > 0 ? questions : defaults?.questions ?? [],
+    };
+  }
+  return { prompt };
+}
+
+export async function addGame(eventId: string, formData: FormData): Promise<never> {
+  const raw = optionalText(formData.get("gameKey"));
+  if (!raw || !(raw in GAMES)) redirect(`/events/${eventId}/content?saved=games`);
+  const gameKey = raw as GameKey;
+  await api(`/events/${eventId}/games`, {
+    method: "POST",
+    body: {
+      gameKey,
+      config: gameConfig(gameKey, formData),
+      position: optionalNumber(formData.get("position")) ?? 0,
+    },
+  });
+  revalidatePath(`/events/${eventId}`, "layout");
+  redirect(`/events/${eventId}/content?saved=games`);
+}
+
+export async function updateGame(eventId: string, gameInstanceId: string, gameKey: GameKey, formData: FormData): Promise<never> {
+  await api(`/events/${eventId}/games/${gameInstanceId}`, {
+    method: "PATCH",
+    body: {
+      enabled: formData.get("enabled") !== null,
+      position: optionalNumber(formData.get("position")) ?? 0,
+      config: gameConfig(gameKey, formData),
+    },
+  });
+  revalidatePath(`/events/${eventId}`, "layout");
+  redirect(`/events/${eventId}/content?saved=games`);
+}
+
+export async function deleteGame(eventId: string, gameInstanceId: string): Promise<never> {
+  await api(`/events/${eventId}/games/${gameInstanceId}`, { method: "DELETE" });
+  revalidatePath(`/events/${eventId}`, "layout");
+  redirect(`/events/${eventId}/content?saved=games`);
 }

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { EventStatus } from "@wtw/shared";
 import { api } from "@/lib/api";
 import { SITE_URL } from "@/lib/env";
-import type { GalleryPhoto, PublicEvent, RegistryForGuests } from "@/lib/types";
+import type { GalleryPhoto, PublicEvent, PublicGame, RegistryForGuests } from "@/lib/types";
 import { EventPageView } from "@/app/e/[slug]/event-page-view";
 
 export const metadata: Metadata = {
@@ -16,6 +16,7 @@ interface EventPreview extends Omit<PublicEvent, "guest"> {
   guest: PublicEvent["guest"];
   registry: RegistryForGuests | null;
   gallery: GalleryPhoto[] | null;
+  games: PublicGame[];
 }
 
 export default async function PreviewPage({
@@ -43,6 +44,7 @@ export default async function PreviewPage({
         guest={preview.guest}
         registry={preview.registry}
         photos={preview.gallery}
+        games={preview.games}
         previewMode
       />
     </>

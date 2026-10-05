@@ -13,6 +13,7 @@ interface SectionInput {
   ceremoniesCount: number;
   hasGallery: boolean;
   hasRegistry: boolean;
+  hasGames: boolean;
 }
 
 function read<T>(config: Record<string, unknown>, key: string): T | undefined {
@@ -71,6 +72,7 @@ export function publicPageSections({
   ceremoniesCount,
   hasGallery,
   hasRegistry,
+  hasGames,
 }: SectionInput): PageSectionLink[] {
   const enabled = modules.filter((module) => module.enabled).sort((a, b) => a.position - b.position);
   const links: PageSectionLink[] = [{ id: "top", label: "Home" }];
@@ -96,6 +98,10 @@ export function publicPageSections({
 
   if (hasRegistry) {
     links.push({ id: "registry", label: "Registry", moduleKey: EventModuleKey.REGISTRY });
+  }
+
+  if (hasGames) {
+    links.push({ id: "games", label: "Games", moduleKey: EventModuleKey.GAMES });
   }
 
   return links;

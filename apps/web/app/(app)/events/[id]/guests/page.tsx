@@ -88,7 +88,7 @@ export default async function GuestListPage({
 
         <div className="flex flex-wrap items-center gap-3">
           <Link
-            href={`/events/${id}/share`}
+            href={`/events/${id}/share#reminders`}
             className="text-base font-medium text-forest hover:underline"
           >
             Send reminder

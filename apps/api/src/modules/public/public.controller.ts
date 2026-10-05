@@ -81,13 +81,19 @@ export class PublicController {
       email: body.email,
       phone: body.phone,
     });
-    const response = await this.rsvp.submit(
-      respondent.eventId,
-      respondent.guestId,
-      respondent.invitationId,
-      body,
-    );
-    return { response, returnToken: respondent.rawToken };
+
+    try {
+      const response = await this.rsvp.submit(
+        respondent.eventId,
+        respondent.guestId,
+        respondent.invitationId,
+        body,
+      );
+      return { response, returnToken: respondent.rawToken };
+    } catch (error) {
+      await this.publicEvents.discardGeneralRespondent(respondent.eventId, respondent.guestId);
+      throw error;
+    }
   }
 
   @Post(':slug/guest-list')

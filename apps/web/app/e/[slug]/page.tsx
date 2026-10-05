@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { EventModuleKey } from "@wtw/shared";
 import { api, ApiError } from "@/lib/api";
-import type { GalleryPhoto, PublicEvent, RegistryForGuests } from "@/lib/types";
+import type { GalleryPhoto, PublicEvent, PublicGame, RegistryForGuests } from "@/lib/types";
 import { EventPageView } from "./event-page-view";
 
 async function load(slug: string, token?: string, code?: string) {
@@ -67,7 +67,7 @@ export default async function PublicEventPage({ params, searchParams }: PageProp
   if (code) access.set("code", code);
   const suffix = access.toString() ? `?${access}` : "";
 
-  const [registry, photos] = await Promise.all([
+  const [registry, photos, games] = await Promise.all([
     enabledKeys.has(EventModuleKey.REGISTRY)
       ? api<RegistryForGuests>(`/e/${slug}/registry${suffix}`, {
           auth: false,
@@ -80,17 +80,25 @@ export default async function PublicEventPage({ params, searchParams }: PageProp
           revalidate: 30,
         }).catch(() => [] as GalleryPhoto[])
       : null,
+    enabledKeys.has(EventModuleKey.GAMES)
+      ? api<PublicGame[]>(`/e/${slug}/games${suffix}`, {
+          auth: false,
+          revalidate: 30,
+        }).catch(() => [] as PublicGame[])
+      : [],
   ]);
   return (
     <EventPageView
       slug={slug}
       token={token}
+      accessCode={code}
       event={event}
       ceremonies={ceremonies}
       modules={modules}
       guest={guest}
       registry={registry}
       photos={photos}
+      games={games}
     />
   );
 }
