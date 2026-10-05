@@ -67,6 +67,19 @@ Prepared 4 October 2026. Source decisions are recorded in `docs/open-decisions.m
 - [ ] Contact requests still need a configured monitored delivery destination or database-backed inbox before production launch.
 - [ ] Reminder targeting for pending guests is still not implemented.
 
+## Follow-up plan checks
+
+- [x] Public header is session-aware and no longer prompts signed-in visitors to sign in again. Verified 5 October 2026 with `pnpm --filter @wtw/web exec tsc --noEmit`.
+- [x] Host next-step guidance allows an undated event with no guest list to publish and share. Verified 5 October 2026 with `pnpm --filter @wtw/web exec tsc --noEmit`.
+- [x] Guest list failures, empty lists and filtered-empty results use distinct states. Verified 5 October 2026 with `pnpm --filter @wtw/web exec tsc --noEmit`.
+- [x] Public invitation service failures show a retryable unavailable state instead of a not-found page. Verified 5 October 2026 with `pnpm --filter @wtw/web exec tsc --noEmit`.
+- [x] Guest optional fields can be intentionally cleared. Verified 5 October 2026 with `pnpm --filter @wtw/api test`, `pnpm --filter @wtw/api build` and `pnpm --filter @wtw/web exec tsc --noEmit`.
+- [x] External-only registries count as registry content for public and host preview navigation. Verified 5 October 2026 with `pnpm --filter @wtw/web exec tsc --noEmit`.
+- [ ] Save lifecycle across optional content forms still needs input-preserving field errors and navigation protection.
+- [x] Event detail, schedule and RSVP deadline wall times save and reopen in the event timezone. Verified 5 October 2026 with `pnpm --filter @wtw/web exec tsc --noEmit`.
+- [ ] Shared-link RSVP atomicity and retry deduplication still need implementation and tests.
+- [ ] Private media protection still needs implementation and environment validation.
+
 ## Verification status
 
 - [x] `pnpm --filter @wtw/shared build`

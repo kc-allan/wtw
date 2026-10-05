@@ -39,8 +39,25 @@ export default async function GuestListPage({
     api<string[]>(`/events/${id}/guests/groups`).catch(() => [] as string[]),
   ]);
 
-  if (!event || !guests) {
+  if (!event) {
     notFound();
+  }
+
+  if (!guests) {
+    return (
+      <main className="w-full px-6 py-8 lg:px-10">
+        <BackToEvent eventId={id} />
+        <div className="mt-8 rounded-2xl bg-white px-6 py-16 text-center">
+          <h1 className="font-serif text-2xl font-semibold text-black">We could not load the guest list</h1>
+          <p className="mx-auto mt-3 max-w-[520px] text-base text-ink/70">
+            Please try again. Your event is still saved.
+          </p>
+          <Link href={`/events/${id}/guests`} className="mt-6 inline-flex rounded-full bg-forest px-6 py-3 text-base font-medium text-bright">
+            Try again
+          </Link>
+        </div>
+      </main>
+    );
   }
 
   // Only the filters, not the pagination, belong on an export of everything.

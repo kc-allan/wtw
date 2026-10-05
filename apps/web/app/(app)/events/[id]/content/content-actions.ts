@@ -7,6 +7,7 @@ import { api, ApiError } from "@/lib/api";
 import { API_URL } from "@/lib/env";
 import { optionalNumber, optionalText } from "@/lib/form-state";
 import { readAccessToken } from "@/lib/session";
+import { dateTimeLocalToUtcIso } from "@/lib/zoned-datetime";
 
 function values(formData: FormData, name: string): string[] {
   return formData
@@ -57,9 +58,10 @@ export async function saveTimeline(eventId: string, formData: FormData): Promise
   const titles = values(formData, "timelineTitle");
   const descriptions = values(formData, "timelineDescription");
   const locations = values(formData, "timelineLocation");
+  const timeZone = optionalText(formData.get("timezone")) ?? "Africa/Nairobi";
   const entries = presentRows(
     startsAt.map((start, index) => ({
-      startsAt: start,
+      startsAt: start ? dateTimeLocalToUtcIso(start, timeZone) ?? start : "",
       title: titles[index] ?? "",
       ...(descriptions[index] ? { description: descriptions[index] } : {}),
       ...(locations[index] ? { location: locations[index] } : {}),
@@ -129,7 +131,12 @@ export async function saveRsvpSettings(eventId: string, formData: FormData): Pro
     eventId,
     EventModuleKey.RSVP,
     {
-      deadline: nullable(formData.get("deadline")),
+      deadline: optionalText(formData.get("deadline"))
+        ? dateTimeLocalToUtcIso(
+            optionalText(formData.get("deadline")) as string,
+            optionalText(formData.get("timezone")) ?? "Africa/Nairobi",
+          )
+        : undefined,
       allowPlusOnes: formData.get("allowPlusOnes") !== null,
       maxPartySize: optionalNumber(formData.get("maxPartySize")) ?? 1,
       allowMaybe: formData.get("allowMaybe") !== null,

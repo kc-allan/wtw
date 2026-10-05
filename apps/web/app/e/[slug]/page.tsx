@@ -47,10 +47,16 @@ export default async function PublicEventPage({ params, searchParams }: PageProp
   try {
     data = await load(slug, token, code);
   } catch (error) {
-    if (error instanceof ApiError && error.status === 403) {
-      return <PrivateNotice />;
+    if (error instanceof ApiError) {
+      if (error.status === 403) {
+        return <PrivateNotice />;
+      }
+      if (error.status === 404) {
+        notFound();
+      }
+      return <UnavailableNotice />;
     }
-    notFound();
+    return <UnavailableNotice />;
   }
 
   const { event, ceremonies, modules, guest } = data;
@@ -91,14 +97,28 @@ export default async function PublicEventPage({ params, searchParams }: PageProp
 
 function PrivateNotice() {
   return (
+    <Notice
+      title="This one is private"
+      body="Open the personal invitation link the hosts sent you."
+    />
+  );
+}
+
+function UnavailableNotice() {
+  return (
+    <Notice
+      title="We could not load this invitation"
+      body="Please try again. If the link was just shared, wait a moment and reopen it."
+    />
+  );
+}
+
+function Notice({ title, body }: { title: string; body: string }) {
+  return (
     <main className="grid min-h-dvh place-items-center bg-canvas px-6">
       <div className="max-w-[420px] text-center">
-        <h1 className="font-serif text-section font-semibold text-black">
-          This one&rsquo;s private
-        </h1>
-        <p className="mt-3 text-base text-ink/70">
-          Open the link the hosts sent you, and it will let you straight in.
-        </p>
+        <h1 className="font-serif text-section font-semibold text-black">{title}</h1>
+        <p className="mt-3 text-base text-ink/70">{body}</p>
       </div>
     </main>
   );

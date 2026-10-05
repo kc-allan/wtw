@@ -9,6 +9,7 @@ import { Button, Field, Input, Textarea } from "@/app/_components/ui";
 import { saveEventDetails, toggleModule } from "@/lib/event-actions";
 import { eventSurfaceLabel } from "@/lib/event-public-sections";
 import { formatEventDate } from "@/lib/event-display";
+import { toDateInput, toTimeInput } from "@/lib/zoned-datetime";
 import type { FormState } from "@/lib/form-state";
 import type { EventDetail, Theme } from "@/lib/types";
 
@@ -106,8 +107,8 @@ export function CustomizeEditor({ event, themes }: { event: EventDetail; themes:
   );
 
   const names = nameLines([partner1, partner2].filter(Boolean), event.title);
-  const dateValue = event.startsAt?.slice(0, 10) ?? "";
-  const timeValue = event.startsAt?.slice(11, 16) ?? "";
+  const dateValue = toDateInput(event.startsAt, event.timezone);
+  const timeValue = toTimeInput(event.startsAt, event.timezone);
   const dateLabel = formatEventDate(event.startsAt, event.timezone, {
     day: "2-digit",
     month: "2-digit",

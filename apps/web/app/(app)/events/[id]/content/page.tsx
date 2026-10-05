@@ -5,6 +5,7 @@ import { BackToEvent } from "../_hub/back-to-event";
 import { Button, Field, Input, Select, Textarea } from "@/app/_components/ui";
 import { api } from "@/lib/api";
 import { formatMoney } from "@/lib/money";
+import { toDateTimeLocalInput } from "@/lib/zoned-datetime";
 import type { EventDetail, EventModuleView } from "@/lib/types";
 import {
   addRegistryItem,
@@ -198,10 +199,11 @@ function ScheduleSection({ event }: { event: EventDetail }) {
   return (
     <Panel id="schedule" title="Schedule" lead="Build the shared programme guests can read before they RSVP.">
       <form action={saveTimeline.bind(null, event.id)} className="flex flex-col gap-5">
+        <input type="hidden" name="timezone" value={event.timezone} />
         {rows.map((row, index) => (
           <div key={index} className="grid gap-4 rounded-xl bg-ivory p-4 md:grid-cols-[220px_1fr]">
             <Field label="Starts at" htmlFor={`timeline-start-${index}`}>
-              <Input id={`timeline-start-${index}`} name="timelineStartsAt" type="datetime-local" defaultValue={row.startsAt?.slice(0, 16) ?? ""} />
+              <Input id={`timeline-start-${index}`} name="timelineStartsAt" type="datetime-local" defaultValue={toDateTimeLocalInput(row.startsAt, event.timezone)} />
             </Field>
             <Field label="Title" htmlFor={`timeline-title-${index}`}>
               <Input id={`timeline-title-${index}`} name="timelineTitle" defaultValue={row.title} />
@@ -311,8 +313,9 @@ function RsvpSection({ event }: { event: EventDetail }) {
   return (
     <Panel id="rsvp-settings" title="RSVP settings" lead="Choose what guests can answer and which extra details are relevant.">
       <form action={saveRsvpSettings.bind(null, event.id)} className="grid gap-4 rounded-xl bg-ivory p-4 md:grid-cols-2">
+        <input type="hidden" name="timezone" value={event.timezone} />
         <Field label="Deadline" htmlFor="deadline">
-          <Input id="deadline" name="deadline" type="datetime-local" defaultValue={textConfig(module, "deadline").slice(0, 16)} />
+          <Input id="deadline" name="deadline" type="datetime-local" defaultValue={toDateTimeLocalInput(textConfig(module, "deadline"), event.timezone)} />
         </Field>
         <Field label="Largest party size" htmlFor="maxPartySize">
           <Input id="maxPartySize" name="maxPartySize" type="number" min={1} max={20} defaultValue={numberConfig(module, "maxPartySize", 1)} />

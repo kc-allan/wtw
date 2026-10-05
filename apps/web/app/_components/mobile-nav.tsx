@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useId, useState } from "react";
 import { navLinks } from "@/app/_data/landing";
 
-export function MobileNav() {
+export function MobileNav({ signedIn = false }: { signedIn?: boolean }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const panelId = useId();
@@ -78,18 +78,18 @@ export function MobileNav() {
         </nav>
         <div className="mt-4 flex flex-col gap-3">
           <Link
-            href="/sign-in"
+            href={signedIn ? "/events" : "/sign-in"}
             onClick={() => setOpen(false)}
             className="flex items-center justify-center rounded-[10px] border border-forest px-3 py-2 text-base font-medium text-forest"
           >
-            Sign in
+            {signedIn ? "My events" : "Sign in"}
           </Link>
           <Link
             href="/create"
             onClick={() => setOpen(false)}
             className="flex items-center justify-center rounded-[10px] bg-forest px-3 py-2 text-base font-medium text-bright"
           >
-            Create Yours
+            Create invitation
           </Link>
         </div>
       </div>

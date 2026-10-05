@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { signOut } from "@/lib/auth-actions";
 import type { CurrentUser } from "@/lib/types";
@@ -17,6 +17,21 @@ function initials(name: string): string {
 
 export function AccountMenu({ user }: { user: CurrentUser | null }) {
   const [open, setOpen] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+        buttonRef.current?.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open]);
 
   if (!user) {
     return null;
@@ -25,6 +40,7 @@ export function AccountMenu({ user }: { user: CurrentUser | null }) {
   return (
     <div className="relative">
       <button
+        ref={buttonRef}
         type="button"
         aria-expanded={open}
         aria-haspopup="menu"
@@ -58,7 +74,7 @@ export function AccountMenu({ user }: { user: CurrentUser | null }) {
               onClick={() => setOpen(false)}
               className="block rounded-lg px-3 py-2 text-base text-ink hover:bg-canvas"
             >
-              Plan &amp; billing
+              Account and beta plan
             </Link>
 
             <form action={signOut}>

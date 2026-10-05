@@ -46,7 +46,9 @@ export function EventPageView({
 
   const hasGifting =
     registry !== null &&
-    (registry.items.length > 0 || registry.cashGiftMethods.length > 0);
+    (registry.items.length > 0 ||
+      registry.cashGiftMethods.length > 0 ||
+      registry.externalRegistries.length > 0);
 
   const sections = publicPageSections({
     event,

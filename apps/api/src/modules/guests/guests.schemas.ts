@@ -16,7 +16,13 @@ export const guestSchema = z.object({
   ceremonyKeys: z.array(z.nativeEnum(CeremonyKey)).max(20).optional(),
 });
 
-export const updateGuestSchema = guestSchema.partial();
+export const updateGuestSchema = guestSchema.partial().extend({
+  lastName: z.string().max(80).trim().nullable().optional(),
+  email: z.string().email().toLowerCase().trim().nullable().optional(),
+  phone: z.string().min(7).max(20).trim().nullable().optional(),
+  groupLabel: z.string().max(120).trim().nullable().optional(),
+  notes: z.string().max(2000).nullable().optional(),
+});
 
 export const bulkGuestsSchema = z.object({
   guests: z.array(guestSchema).min(1).max(500),

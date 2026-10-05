@@ -90,12 +90,12 @@ export async function updateGuest(
       method: "PATCH",
       body: {
         firstName,
-        lastName: text(formData.get("lastName")),
-        email: text(formData.get("email")),
-        phone: text(formData.get("phone")),
-        groupLabel: text(formData.get("groupLabel")),
+        lastName: nullableText(formData.get("lastName")),
+        email: nullableText(formData.get("email")),
+        phone: nullableText(formData.get("phone")),
+        groupLabel: nullableText(formData.get("groupLabel")),
         maxPartySize: Number(formData.get("maxPartySize")) || 1,
-        notes: text(formData.get("notes")),
+        notes: nullableText(formData.get("notes")),
       },
     });
   } catch (error) {
@@ -145,4 +145,9 @@ export async function createGuestInvitationLink(
 function text(value: FormDataEntryValue | null): string | undefined {
   const cleaned = typeof value === "string" ? value.trim() : "";
   return cleaned || undefined;
+}
+
+function nullableText(value: FormDataEntryValue | null): string | null {
+  const cleaned = typeof value === "string" ? value.trim() : "";
+  return cleaned || null;
 }

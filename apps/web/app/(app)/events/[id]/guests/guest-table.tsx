@@ -34,11 +34,22 @@ export function GuestTable({
   filters: { status?: string; group?: string };
 }) {
   if (guests.data.length === 0) {
+    const filtered = Boolean(filters.status || filters.group);
     return (
       <div className="mt-4 rounded-xl bg-white px-6 py-16 text-center">
         <p className="text-base text-ink/70">
-          No guests here yet. Add them and every RSVP lands on this page.
+          {filtered
+            ? "No guests match these filters. Clear the filters to see everyone."
+            : "Add your first guest to send a personal invitation."}
         </p>
+        {filtered ? (
+          <Link
+            href={`/events/${eventId}/guests`}
+            className="mt-4 inline-flex rounded-full border border-forest px-5 py-2.5 text-base text-forest"
+          >
+            Clear filters
+          </Link>
+        ) : null}
       </div>
     );
   }

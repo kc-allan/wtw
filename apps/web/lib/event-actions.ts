@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { EventModuleKey, EventTypeKey, EventVisibility } from "@wtw/shared";
 import { api, ApiError } from "./api";
 import { optionalNumber, optionalText, toFormState, type FormState } from "./form-state";
+import { wallTimeToUtcIso } from "./zoned-datetime";
 import type { EventDetail } from "./types";
 
 function nullableText(value: FormDataEntryValue | null): string | null {
@@ -17,7 +18,8 @@ function nullableDateTime(formData: FormData): string | null {
   const date = optionalText(formData.get("startsAtDate"));
   if (!date) return null;
   const time = optionalText(formData.get("startsAtTime")) ?? "12:00";
-  return `${date}T${time}:00`;
+  const timezone = optionalText(formData.get("timezone")) ?? "Africa/Nairobi";
+  return wallTimeToUtcIso(date, time, timezone);
 }
 
 export async function createEvent(_state: FormState, formData: FormData): Promise<FormState> {

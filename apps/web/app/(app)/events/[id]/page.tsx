@@ -52,47 +52,33 @@ function nextTaskForEvent({
     };
   }
 
-  if (!event.startsAt) {
-    return {
-      label: "Set the date, or mark it as to be announced.",
-      href: `/events/${event.id}/customize`,
-      action: "Set date",
-    };
-  }
-
-  if (!hasText(event.venueName) && !hasText(event.city) && !hasText(event.venueAddress)) {
-    return {
-      label: "Add the place guests should plan around.",
-      href: `/events/${event.id}/customize`,
-      action: "Add location",
-    };
-  }
-
-  if (guestCount === 0) {
-    return {
-      label: "Add guests or open address collection before you publish.",
-      href: `/events/${event.id}?section=guests`,
-      action: "Add guests",
-    };
-  }
-
   if (!isLive) {
     return {
-      label: "Preview the saved invitation, then publish when it reads right.",
+      label: event.startsAt
+        ? "Preview the saved invitation, then publish when it reads right."
+        : "Preview the saved invitation. You can publish now and add the date when it is confirmed.",
       href: `/events/${event.id}/publish`,
       action: "Preview and publish",
     };
   }
 
+  if (guestCount > 0) {
+    return {
+      label: "Review replies and share again with anyone who still needs the link.",
+      href: `/events/${event.id}/guests`,
+      action: "Review guests",
+    };
+  }
+
   return {
-    label: "Share the live link with guests.",
+    label: "Share the live link. A guest list is optional unless you want personal links.",
     href: `/events/${event.id}/share`,
     action: "Share invitation",
   };
 }
 
 function sectionForTask(task: NextTask): string {
-  if (task.href.includes("section=guests")) return "guests";
+  if (task.href.includes("/guests") || task.href.includes("section=guests")) return "guests";
   if (task.href.includes("share")) return "invitations";
   return "invitation";
 }
@@ -119,7 +105,9 @@ export default async function EventHubPage({ params, searchParams }: PageProps<"
   const surfaceLabel = eventSurfaceLabel(event);
   const hasRegistry = Boolean(
     preview?.registry &&
-      (preview.registry.items.length > 0 || preview.registry.cashGiftMethods.length > 0),
+      (preview.registry.items.length > 0 ||
+        preview.registry.cashGiftMethods.length > 0 ||
+        preview.registry.externalRegistries.length > 0),
   );
 
   const websitePages: WebsitePage[] = publicPageSections({
