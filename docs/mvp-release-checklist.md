@@ -37,6 +37,36 @@ Prepared 4 October 2026. Source decisions are recorded in `docs/open-decisions.m
 - [x] Invitation reissue resets revoked, expired, opened and responded lifecycle fields.
 - [x] Attendance cards distinguish replies from people attending.
 
+## Stage 2 checks
+
+- [x] Host hub opens with event context, saved state and a recommended next step.
+- [x] Invitation and Wedding website vocabulary follows the saved event presentation.
+- [x] Customize uses celebration-specific labels and explicit save states.
+- [x] Preview and publish actions use saved values.
+- [x] Host preview can render a selected guest without issuing or opening an invitation.
+- [x] Public and host preview navigation share the same section visibility rules.
+
+## Stage 3 checks
+
+- [x] Host content area added for story, schedule, FAQ, dress code, accommodation, RSVP settings, registry settings, registry items and gallery uploads.
+- [x] Public registry displays external registries and purchase links.
+- [x] Gallery uploads are host-only and publish through the enabled gallery section.
+- [ ] Baby shower games still need a guest-facing web section and host setup UI.
+- [ ] Invitation image and PDF downloads still need generated artifacts.
+- [ ] Gallery captions, alternative text and manual arrangement need storage support before they can be completed.
+
+## Stage 4 checks
+
+- [x] Published events expose visibility controls for public, unlisted and private access.
+- [x] Hosts can unpublish an event without deleting it.
+- [x] Private events direct hosts to personal guest links instead of general-link sharing.
+- [x] Manual sharing copy says WhatsApp, SMS and email open for the host to review and send.
+- [x] Footer and app navigation no longer point to unavailable beta routes.
+- [x] Privacy and terms pages added with beta retention, registry and support language.
+- [x] Contact enquiries preserve the full submitted message in the API log.
+- [ ] Contact requests still need a configured monitored delivery destination or database-backed inbox before production launch.
+- [ ] Reminder targeting for pending guests is still not implemented.
+
 ## Verification status
 
 - [x] `pnpm --filter @wtw/shared build`

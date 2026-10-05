@@ -155,6 +155,7 @@ export function EventPageView({
           heading="Gifting"
           note={registry.cashGiftNote ?? undefined}
           methods={registry.cashGiftMethods}
+          externalRegistries={registry.externalRegistries}
           items={registry.items}
           currency={registry.currency}
           palette={palette}

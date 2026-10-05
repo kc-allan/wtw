@@ -11,10 +11,14 @@ export class ContactService {
   private readonly logger = new Logger(ContactService.name);
 
   submit(input: ContactInput): { received: true } {
-    this.logger.log(
-      `Enquiry from ${input.name} <${input.contact}>` +
-        (input.planning ? ` about a ${input.planning}` : ''),
-    );
+    this.logger.log({
+      message: 'Contact enquiry received',
+      name: input.name,
+      contact: input.contact,
+      planning: input.planning ?? null,
+      body: input.message,
+      receivedAt: new Date().toISOString(),
+    });
     return { received: true };
   }
 }

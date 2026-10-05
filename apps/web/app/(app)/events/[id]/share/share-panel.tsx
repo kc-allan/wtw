@@ -6,41 +6,47 @@ import { useState } from "react";
 /**
  * The share sheet. Nothing is sent from the server: the host chooses the
  * channel and their own device opens it, which is how people actually share an
- * invitation here — and it means no provider account is needed to go live.
+ * invitation here. It means no provider account is needed to go live.
  */
 export function SharePanel({
   eventId,
   url,
   title,
   dateLabel,
+  visibility,
 }: {
   eventId: string;
   url: string;
   title: string;
   dateLabel: string;
+  visibility: string;
 }) {
   const [copied, setCopied] = useState(false);
 
   const message = `You're invited to ${title} on ${dateLabel}. Details and RSVP: ${url}`;
+  const isPrivate = visibility === "private";
+  const accessNote = isPrivate
+    ? "This event is private. Use personal invitation links from the guest list so each guest can open it."
+    : "This shared link lets guests type their name and reply once. Use the guest list when you want a private link for a specific guest.";
 
   const channels = [
     {
       key: "whatsapp",
-      label: "Send by Whatsapp",
-      hint: "Send to a contact, group or broadcast list",
+      label: "Share on WhatsApp",
+      hint: "Choose who to send it to in WhatsApp",
       href: `https://wa.me/?text=${encodeURIComponent(message)}`,
       icon: <WhatsappIcon />,
     },
     {
       key: "sms",
-      label: "Send by SMS",
-      hint: "Best for guests who don't use Whatsapp",
+      label: "Share by SMS",
+      hint: "Opens a message you can review before sending",
       href: `sms:?&body=${encodeURIComponent(message)}`,
       icon: <SmsIcon />,
     },
     {
       key: "email",
-      label: "Send by Email",
+      label: "Share by email",
       hint: "Opens a draft you can edit before sending",
       href: `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(message)}`,
       icon: <MailIcon />,
@@ -75,35 +81,36 @@ export function SharePanel({
         {copied ? "Link copied to clipboard" : ""}
       </p>
 
-      <ul className="mt-6 flex flex-col gap-3">
-        {channels.map((channel) => (
-          <li key={channel.key}>
-            <a
-              href={channel.href}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-4 rounded-lg border border-rule px-4 py-3 transition-colors hover:bg-ivory"
-            >
-              {channel.icon}
-              <span>
-                <span className="block text-base font-medium text-ink">{channel.label}</span>
-                <span className="block text-base text-ink/60">{channel.hint}</span>
-              </span>
-            </a>
-          </li>
-        ))}
-      </ul>
+      {isPrivate ? null : (
+        <ul className="mt-6 flex flex-col gap-3">
+          {channels.map((channel) => (
+            <li key={channel.key}>
+              <a
+                href={channel.href}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-4 rounded-lg border border-rule px-4 py-3 transition-colors hover:bg-ivory"
+              >
+                {channel.icon}
+                <span>
+                  <span className="block text-base font-medium text-ink">{channel.label}</span>
+                  <span className="block text-base text-ink/60">{channel.hint}</span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
 
       <p className="mt-6 rounded-lg bg-ivory px-4 py-3 text-sm text-ink/70">
-        This shared link lets guests type their name and reply once. Use the guest list
-        when you want a private link for a specific guest.
+        {accessNote}
       </p>
 
       <Link
         href={`/events/${eventId}/guests`}
         className="mt-8 flex w-full items-center justify-center rounded-full bg-forest px-6 py-3.5 text-base font-medium text-bright"
       >
-        Go to guest list
+        {isPrivate ? "Create personal links" : "Go to guest list"}
       </Link>
     </div>
   );

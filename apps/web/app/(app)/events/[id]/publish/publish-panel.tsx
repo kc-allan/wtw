@@ -19,7 +19,7 @@ export function PublishPanel({
 
   return (
     <div className="mt-8 border-t border-rule/50 pt-6">
-      <p className="text-base text-ink/70">Your guests will open</p>
+      <p className="text-base text-ink/70">Guests will open the saved page here</p>
       <p className="mt-1 text-base break-all text-forest">
         {SITE_ORIGIN}/e/{slug}
       </p>
@@ -49,12 +49,12 @@ export function PublishPanel({
           });
         }}
       >
-        {pending ? "Publishing…" : "Publish event"}
+        {pending ? "Publishing" : "Publish event"}
       </Button>
 
       {blocked ? (
         <p className="mt-3 text-sm text-ink/70">
-          Finish the items above first.
+          Finish the required items above first. You can add the date when it is confirmed.
         </p>
       ) : null}
     </div>

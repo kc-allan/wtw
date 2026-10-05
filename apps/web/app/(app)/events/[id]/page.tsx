@@ -212,6 +212,12 @@ export default async function EventHubPage({ params, searchParams }: PageProps<"
                   Edit {surfaceLabel.toLowerCase()}
                 </Link>
                 <Link
+                  href={`/events/${id}/content`}
+                  className="rounded-full border border-forest px-8 py-3.5 text-base text-forest transition-colors hover:bg-forest/5"
+                >
+                  Edit sections
+                </Link>
+                <Link
                   href={`/events/${id}/preview`}
                   target="_blank"
                   className="rounded-full border border-forest px-8 py-3.5 text-base text-forest transition-colors hover:bg-forest/5"

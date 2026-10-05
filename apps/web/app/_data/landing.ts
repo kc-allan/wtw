@@ -236,9 +236,9 @@ export const celebrations: Record<
     detail: {
       title: "Baby showers",
       summary:
-        "Simple and elegant , plus digital games guests can play straight from the page",
+        "Simple and elegant, plus digital games guests can play straight from the page",
       features: [
-        "Wishlist/ registry",
+        "Gift registry",
         "Shower games",
         "RSVP",
         "Venue and maps",
@@ -254,7 +254,7 @@ export const celebrations: Record<
       title: "Other celebrations",
       summary:
         "Graduations, anniversaries, bridal showers and corporate events.",
-      features: ["Digital inivation", "RSVP", "Event details", "Themed designs"],
+      features: ["Digital invitation", "RSVP", "Event details", "Themed designs"],
     },
   },
   birthday: {
@@ -271,8 +271,8 @@ export const celebrations: Record<
       features: [
         "Digital invitation",
         "RSVP",
-        "Wishlist/ registry",
         "Venue and maps",
+        "Themed designs",
       ],
     },
   },
@@ -308,7 +308,7 @@ export const steps: Step[] = [
   {
     number: "03",
     title: "Share the link (1 minute)",
-    body: "Genuinely one tap. The number being this small is the point — it's the contrast with printing and hand-delivering cards.",
+    body: "One tap opens the host's sharing app. The contrast with printing and hand-delivering cards is the point.",
     illustration: "/illustrations/share-the-link.svg",
     width: 384,
     height: 307,
@@ -377,17 +377,17 @@ export const faqs: Faq[] = [
   {
     question: "Do my guests need to download an app?",
     answer:
-      "No. Everything opens in a browser from a link. Whatsapp, SMS or email .guests tap, read, and RSVP in under a minute.",
+      "No. Everything opens in a browser from a link. Guests tap, read and reply without installing anything.",
   },
   {
-    question: "Can I pay with M-Pesa?",
+    question: "Is the beta free?",
     answer:
-      "Yes. M-Pesa sits alongside card payment at checkout, so you can pay the way you already do.",
+      "Yes. The beta is free while the invitation, RSVP and wedding website journeys are completed.",
   },
   {
-    question: "Is there a free options?",
+    question: "Which celebrations have a registry?",
     answer:
-      "Yes. You can build an event, pick a design and share it for free. Paid plans add the extras like the gift registry and unlimited guests.",
+      "Registries are available for weddings and baby showers during beta.",
   },
   {
     question: "What if I need to change details after sending?",
@@ -397,7 +397,7 @@ export const faqs: Faq[] = [
   {
     question: "I'm planning from abroad. Does that work?",
     answer:
-      "It does. Everything runs in the browser wherever you are, and guests see times in their own timezone.",
+      "It does. Everything runs in the browser wherever you are. Event times are shown with the event timezone.",
   },
 ];
 
@@ -413,30 +413,30 @@ export const footerColumns: FooterColumn[] = [
       { label: "How it works", href: "/how-it-works" },
       { label: "Invitations", href: "/invitations" },
       { label: "Plans", href: "/plans" },
-      { label: "Guest experience", href: "/guest-experience" },
+      { label: "Start beta", href: "/sign-up" },
     ],
   },
   {
     heading: "Celebration",
     links: [
-      { label: "Weddings", href: "/celebrations/weddings" },
-      { label: "Birthdays", href: "/celebrations/birthdays" },
-      { label: "Baby showers", href: "/celebrations/baby-showers" },
-      { label: "Graduations", href: "/celebrations/graduations" },
+      { label: "Wedding designs", href: "/invitations?type=wedding" },
+      { label: "Birthday designs", href: "/invitations?type=birthday" },
+      { label: "Baby shower designs", href: "/invitations?type=baby_shower" },
+      { label: "Graduation designs", href: "/invitations?type=graduation" },
     ],
   },
   {
     heading: "Company",
     links: [
       { label: "Our story", href: "/our-story" },
-      { label: "Contacts", href: "/contacts" },
-      { label: "For professionals", href: "/professionals" },
-      { label: "Careers", href: "/careers" },
+      { label: "Contact", href: "/our-story#contact" },
+      { label: "Privacy", href: "/privacy" },
+      { label: "Terms", href: "/terms" },
     ],
   },
 ];
 
 export const legalLinks: NavLink[] = [
-  { label: "Privacy.", href: "/privacy" },
-  { label: "Terms.", href: "/terms" },
+  { label: "Privacy", href: "/privacy" },
+  { label: "Terms", href: "/terms" },
 ];

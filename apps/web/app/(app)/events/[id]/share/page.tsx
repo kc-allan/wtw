@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { EventStatus } from "@wtw/shared";
+import { EventStatus, type EventVisibility } from "@wtw/shared";
 import { api } from "@/lib/api";
 import { BackToEvent } from "../_hub/back-to-event";
 import { formatEventDate } from "@/lib/event-display";
@@ -9,8 +9,9 @@ import { SITE_ORIGIN } from "@/lib/site";
 import type { EventDetail } from "@/lib/types";
 import { InvitationCard, nameLines } from "@/app/_components/invitation-card";
 import { SharePanel } from "./share-panel";
+import { ShareControls } from "./share-controls";
 
-export const metadata: Metadata = { title: "Share — Worth the Wait" };
+export const metadata: Metadata = { title: "Share | Worth the Wait" };
 
 export default async function ShareStepPage({ params }: PageProps<"/events/[id]/share">) {
   const { id } = await params;
@@ -34,16 +35,20 @@ export default async function ShareStepPage({ params }: PageProps<"/events/[id]/
 
       <h1 className="mt-8 font-serif text-section font-semibold text-black">You&rsquo;re live</h1>
       <p className="mt-1 text-base tracking-[0.02em] text-ink/70">
-        {event.title} is published. Now let people know
+        {event.title} is published. Choose who can open it, then share the link through your own apps.
       </p>
 
       <div className="mt-8 grid gap-6 xl:grid-cols-[minmax(0,588px)_minmax(0,1fr)]">
-        <SharePanel
-          eventId={event.id}
-          url={url}
-          title={event.title}
-          dateLabel={formatEventDate(event.startsAt, event.timezone)}
-        />
+        <div className="flex flex-col gap-6">
+          <SharePanel
+            eventId={event.id}
+            url={url}
+            title={event.title}
+            dateLabel={formatEventDate(event.startsAt, event.timezone)}
+            visibility={event.visibility}
+          />
+          <ShareControls eventId={event.id} visibility={event.visibility as EventVisibility} />
+        </div>
 
         <div className="min-w-0">
           <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-white px-6 py-4">

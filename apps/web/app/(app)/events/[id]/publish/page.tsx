@@ -8,7 +8,7 @@ import type { EventDetail } from "@/lib/types";
 import { InvitationCard, nameLines } from "@/app/_components/invitation-card";
 import { PublishPanel } from "./publish-panel";
 
-export const metadata: Metadata = { title: "Publish — Worth the Wait" };
+export const metadata: Metadata = { title: "Publish | Worth the Wait" };
 
 export default async function PublishStepPage({ params }: PageProps<"/events/[id]/publish">) {
   const { id } = await params;
@@ -48,7 +48,7 @@ export default async function PublishStepPage({ params }: PageProps<"/events/[id
         Ready when you are
       </h1>
       <p className="mt-1 text-base tracking-[0.02em] text-ink/70">
-        Publishing gives {event.title} its own link. You can keep editing afterwards.
+        Publishing makes the saved invitation available at its link. You can keep editing afterwards.
       </p>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
@@ -83,6 +83,7 @@ export default async function PublishStepPage({ params }: PageProps<"/events/[id
               value={formatEventDate(event.startsAt, event.timezone)}
             />
             <Detail label="Design" value={event.theme?.name ?? "Not chosen"} />
+            <Detail label="Who can open it" value={event.visibility === "private" ? "Personal invitation links only" : event.visibility === "public" ? "Anyone with the link" : "Anyone with the link, not listed"} />
             <Detail
               label="Sections switched on"
               value={String(event.modules.filter((module) => module.enabled).length)}

@@ -59,7 +59,7 @@ export function SiteFooter() {
                 {link.label}
               </Link>
             ))}
-            <span>M-Pesa &amp; Card accepted</span>
+            <span>Free beta</span>
           </div>
         </div>
       </div>

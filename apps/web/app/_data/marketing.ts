@@ -49,7 +49,7 @@ export const howItWorksSteps: HowItWorksStep[] = [
   {
     title: "Celebrate",
     description:
-      "Turn up knowing exactly who's coming. Your event stays live as a keepsake afterwards.",
+      "Turn up knowing exactly who's coming. Keep the page live, or unpublish it when you are done.",
   },
 ];
 
@@ -62,7 +62,7 @@ export const aboutCards: AboutCard[] = [
   {
     emoji: "🎈",
     title: "It works how you already do",
-    body: "Pay with M-Pesa. Share on WhatsApp. Do the whole thing from your phone. Nothing you'll need to learn",
+    body: "Share on WhatsApp. Do the whole thing from your phone. Nothing you'll need to learn",
   },
   {
     emoji: "🎉",

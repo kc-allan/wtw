@@ -10,7 +10,7 @@ export interface CashGiftMethod {
 
 /**
  * How guests give. A host may offer a list of gifts, the details for sending
- * money, or both — nothing is handled on their behalf either way, so the
+ * money, or both. Nothing is handled on their behalf either way, so the
  * section shows what the couple wrote and gets out of the road.
  */
 export function GiftingSection({
@@ -19,6 +19,7 @@ export function GiftingSection({
   heading,
   note,
   methods,
+  externalRegistries,
   items,
   currency,
   palette,
@@ -28,11 +29,12 @@ export function GiftingSection({
   heading: string;
   note?: string;
   methods: CashGiftMethod[];
+  externalRegistries: { label: string; url: string }[];
   items: RegistryItem[];
   currency: string;
   palette: ThemePalette;
 }) {
-  if (methods.length === 0 && items.length === 0) return null;
+  if (methods.length === 0 && externalRegistries.length === 0 && items.length === 0) return null;
 
   return (
     <section
@@ -83,6 +85,25 @@ export function GiftingSection({
           </ul>
         ) : null}
 
+
+        {externalRegistries.length > 0 ? (
+          <ul className="mt-8 flex flex-wrap justify-center gap-4">
+            {externalRegistries.map((registry) => (
+              <li key={registry.url}>
+                <a
+                  href={registry.url}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="inline-flex rounded-full border px-5 py-2.5 text-base transition-opacity hover:opacity-80"
+                  style={{ borderColor: palette.ink, color: palette.ink }}
+                >
+                  Open {registry.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+
         {items.length > 0 ? (
           <ul className="mt-10 grid gap-5 sm:grid-cols-2">
             {items.map((item) => (
@@ -109,6 +130,18 @@ export function GiftingSection({
                     ? `${remaining(item)} of ${item.quantity} still needed`
                     : "Taken care of"}
                 </p>
+
+                {item.externalUrl ? (
+                  <a
+                    href={item.externalUrl}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="mt-4 inline-flex rounded-full border px-5 py-2 text-base transition-opacity hover:opacity-80"
+                    style={{ borderColor: palette.ink, color: palette.ink }}
+                  >
+                    Open purchase link
+                  </a>
+                ) : null}
 
                 <div className="mt-4">
                   <ClaimGift

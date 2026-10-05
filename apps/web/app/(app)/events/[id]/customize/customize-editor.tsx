@@ -336,9 +336,17 @@ export function CustomizeEditor({ event, themes }: { event: EventDetail; themes:
             </p>
           ) : null}
 
-          <h2 className="mt-8 text-sm tracking-[0.08em] text-muted uppercase">
-            {websiteEnabled ? "Website sections" : "Optional sections"}
-          </h2>
+          <div className="mt-8 flex items-center justify-between gap-3">
+            <h2 className="text-sm tracking-[0.08em] text-muted uppercase">
+              {websiteEnabled ? "Website sections" : "Optional sections"}
+            </h2>
+            <Link
+              href={`/events/${event.id}/content`}
+              className="text-sm text-forest underline underline-offset-2"
+            >
+              Edit content
+            </Link>
+          </div>
           <ul className="mt-4 flex flex-col">
             {SECTION_ORDER.map((key) => {
               const module = event.modules.find((entry) => entry.key === key);
@@ -409,7 +417,7 @@ function SaveButton() {
   const { pending } = useFormStatus();
   return (
     <Button type="submit" disabled={pending} className="self-start">
-      {pending ? "Saving…" : "Save changes"}
+      {pending ? "Saving" : "Save changes"}
     </Button>
   );
 }

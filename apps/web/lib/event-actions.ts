@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { EventModuleKey, EventTypeKey } from "@wtw/shared";
+import { EventModuleKey, EventTypeKey, EventVisibility } from "@wtw/shared";
 import { api, ApiError } from "./api";
 import { optionalNumber, optionalText, toFormState, type FormState } from "./form-state";
 import type { EventDetail } from "./types";
@@ -111,6 +111,36 @@ export async function publishEvent(eventId: string): Promise<void> {
   revalidatePath("/events");
   revalidatePath(`/events/${eventId}`, "layout");
   redirect(`/events/${eventId}/share`);
+}
+
+export async function unpublishEvent(eventId: string): Promise<void> {
+  await api(`/events/${eventId}/unpublish`, { method: "POST" });
+  revalidatePath("/events");
+  revalidatePath(`/events/${eventId}`, "layout");
+  redirect(`/events/${eventId}`);
+}
+
+export async function updateEventVisibility(
+  eventId: string,
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const visibility = formData.get("visibility");
+  if (typeof visibility !== "string" || !Object.values(EventVisibility).includes(visibility as EventVisibility)) {
+    return { message: "Choose who can open the link" };
+  }
+
+  try {
+    await api(`/events/${eventId}`, {
+      method: "PATCH",
+      body: { visibility },
+    });
+  } catch (error) {
+    return toFormState(error, "We could not save that setting");
+  }
+
+  revalidatePath(`/events/${eventId}`, "layout");
+  return { message: "Saved" };
 }
 
 /** Opens or closes the link that lets guests add themselves to the list. */
