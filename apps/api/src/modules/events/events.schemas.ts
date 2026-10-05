@@ -43,6 +43,15 @@ export const updateEventSchema = createEventSchema
   .omit({ typeKey: true, ceremonies: true })
   .partial()
   .extend({
+    tagline: z.string().max(300).trim().nullable().optional(),
+    description: z.string().max(5000).nullable().optional(),
+    startsAt: z.coerce.date().nullable().optional(),
+    endsAt: z.coerce.date().nullable().optional(),
+    city: z.string().max(120).nullable().optional(),
+    venueName: z.string().max(200).nullable().optional(),
+    venueAddress: z.string().max(500).nullable().optional(),
+    latitude: z.number().min(-90).max(90).nullable().optional(),
+    longitude: z.number().min(-180).max(180).nullable().optional(),
     accessCode: z.string().min(4).max(40).nullable().optional(),
     /** A MediaAsset on this event; null clears the cover. */
     coverImageId: z.string().min(1).max(60).nullable().optional(),

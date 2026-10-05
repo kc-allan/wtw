@@ -2,6 +2,7 @@ import Link from "next/link";
 import { RsvpStatus } from "@wtw/shared";
 import type { Ceremony, Guest, Paginated } from "@/lib/types";
 import { GuestCeremonies } from "./guest-ceremonies";
+import { GuestRowActions } from "./guest-row-actions";
 
 const RSVP_LABELS: Record<RsvpStatus, { label: string; className: string }> = {
   [RsvpStatus.ATTENDING]: { label: "Attending", className: "bg-mint text-success" },
@@ -75,6 +76,9 @@ export function GuestTable({
               <th scope="col" className="px-6 py-4 text-start font-normal">
                 Invited via
               </th>
+              <th scope="col" className="px-6 py-4 text-start font-normal">
+                Actions
+              </th>
             </tr>
           </thead>
 
@@ -136,6 +140,10 @@ export function GuestTable({
 
                   <td className="px-6 py-4 text-base text-ink capitalize">
                     {guest.invitation?.channel ?? "—"}
+                  </td>
+
+                  <td className="px-6 py-4">
+                    <GuestRowActions eventId={eventId} guest={guest} />
                   </td>
                 </tr>
               );

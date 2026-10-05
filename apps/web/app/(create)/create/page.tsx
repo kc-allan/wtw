@@ -7,16 +7,25 @@ import { EventBasicsForm } from "./event-basics-form";
 import { createSteps } from "@/lib/create-flow";
 import { readDraft } from "@/lib/create-draft";
 import { readAccessToken } from "@/lib/session";
+import { api } from "@/lib/api";
+import type { Theme } from "@/lib/types";
 
 export const metadata: Metadata = { title: "What are we celebrating? — Worth the Wait" };
 
 export default async function EventTypePage({ searchParams }: PageProps<"/create">) {
-  const { template } = await searchParams;
-  const [draft, accessToken] = await Promise.all([readDraft(), readAccessToken()]);
+  const { template, error } = await searchParams;
+  const [draft, accessToken, selectedTheme] = await Promise.all([
+    readDraft(),
+    readAccessToken(),
+    typeof template === "string"
+      ? api<Theme>(`/themes/${template}`, { auth: false, revalidate: 3600 }).catch(() => null)
+      : null,
+  ]);
 
-  // Before a type is chosen the strip cannot know which questions follow, so
-  // it shows the wedding path — the longest, and the one most people take.
-  const steps = createSteps(draft?.typeKey ?? EventTypeKey.WEDDING, accessToken !== undefined);
+  const steps = createSteps(
+    draft?.typeKey ?? selectedTheme?.eventTypeKey ?? EventTypeKey.WEDDING,
+    accessToken !== undefined,
+  );
 
   return (
     <main>
@@ -27,12 +36,14 @@ export default async function EventTypePage({ searchParams }: PageProps<"/create
           What are we celebrating?
         </h1>
         <p className="mt-2 max-w-[640px] text-base text-ink/70">
-          This decides which tools switch on, you can change it later.
+          This sets up the right invitation tools for your celebration.
         </p>
 
         <EventBasicsForm
           draft={draft}
-          themeKey={typeof template === "string" ? template : undefined}
+          themeKey={selectedTheme?.key}
+          initialType={selectedTheme?.eventTypeKey}
+          creationError={typeof error === "string"}
         />
       </StepColumns>
     </main>

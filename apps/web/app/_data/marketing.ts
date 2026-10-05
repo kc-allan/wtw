@@ -24,7 +24,7 @@ export const howItWorksSteps: HowItWorksStep[] = [
   {
     title: "Customize it",
     description:
-      "Names, dates, venue, colors, your story, your photos. Everything updates live as you type.",
+      "Names, dates, venue, colors and optional details. Save, preview and adjust before sharing.",
   },
   {
     title: "Publish",
@@ -34,7 +34,7 @@ export const howItWorksSteps: HowItWorksStep[] = [
   {
     title: "Share invitation",
     description:
-      "One tap to WhatsApp, SMS or email. Send to everyone at once, or personalize per guest",
+      "Open WhatsApp, SMS or email with your event link, or create a private link for one guest.",
   },
   {
     title: "Collect RSVPs",
@@ -44,7 +44,7 @@ export const howItWorksSteps: HowItWorksStep[] = [
   {
     title: "Manage your guests",
     description:
-      "Live counts, categories, reminders for anyone who hasn't replied, and an export whenever you need one.",
+      "Live replies, people attending, guest corrections and an export whenever you need one.",
   },
   {
     title: "Celebrate",
@@ -91,70 +91,51 @@ export type PricingPlan = {
 
 export const pricingPlans: PricingPlan[] = [
   {
-    id: "free",
-    eyebrow: "Free",
+    id: "beta",
+    eyebrow: "Free beta",
     price: "KES 0",
-    summary: "Try it properly before you pay.",
+    summary: "Create and share celebrations while the beta is open.",
     included: [
-      "1 event",
-      "3 starter templates",
+      "Create wedding, birthday, baby shower and other invitations",
       "Digital invitation",
-      "RSVP collection (up to 30 guests)",
-    ],
-    excluded: ["Premium templates", "Custom link", "Gift registry"],
-    cta: { label: "Start free", href: "/sign-up" },
-  },
-  {
-    id: "celebration",
-    eyebrow: "Celebration",
-    price: "KES 4,000",
-    period: "/Event",
-    summary: "Everything most weddings and parties need",
-    included: [
-      "All templates, all styles",
-      "Full event website",
-      "Unlimited guests & RSVP",
-      "Custom link & countdown",
-      "Gift registry/ wishlist",
-      "WhatsApp, SMS & email sharing",
+      "RSVP collection",
+      "Registry for weddings and baby showers",
+      "Manual WhatsApp, SMS and email sharing",
       "Guest list export",
     ],
-    cta: { label: "Choose celebration", href: "/sign-up?plan=celebration" },
+    excluded: ["Checkout", "paid plans", "professional workspaces"],
+    cta: { label: "Start beta", href: "/sign-up" },
     featured: true,
   },
   {
-    id: "professional",
-    eyebrow: "Professional",
-    price: "KES 7,500",
-    period: "/Month",
-    summary: "For planners, venues and decor companies",
+    id: "later",
+    eyebrow: "Coming later",
+    price: "Paid plans",
+    summary: "For hosts and professionals who need more after beta.",
     included: [
-      "Unlimited events",
-      "Create events for clients",
-      "Multi-event dashboard",
-      "Team access",
-      "Your branding on invites",
-      "Advanced guest analytics",
-      "Priority support",
+      "Professional accounts",
+      "Provider delivery integrations",
+      "More publishing and design options",
+      "Commercial support",
     ],
-    cta: { label: "Talk to us", href: "/our-story#contact" },
+    cta: { label: "Join the beta", href: "/sign-up" },
   },
 ];
 
 export const pricingFaqs = [
   {
-    question: "Is the payment really one off?",
+    question: "Is the beta free?",
     answer:
-      "For hosts, yes; you pay per celebration, not monthly. The monthly plan exists for professionals running many events a year.",
+      "Yes. The beta is free while the core invitation, RSVP and website journeys are being completed.",
   },
   {
-    question: "What happens to my site after event?",
+    question: "Can I publish without a date?",
     answer:
-      "It stays live as a keepsake. Your guest list, RSVPs and photos remain in your account, and you can unpublish the page at any time.",
+      "Yes. Guests will see Date to be announced until you add one.",
   },
   {
-    question: "Can I upgrade after publishing for free?",
+    question: "Which celebrations get a registry?",
     answer:
-      "Yes. Upgrading unlocks the premium templates, the registry and the custom link on the event you have already built — nothing needs rebuilding.",
+      "Registries are available for weddings and baby showers in the beta.",
   },
 ];

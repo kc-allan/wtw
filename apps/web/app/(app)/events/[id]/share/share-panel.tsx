@@ -20,7 +20,6 @@ export function SharePanel({
   dateLabel: string;
 }) {
   const [copied, setCopied] = useState(false);
-  const [personalize, setPersonalize] = useState("yes");
 
   const message = `You're invited to ${title} on ${dateLabel}. Details and RSVP: ${url}`;
 
@@ -42,7 +41,7 @@ export function SharePanel({
     {
       key: "email",
       label: "Send by Email",
-      hint: "With a preview of the invitation",
+      hint: "Opens a draft you can edit before sending",
       href: `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(message)}`,
       icon: <MailIcon />,
     },
@@ -95,25 +94,10 @@ export function SharePanel({
         ))}
       </ul>
 
-      <div className="mt-6">
-        <label htmlFor="personalize" className="text-base text-ink/80">
-          Personalize per guest
-        </label>
-        <select
-          id="personalize"
-          value={personalize}
-          onChange={(nativeEvent) => setPersonalize(nativeEvent.target.value)}
-          className="mt-2 w-full max-w-full rounded-lg border border-rule bg-white px-4 py-3 text-base text-ink"
-        >
-          <option value="yes">Yes - address each guest by name</option>
-          <option value="no">No - send everyone the same link</option>
-        </select>
-        <p className="mt-2 text-sm text-ink/70">
-          {personalize === "yes"
-            ? "Each guest gets their own link, so their RSVP arrives already named."
-            : "One link for everyone. Guests type their own name when they reply."}
-        </p>
-      </div>
+      <p className="mt-6 rounded-lg bg-ivory px-4 py-3 text-sm text-ink/70">
+        This shared link lets guests type their name and reply once. Use the guest list
+        when you want a private link for a specific guest.
+      </p>
 
       <Link
         href={`/events/${eventId}/guests`}

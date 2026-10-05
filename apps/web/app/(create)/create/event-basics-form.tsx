@@ -35,17 +35,25 @@ const INITIAL: FormState = {};
 export function EventBasicsForm({
   draft,
   themeKey,
+  initialType,
+  creationError,
 }: {
   draft: CreateDraft | null;
   themeKey?: string;
+  initialType?: EventTypeKey;
+  creationError?: boolean;
 }) {
   const [state, action] = useActionState(saveEventBasics, INITIAL);
-  const [selected, setSelected] = useState<EventTypeKey>(draft?.typeKey ?? EventTypeKey.WEDDING);
+  const [selected, setSelected] = useState<EventTypeKey>(
+    draft?.typeKey ?? initialType ?? EventTypeKey.WEDDING,
+  );
   const [isOther, setIsOther] = useState(
     draft ? OTHER_CHOICES.includes(draft.typeKey as (typeof OTHER_CHOICES)[number]) : false,
   );
   const [undecided, setUndecided] = useState(draft !== null && !draft.startsAt);
   const [city, setCity] = useState(startingCity(draft));
+  const initialDate = draft?.startsAt?.slice(0, 10) ?? "";
+  const initialTime = draft?.startsAt?.slice(11, 16) ?? "";
 
   return (
     <form action={action} className="mt-8">
@@ -106,7 +114,17 @@ export function EventBasicsForm({
         <span aria-hidden className="mt-4 block h-px w-full bg-rule/60" />
 
         <div className="mt-5 flex flex-col gap-5">
-          <Field label="Full Name" htmlFor="fullName" error={state.fieldErrors?.fullName}>
+          {creationError ? (
+            <p role="alert" className="rounded-lg bg-blush px-4 py-3 text-sm text-ember">
+              We could not create that celebration. Check the details and try again.
+            </p>
+          ) : null}
+
+          <Field
+            label={selected === EventTypeKey.BIRTHDAY ? "Birthday person's name" : "Name"}
+            htmlFor="fullName"
+            error={state.fieldErrors?.fullName}
+          >
             <Input
               id="fullName"
               name="fullName"
@@ -119,7 +137,7 @@ export function EventBasicsForm({
           </Field>
 
           {PAIRED_TYPES.has(selected) ? (
-            <Field label="Partners Full name" htmlFor="partnerName">
+            <Field label={selected === EventTypeKey.WEDDING ? "Partner's name" : "Second name"} htmlFor="partnerName">
               <Input
                 id="partnerName"
                 name="partnerName"
@@ -132,14 +150,14 @@ export function EventBasicsForm({
 
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
-              <Field label="Date" htmlFor="startsAt" error={state.fieldErrors?.startsAt}>
+              <Field label="Date" htmlFor="startsAtDate" error={state.fieldErrors?.startsAtDate}>
                 <Input
-                  id="startsAt"
-                  name="startsAt"
+                  id="startsAtDate"
+                  name="startsAtDate"
                   type="date"
                   required={!undecided}
                   disabled={undecided}
-                  defaultValue={draft?.startsAt?.slice(0, 10)}
+                  defaultValue={initialDate}
                   className="bg-white disabled:opacity-50"
                 />
               </Field>
@@ -171,6 +189,34 @@ export function EventBasicsForm({
                 placeholder="e.g., 180"
                 className="bg-white"
               />
+            </Field>
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Field label="Time" htmlFor="startsAtTime">
+              <Input
+                id="startsAtTime"
+                name="startsAtTime"
+                type="time"
+                disabled={undecided}
+                defaultValue={initialTime}
+                className="bg-white disabled:opacity-50"
+              />
+            </Field>
+
+            <Field label="Timezone" htmlFor="timezone">
+              <Select
+                id="timezone"
+                name="timezone"
+                defaultValue={draft?.timezone ?? "Africa/Nairobi"}
+                className="bg-white"
+              >
+                <option value="Africa/Nairobi">Africa/Nairobi</option>
+                <option value="Africa/Kampala">Africa/Kampala</option>
+                <option value="Africa/Dar_es_Salaam">Africa/Dar es Salaam</option>
+                <option value="Europe/London">Europe/London</option>
+                <option value="America/New_York">America/New York</option>
+              </Select>
             </Field>
           </div>
 

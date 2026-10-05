@@ -7,6 +7,19 @@ import { api, ApiError } from "./api";
 import { optionalNumber, optionalText, toFormState, type FormState } from "./form-state";
 import type { EventDetail } from "./types";
 
+function nullableText(value: FormDataEntryValue | null): string | null {
+  const text = typeof value === "string" ? value.trim() : "";
+  return text || null;
+}
+
+function nullableDateTime(formData: FormData): string | null {
+  if (formData.get("dateUndecided") !== null) return null;
+  const date = optionalText(formData.get("startsAtDate"));
+  if (!date) return null;
+  const time = optionalText(formData.get("startsAtTime")) ?? "12:00";
+  return `${date}T${time}:00`;
+}
+
 export async function createEvent(_state: FormState, formData: FormData): Promise<FormState> {
   const typeKey = formData.get("typeKey");
   if (typeof typeKey !== "string" || !Object.values(EventTypeKey).includes(typeKey as EventTypeKey)) {
@@ -54,12 +67,12 @@ export async function saveEventDetails(
       body: {
         ...(hostNames.length > 0 ? { hostNames } : {}),
         ...(optionalText(formData.get("title")) ? { title: formData.get("title") } : {}),
-        ...(optionalText(formData.get("startsAt"))
-          ? { startsAt: formData.get("startsAt") }
-          : {}),
-        venueName: optionalText(formData.get("venueName")),
-        city: optionalText(formData.get("city")),
-        description: optionalText(formData.get("description")),
+        startsAt: nullableDateTime(formData),
+        timezone: optionalText(formData.get("timezone")) ?? "Africa/Nairobi",
+        venueName: nullableText(formData.get("venueName")),
+        venueAddress: nullableText(formData.get("venueAddress")),
+        city: nullableText(formData.get("city")),
+        description: nullableText(formData.get("description")),
       },
     });
   } catch (error) {

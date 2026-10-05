@@ -39,18 +39,15 @@ describe('buildCeremonies', () => {
 });
 
 describe('create steps', () => {
-  it('asks weddings, and only weddings, about ceremonies', () => {
+  it('does not force ceremonies during creation', () => {
     const asked = ALL_EVENT_TYPE_KEYS.filter((key) =>
       typeAsksCreateStep(key, CreateStepKey.CEREMONIES),
     );
-    expect(asked).toEqual([EventTypeKey.WEDDING]);
+    expect(asked).toEqual([]);
   });
 
-  it('asks the role question alongside it', () => {
-    expect(createStepsForType(EventTypeKey.WEDDING)).toEqual([
-      CreateStepKey.HOST_ROLE,
-      CreateStepKey.CEREMONIES,
-    ]);
+  it('still asks weddings for the host role', () => {
+    expect(createStepsForType(EventTypeKey.WEDDING)).toEqual([CreateStepKey.HOST_ROLE]);
   });
 
   it('sends every other type straight from the basics to a design', () => {

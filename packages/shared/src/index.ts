@@ -9,3 +9,4 @@ export * from './rsvp';
 export * from './themes';
 export * from './games';
 export * from './vendors';
+export * from './beta-capabilities';

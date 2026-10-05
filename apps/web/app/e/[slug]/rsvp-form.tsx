@@ -30,23 +30,28 @@ export function RsvpForm({
   // The split is offered against the party size, so it has to follow it.
   const [partySize, setPartySize] = useState(guest?.rsvp?.partySize ?? 1);
 
-  // Without a token we cannot tell the API who is replying, so the honest
-  // thing is to ask them to open their own link rather than fail on submit.
-  if (!token || !guest) {
-    return (
-      <p className="mt-6 text-center text-base opacity-80">
-        Open the personal link the hosts sent you to reply. If you have not had one,
-        ask them to send yours.
-      </p>
-    );
-  }
+  const controlStyle = {
+    backgroundColor: palette.surface,
+    color: palette.ink,
+    borderColor: `${palette.ink}33`,
+  };
 
   if (state.status === "sent") {
     return (
-      <p role="status" className="mt-6 text-center text-base">
-        Thank you, {guest.firstName}. Your reply is in — reopen this link any time to
-        change it.
-      </p>
+      <div role="status" className="mt-6 rounded-lg p-4 text-center text-base" style={controlStyle}>
+        <p>
+          Thank you{guest ? `, ${guest.firstName}` : ""}. Your reply is in.
+        </p>
+        {state.returnUrl ? (
+          <p className="mt-2 break-all text-sm opacity-80">
+            Save this private link if you need to change your reply: {state.returnUrl}
+          </p>
+        ) : (
+          <p className="mt-2 text-sm opacity-80">
+            Reopen this link any time to change it.
+          </p>
+        )}
+      </div>
     );
   }
 
@@ -57,9 +62,11 @@ export function RsvpForm({
   const collectMessage = (config.collectMessage as boolean | undefined) ?? true;
   const collectBreakdown =
     (config.collectHeadcountBreakdown as boolean | undefined) ?? false;
+  const deadline = typeof config.deadline === "string" ? new Date(config.deadline) : null;
+  const isClosed = deadline !== null && deadline.getTime() < Date.now();
   const ceiling = Math.min(
-    guest.maxPartySize,
-    (config.maxPartySize as number | undefined) ?? guest.maxPartySize,
+    guest?.maxPartySize ?? (config.maxPartySize as number | undefined) ?? 1,
+    (config.maxPartySize as number | undefined) ?? guest?.maxPartySize ?? 1,
   );
 
   const choices = [
@@ -68,18 +75,70 @@ export function RsvpForm({
     { key: RsvpStatus.NOT_ATTENDING, label: "Regretfully declines" },
   ];
 
-  const controlStyle = {
-    backgroundColor: palette.surface,
-    color: palette.ink,
-    borderColor: `${palette.ink}33`,
-  };
+  if (isClosed) {
+    return (
+      <p className="mt-6 text-center text-base opacity-80">
+        RSVP is closed. Please contact the hosts if your plans changed.
+      </p>
+    );
+  }
 
   return (
     <form action={formAction} className="mt-6 flex flex-col gap-5">
-      <p className="text-center text-base opacity-80">
-        Replying as {guest.firstName}
-        {guest.lastName ? ` ${guest.lastName}` : ""}
-      </p>
+      {guest ? (
+        <p className="text-center text-base opacity-80">
+          Replying as {guest.firstName}
+          {guest.lastName ? ` ${guest.lastName}` : ""}
+        </p>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="flex flex-col gap-1.5 text-base">
+            First name
+            <input
+              type="text"
+              name="firstName"
+              required
+              maxLength={80}
+              className="rounded-lg border px-4 py-3"
+              style={controlStyle}
+              aria-describedby={state.fieldErrors?.firstName ? "firstName-error" : undefined}
+            />
+            {state.fieldErrors?.firstName ? (
+              <span id="firstName-error" className="text-sm" style={{ color: palette.accent }}>
+                {state.fieldErrors.firstName}
+              </span>
+            ) : null}
+          </label>
+          <label className="flex flex-col gap-1.5 text-base">
+            Last name
+            <input
+              type="text"
+              name="lastName"
+              maxLength={80}
+              className="rounded-lg border px-4 py-3"
+              style={controlStyle}
+            />
+          </label>
+          <label className="flex flex-col gap-1.5 text-base">
+            Email
+            <input
+              type="email"
+              name="email"
+              className="rounded-lg border px-4 py-3"
+              style={controlStyle}
+            />
+          </label>
+          <label className="flex flex-col gap-1.5 text-base">
+            Phone
+            <input
+              type="tel"
+              name="phone"
+              className="rounded-lg border px-4 py-3"
+              style={controlStyle}
+            />
+          </label>
+        </div>
+      )}
 
       <fieldset className="flex flex-col gap-3">
         <legend className="sr-only">Can you come?</legend>
@@ -138,7 +197,7 @@ export function RsvpForm({
                   name="adults"
                   min={0}
                   max={partySize}
-                  defaultValue={guest.rsvp?.adults ?? partySize}
+                  defaultValue={guest?.rsvp?.adults ?? partySize}
                   className="rounded-lg border px-4 py-3"
                   style={controlStyle}
                 />
@@ -150,7 +209,7 @@ export function RsvpForm({
                   name="children"
                   min={0}
                   max={partySize}
-                  defaultValue={guest.rsvp?.children ?? 0}
+                  defaultValue={guest?.rsvp?.children ?? 0}
                   className="rounded-lg border px-4 py-3"
                   style={controlStyle}
                 />
@@ -163,7 +222,7 @@ export function RsvpForm({
               What would you like to eat?
               <select
                 name="mealChoice"
-                defaultValue=""
+                defaultValue={guest?.rsvp?.mealChoice ?? ""}
                 className="rounded-lg border px-4 py-3"
                 style={controlStyle}
               >
@@ -184,6 +243,7 @@ export function RsvpForm({
                 type="text"
                 name="dietaryNotes"
                 maxLength={1000}
+                defaultValue={guest?.rsvp?.dietaryNotes ?? ""}
                 className="rounded-lg border px-4 py-3"
                 style={controlStyle}
               />
@@ -201,7 +261,7 @@ export function RsvpForm({
             name="message"
             rows={3}
             maxLength={2000}
-            defaultValue={guest.rsvp?.message ?? ""}
+            defaultValue={guest?.rsvp?.message ?? ""}
             className="rounded-lg border px-4 py-3"
             style={controlStyle}
           />
@@ -214,7 +274,7 @@ export function RsvpForm({
         </p>
       ) : null}
 
-      <SubmitButton palette={palette} hasReplied={guest.rsvp !== null} />
+      <SubmitButton palette={palette} hasReplied={guest?.rsvp !== null && guest?.rsvp !== undefined} />
     </form>
   );
 }

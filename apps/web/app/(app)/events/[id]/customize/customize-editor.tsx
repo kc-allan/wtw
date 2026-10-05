@@ -35,6 +35,7 @@ export function CustomizeEditor({ event, themes }: { event: EventDetail; themes:
   const [partner1, setPartner1] = useState(event.hostNames[0] ?? "");
   const [partner2, setPartner2] = useState(event.hostNames[1] ?? "");
   const [venueName, setVenueName] = useState(event.venueName ?? "");
+  const [dateUndecided, setDateUndecided] = useState(event.startsAt === null);
 
   const [themeKey, setThemeKey] = useState(event.theme?.key ?? null);
   const activeTheme = useMemo(
@@ -43,6 +44,8 @@ export function CustomizeEditor({ event, themes }: { event: EventDetail; themes:
   );
 
   const names = nameLines([partner1, partner2].filter(Boolean), event.title);
+  const dateValue = event.startsAt?.slice(0, 10) ?? "";
+  const timeValue = event.startsAt?.slice(11, 16) ?? "";
   const dateLabel = formatEventDate(event.startsAt, event.timezone, {
     day: "2-digit",
     month: "2-digit",
@@ -90,7 +93,7 @@ export function CustomizeEditor({ event, themes }: { event: EventDetail; themes:
           <h2 className="font-serif text-xl text-ink/70">Content</h2>
 
           <div className="mt-4 flex flex-col gap-4">
-            <Field label="Partner 1" htmlFor="partner1">
+            <Field label={event.typeKey === "wedding" ? "Partner 1" : "Primary name"} htmlFor="partner1">
               <Input
                 id="partner1"
                 name="partner1"
@@ -100,7 +103,7 @@ export function CustomizeEditor({ event, themes }: { event: EventDetail; themes:
               />
             </Field>
 
-            <Field label="Partner 2" htmlFor="partner2">
+            <Field label={event.typeKey === "wedding" ? "Partner 2" : "Second name"} htmlFor="partner2">
               <Input
                 id="partner2"
                 name="partner2"
@@ -114,14 +117,55 @@ export function CustomizeEditor({ event, themes }: { event: EventDetail; themes:
               <Input id="title" name="title" defaultValue={event.title} className="bg-white" />
             </Field>
 
-            <Field label="Date" htmlFor="startsAt" error={state.fieldErrors?.startsAt}>
-              <Input
-                id="startsAt"
-                name="startsAt"
-                type="date"
-                defaultValue={event.startsAt?.slice(0, 10) ?? ""}
-                className="bg-white"
-              />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <Field label="Date" htmlFor="startsAtDate" error={state.fieldErrors?.startsAt}>
+                  <Input
+                    id="startsAtDate"
+                    name="startsAtDate"
+                    type="date"
+                    disabled={dateUndecided}
+                    defaultValue={dateValue}
+                    className="bg-white disabled:opacity-50"
+                  />
+                </Field>
+                <label className="mt-3 flex cursor-pointer items-center gap-2">
+                  <input
+                    type="checkbox"
+                    name="dateUndecided"
+                    checked={dateUndecided}
+                    onChange={(nativeEvent) => setDateUndecided(nativeEvent.target.checked)}
+                    className="h-4 w-4 accent-forest"
+                  />
+                  <span className="text-sm text-ink">Date to be announced</span>
+                </label>
+              </div>
+
+              <Field label="Time" htmlFor="startsAtTime">
+                <Input
+                  id="startsAtTime"
+                  name="startsAtTime"
+                  type="time"
+                  disabled={dateUndecided}
+                  defaultValue={timeValue}
+                  className="bg-white disabled:opacity-50"
+                />
+              </Field>
+            </div>
+
+            <Field label="Timezone" htmlFor="timezone">
+              <select
+                id="timezone"
+                name="timezone"
+                defaultValue={event.timezone}
+                className="w-full rounded-lg border border-rule bg-white px-4 py-3 text-base text-ink outline-offset-2 focus:border-forest"
+              >
+                <option value="Africa/Nairobi">Africa/Nairobi</option>
+                <option value="Africa/Kampala">Africa/Kampala</option>
+                <option value="Africa/Dar_es_Salaam">Africa/Dar es Salaam</option>
+                <option value="Europe/London">Europe/London</option>
+                <option value="America/New_York">America/New York</option>
+              </select>
             </Field>
 
             <Field label="Venue" htmlFor="venueName">
@@ -131,6 +175,16 @@ export function CustomizeEditor({ event, themes }: { event: EventDetail; themes:
                 value={venueName}
                 onChange={(nativeEvent) => setVenueName(nativeEvent.target.value)}
                 placeholder="All Saints Cathedral, Nairobi"
+                className="bg-white"
+              />
+            </Field>
+
+            <Field label="Address" htmlFor="venueAddress">
+              <Input
+                id="venueAddress"
+                name="venueAddress"
+                defaultValue={event.venueAddress ?? ""}
+                placeholder="Street address, entrance or landmark"
                 className="bg-white"
               />
             </Field>

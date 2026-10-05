@@ -88,9 +88,9 @@ export default async function GuestListPage({
 
       <ul className="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
-          label="Attending"
+          label="Attending replies"
           value={summary?.attending}
-          hint={summary ? `Including ${summary.plusOnes} plus ones` : undefined}
+          hint={summary ? `${summary.totalAttendees} people attending` : undefined}
           tone="text-success-bright"
         />
         <StatCard
@@ -106,9 +106,9 @@ export default async function GuestListPage({
           tone="text-ember"
         />
         <StatCard
-          label="Meals needed"
+          label="People attending"
           value={summary?.totalAttendees}
-          hint={mealSummary}
+          hint={summary ? `${summary.plusOnes} additional guests` : mealSummary}
           tone="text-black"
         />
       </ul>

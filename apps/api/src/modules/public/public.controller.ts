@@ -1,4 +1,14 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { Public } from '../../core/auth/public.decorator';
@@ -8,9 +18,13 @@ import { claimRegistryItemSchema, type ClaimRegistryItemInput } from '../registr
 import { RegistryService } from '../registry/registry.service';
 import { submitGameSchema, type SubmitGameInput } from '../games/games.schemas';
 import { GamesService } from '../games/games.service';
-import { submitRsvpSchema, type SubmitRsvpInput } from '../rsvp/rsvp.schemas';
 import { RsvpService } from '../rsvp/rsvp.service';
-import { joinGuestListSchema, type JoinGuestListInput } from './public.schemas';
+import {
+  joinGuestListSchema,
+  publicRsvpSchema,
+  type JoinGuestListInput,
+  type PublicRsvpInput,
+} from './public.schemas';
 import { PublicEventsService } from './public-events.service';
 
 /**
@@ -44,16 +58,36 @@ export class PublicController {
   @HttpCode(HttpStatus.OK)
   // Guest endpoints are unauthenticated, so they get a tighter budget.
   @Throttle({ default: { limit: 10, ttl: 60_000 } })
-  @ApiOperation({ summary: 'Submit or update an RSVP using an invitation token' })
-  @ApiQuery({ name: 't', required: true, description: 'Guest invitation token' })
-  @ApiZodBody(submitRsvpSchema, 'SubmitRsvp')
+  @ApiOperation({ summary: 'Submit or update an RSVP' })
+  @ApiQuery({ name: 't', required: false, description: 'Guest invitation token' })
+  @ApiZodBody(publicRsvpSchema, 'SubmitRsvp')
   async submitRsvp(
     @Param('slug') slug: string,
-    @Query('t') token: string,
-    @Body(zodBody(submitRsvpSchema)) body: SubmitRsvpInput,
+    @Query('t') token: string | undefined,
+    @Body(zodBody(publicRsvpSchema)) body: PublicRsvpInput,
   ) {
-    const { eventId, guest } = await this.publicEvents.requireGuest(slug, token);
-    return this.rsvp.submit(eventId, guest.id, guest.invitationId, body);
+    if (token) {
+      const { eventId, guest } = await this.publicEvents.requireGuest(slug, token);
+      return this.rsvp.submit(eventId, guest.id, guest.invitationId, body);
+    }
+
+    if (!body.firstName) {
+      throw new BadRequestException('Tell us your name so the hosts know who replied');
+    }
+
+    const respondent = await this.publicEvents.createGeneralRespondent(slug, {
+      firstName: body.firstName,
+      lastName: body.lastName,
+      email: body.email,
+      phone: body.phone,
+    });
+    const response = await this.rsvp.submit(
+      respondent.eventId,
+      respondent.guestId,
+      respondent.invitationId,
+      body,
+    );
+    return { response, returnToken: respondent.rawToken };
   }
 
   @Post(':slug/guest-list')

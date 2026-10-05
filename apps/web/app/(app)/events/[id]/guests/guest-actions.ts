@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { CeremonyKey, isCeremonyKey } from "@wtw/shared";
+import { CeremonyKey, InvitationChannel, isCeremonyKey } from "@wtw/shared";
 import { api } from "@/lib/api";
 import { toFormState, type FormState } from "@/lib/form-state";
 
@@ -72,4 +72,77 @@ export async function setGuestCeremonies(
 
   revalidatePath(`/events/${eventId}/guests`);
   return { ok: true };
+}
+
+export async function updateGuest(
+  eventId: string,
+  guestId: string,
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const firstName = text(formData.get("firstName"));
+  if (!firstName) {
+    return { fieldErrors: { firstName: "Add a first name" } };
+  }
+
+  try {
+    await api(`/events/${eventId}/guests/${guestId}`, {
+      method: "PATCH",
+      body: {
+        firstName,
+        lastName: text(formData.get("lastName")),
+        email: text(formData.get("email")),
+        phone: text(formData.get("phone")),
+        groupLabel: text(formData.get("groupLabel")),
+        maxPartySize: Number(formData.get("maxPartySize")) || 1,
+        notes: text(formData.get("notes")),
+      },
+    });
+  } catch (error) {
+    return toFormState(error, "We could not save that guest");
+  }
+
+  revalidatePath(`/events/${eventId}/guests`);
+  return {};
+}
+
+export async function removeGuest(eventId: string, guestId: string): Promise<void> {
+  await api(`/events/${eventId}/guests/${guestId}`, { method: "DELETE" });
+  revalidatePath(`/events/${eventId}/guests`);
+}
+
+export async function createGuestInvitationLink(
+  eventId: string,
+  guestId: string,
+  regenerate: boolean,
+): Promise<{ ok: boolean; link?: string; message?: string }> {
+  try {
+    const issued = await api<{ guestId: string; link: string | null }[]>(
+      `/events/${eventId}/invitations/issue`,
+      {
+        method: "POST",
+        body: {
+          guestIds: [guestId],
+          channel: InvitationChannel.LINK,
+          regenerate,
+        },
+      },
+    );
+    const link = issued.find((entry) => entry.guestId === guestId)?.link;
+    revalidatePath(`/events/${eventId}/guests`);
+    if (!link) {
+      return {
+        ok: false,
+        message: "This guest already has a private link. Replace it to create a new one.",
+      };
+    }
+    return { ok: true, link };
+  } catch {
+    return { ok: false, message: "We could not create that link" };
+  }
+}
+
+function text(value: FormDataEntryValue | null): string | undefined {
+  const cleaned = typeof value === "string" ? value.trim() : "";
+  return cleaned || undefined;
 }

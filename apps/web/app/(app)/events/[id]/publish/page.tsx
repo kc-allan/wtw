@@ -29,7 +29,7 @@ export default async function PublishStepPage({ params }: PageProps<"/events/[id
   const checks = [
     { label: "A design is chosen", done: event.theme !== null },
     { label: "The event has a name", done: event.title.trim().length > 0 },
-    { label: "A date is set", done: Boolean(event.startsAt) },
+    { label: "Date", done: Boolean(event.startsAt), optional: true },
     {
       label: "Somewhere to go",
       done: Boolean(event.venueName ?? event.venueAddress ?? event.city),
@@ -80,7 +80,7 @@ export default async function PublishStepPage({ params }: PageProps<"/events/[id
             <Detail label="Celebration" value={EVENT_TYPES[event.typeKey].name} />
             <Detail
               label="Date"
-              value={formatEventDate(event.startsAt, event.timezone, undefined, "Not set yet")}
+              value={formatEventDate(event.startsAt, event.timezone)}
             />
             <Detail label="Design" value={event.theme?.name ?? "Not chosen"} />
             <Detail

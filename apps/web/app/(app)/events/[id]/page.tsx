@@ -41,7 +41,9 @@ export default async function EventHubPage({ params, searchParams }: PageProps<"
   if (!event) notFound();
 
   const guestCount = guests?.meta.total ?? 0;
-  const sentCount = invitations.filter((row) => row.status !== "draft").length;
+  const sentCount = invitations.filter((row) =>
+    ["sent", "opened", "responded"].includes(row.status),
+  ).length;
   const isLive = event.status === EventStatus.PUBLISHED;
   const publicHref = `${SITE_URL}/e/${event.slug}`;
   const hasCeremonies = typeAsksCreateStep(event.typeKey, CreateStepKey.CEREMONIES);
@@ -70,7 +72,7 @@ export default async function EventHubPage({ params, searchParams }: PageProps<"
       : []),
     {
       id: "website",
-      label: "Website",
+      label: "Invitation",
       status: isLive ? "Live" : "Not live",
       children: <WebsitePages pages={websitePages} href={isLive ? publicHref : `/events/${id}/preview`} />,
     },
@@ -106,11 +108,11 @@ export default async function EventHubPage({ params, searchParams }: PageProps<"
 
           {current === "website" ? (
             <Panel
-              heading={isLive ? "Your website is live" : "Your website"}
+              heading={isLive ? "Your invitation is live" : "Your invitation"}
               lead={
                 isLive
-                  ? "Every change you make shows up straight away."
-                  : "Build it in your own order, then publish when it reads right."
+                  ? "Guests can open your invitation and reply."
+                  : "Add the essentials, preview it, then publish when it reads right."
               }
             >
               <div className="flex flex-wrap items-center justify-center gap-3">
@@ -118,7 +120,7 @@ export default async function EventHubPage({ params, searchParams }: PageProps<"
                   href={`/events/${id}/customize`}
                   className="rounded-full bg-forest px-8 py-3.5 text-base font-medium text-bright transition-colors hover:bg-forest-deep"
                 >
-                  Edit the website
+                  Edit invitation
                 </Link>
                 <Link
                   href={`/events/${id}/${isLive ? "share" : "publish"}`}

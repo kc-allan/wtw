@@ -4,10 +4,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { EventStatus, EventVisibility, InvitationStatus } from '@wtw/shared';
-import { hashToken } from '../../core/crypto/tokens';
+import { EventStatus, EventVisibility, InvitationChannel, InvitationStatus } from '@wtw/shared';
+import { generateRawToken, hashToken } from '../../core/crypto/tokens';
 import {
   toDbEventStatus,
+  toDbInvitationChannel,
   toDbInvitationStatus,
   toDbVisibility,
 } from '../../core/prisma/enums';
@@ -23,7 +24,11 @@ export interface ResolvedGuest {
   rsvp: {
     status: string;
     partySize: number;
+    adults: number | null;
+    children: number | null;
     attendeeNames: string[];
+    mealChoice?: string | null;
+    dietaryNotes?: string | null;
     message: string | null;
   } | null;
 }
@@ -40,6 +45,7 @@ const EVENT_VIEW_SELECT = {
   startsAt: true,
   endsAt: true,
   timezone: true,
+  city: true,
   venueName: true,
   venueAddress: true,
   latitude: true,
@@ -128,9 +134,8 @@ export class PublicEventsService {
 
   /**
    * Adds someone to the guest list from the link a host shared. The event has
-   * to be published and have the form switched on, and a name that is already
-   * on the list is matched rather than duplicated, so a guest who submits
-   * twice does not appear twice.
+   * to be published, reachable by a general link and have the form switched on.
+   * This never edits a matching name, because a name is not proof of identity.
    */
   async addSelfToGuestList(
     slug: string,
@@ -138,33 +143,16 @@ export class PublicEventsService {
   ) {
     const event = await this.prisma.event.findUnique({
       where: { slug },
-      select: { id: true, status: true, guestListFormEnabled: true },
+      select: { id: true, status: true, visibility: true, guestListFormEnabled: true },
     });
 
-    if (!event || event.status !== 'published' || !event.guestListFormEnabled) {
+    if (
+      !event ||
+      event.status !== 'published' ||
+      event.visibility === 'private' ||
+      !event.guestListFormEnabled
+    ) {
       throw new NotFoundException('That list is not open');
-    }
-
-    const existing = await this.prisma.guest.findFirst({
-      where: {
-        eventId: event.id,
-        firstName: { equals: input.firstName, mode: 'insensitive' },
-        ...(input.lastName
-          ? { lastName: { equals: input.lastName, mode: 'insensitive' } }
-          : {}),
-      },
-      select: { id: true },
-    });
-
-    if (existing) {
-      await this.prisma.guest.update({
-        where: { id: existing.id },
-        data: {
-          ...(input.email ? { email: input.email } : {}),
-          ...(input.phone ? { phone: input.phone } : {}),
-        },
-      });
-      return { added: false };
     }
 
     await this.prisma.guest.create({
@@ -178,6 +166,46 @@ export class PublicEventsService {
       },
     });
     return { added: true };
+  }
+
+  async createGeneralRespondent(
+    slug: string,
+    input: { firstName: string; lastName?: string; email?: string; phone?: string },
+  ): Promise<{ eventId: string; guestId: string; invitationId: string; rawToken: string }> {
+    const { eventId } = await this.requireAccess(slug);
+    const rawToken = generateRawToken();
+    const guest = await this.prisma.guest.create({
+      data: {
+        eventId,
+        firstName: input.firstName,
+        lastName: input.lastName,
+        email: input.email,
+        phone: input.phone,
+        groupLabel: 'Shared link',
+        maxPartySize: 20,
+        invitation: {
+          create: {
+            eventId,
+            tokenHash: hashToken(rawToken),
+            channel: toDbInvitationChannel(InvitationChannel.LINK),
+            status: toDbInvitationStatus(InvitationStatus.OPENED),
+            openedAt: new Date(),
+          },
+        },
+      },
+      select: { id: true, invitation: { select: { id: true } } },
+    });
+
+    if (!guest.invitation) {
+      throw new NotFoundException('Invitation not created');
+    }
+
+    return {
+      eventId,
+      guestId: guest.id,
+      invitationId: guest.invitation.id,
+      rawToken,
+    };
   }
 
   /** The photos on a published event, for the gallery section. */
@@ -253,6 +281,8 @@ export class PublicEventsService {
                 adults: true,
                 children: true,
                 attendeeNames: true,
+                mealChoice: true,
+                dietaryNotes: true,
                 message: true,
               },
             },

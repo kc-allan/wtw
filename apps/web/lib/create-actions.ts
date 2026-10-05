@@ -18,6 +18,15 @@ import { readAccessToken } from "./session";
 import { OTHER_CITY } from "./cities";
 import type { EventDetail } from "./types";
 
+const DEFAULT_TIMEZONE = "Africa/Nairobi";
+
+function combineDateTime(date: FormDataEntryValue | null, time: FormDataEntryValue | null) {
+  const dateText = optionalText(date);
+  if (!dateText) return undefined;
+  const timeText = optionalText(time) ?? "12:00";
+  return `${dateText}T${timeText}:00`;
+}
+
 /**
  * Each step saves its own answer and hands over to whichever step comes next
  * for this event type, so the order lives in one place rather than in four
@@ -47,9 +56,11 @@ export async function saveEventBasics(
   // A host who ticked "we're still deciding" keeps no date at all, rather than
   // one we invented for them.
   const undecided = formData.get("dateUndecided") !== null;
-  const startsAt = undecided ? undefined : optionalText(formData.get("startsAt"));
+  const startsAt = undecided
+    ? undefined
+    : combineDateTime(formData.get("startsAtDate"), formData.get("startsAtTime"));
   if (!undecided && !startsAt) {
-    return { fieldErrors: { startsAt: "Pick a date, or say you are still deciding" } };
+    return { fieldErrors: { startsAtDate: "Pick a date, or say you are still deciding" } };
   }
 
   const city = optionalText(formData.get("city"));
@@ -59,6 +70,7 @@ export async function saveEventBasics(
     fullName,
     partnerName: optionalText(formData.get("partnerName")),
     startsAt,
+    timezone: optionalText(formData.get("timezone")) ?? DEFAULT_TIMEZONE,
     expectedGuests: optionalNumber(formData.get("expectedGuests")),
     city: city === OTHER_CITY ? optionalText(formData.get("otherCity")) : city,
     themeKey: optionalText(formData.get("themeKey")),
@@ -107,6 +119,7 @@ export async function createEventFromDraft(): Promise<never> {
         typeKey: draft.typeKey,
         title: draftEventTitle(draft),
         ...(draft.startsAt ? { startsAt: draft.startsAt } : {}),
+        timezone: draft.timezone ?? DEFAULT_TIMEZONE,
         hostNames: draftHostNames(draft),
         expectedGuests: draft.expectedGuests,
         city: draft.city,

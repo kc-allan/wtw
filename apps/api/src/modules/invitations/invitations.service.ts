@@ -60,6 +60,11 @@ export class InvitationsService {
         tokenHash: hashToken(rawToken),
         channel: toDbInvitationChannel(input.channel),
         status: toDbInvitationStatus(InvitationStatus.DRAFT),
+        sentAt: null,
+        openedAt: null,
+        respondedAt: null,
+        revokedAt: null,
+        expiresAt: null,
       };
 
       if (existing) {

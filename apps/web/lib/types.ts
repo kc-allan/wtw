@@ -170,6 +170,8 @@ export interface PublicEvent {
       adults: number | null;
       children: number | null;
       attendeeNames: string[];
+      mealChoice: string | null;
+      dietaryNotes: string | null;
       message: string | null;
     } | null;
   } | null;

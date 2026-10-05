@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { ButtonLink } from "@/app/_components/ui";
 
 export const metadata: Metadata = { title: "Plan & billing — Worth the Wait" };
 
 /**
- * Payments are not built yet, so this states the plan honestly rather than
- * showing an invoice history that does not exist.
+ * Payments are not part of the beta, so this states the current access
+ * plainly rather than showing an invoice history that does not exist.
  */
 export default function BillingPage() {
   return (
@@ -15,26 +14,18 @@ export default function BillingPage() {
 
       <div className="mt-8 rounded-2xl bg-white p-8">
         <p className="text-base text-ink/70">Current plan</p>
-        <p className="mt-1 font-serif text-xl font-semibold text-black">Free</p>
+        <p className="mt-1 font-serif text-xl font-semibold text-black">Free beta</p>
         <p className="mt-3 text-base text-ink/80">
-          One event, three starter templates and RSVPs for up to 30 guests. Upgrading is
-          per celebration, not a subscription.
+          You can create, publish and collect RSVPs while the beta is open. Paid
+          plans and professional accounts come later.
         </p>
 
         <div className="mt-6 flex flex-wrap gap-3">
           <ButtonLink href="/plans" variant="ghost">
-            Compare plans
+            View beta access
           </ButtonLink>
         </div>
       </div>
-
-      <p className="mt-6 text-base text-ink/70">
-        Card and M-Pesa payments are not switched on yet. To upgrade in the meantime,{" "}
-        <Link href="/our-story#contact" className="underline underline-offset-4">
-          talk to us
-        </Link>
-        .
-      </p>
     </main>
   );
 }

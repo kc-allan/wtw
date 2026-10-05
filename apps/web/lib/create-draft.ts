@@ -18,6 +18,7 @@ export interface CreateDraft {
   partnerName?: string;
   /** Absent when the host said they are still deciding. */
   startsAt?: string;
+  timezone?: string;
   expectedGuests?: number;
   city?: string;
   hostRole?: HostRole;
@@ -71,6 +72,7 @@ function parse(raw: string): CreateDraft | null {
     fullName,
     partnerName: text(draft.partnerName),
     startsAt: text(draft.startsAt),
+    timezone: text(draft.timezone),
     expectedGuests: typeof draft.expectedGuests === "number" ? draft.expectedGuests : undefined,
     city: text(draft.city),
     hostRole: isEnumValue(HostRole, draft.hostRole) ? draft.hostRole : undefined,

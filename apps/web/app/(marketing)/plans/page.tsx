@@ -6,7 +6,7 @@ import { pricingFaqs, pricingPlans } from "@/app/_data/marketing";
 export const metadata: Metadata = {
   title: "Pricing — Worth the Wait",
   description:
-    "Pay once, per celebration. No subscription for hosts. Pick a plan when you are ready to publish. M-Pesa or card.",
+    "Worth the Wait is in free beta while the invitation, RSVP and wedding website journeys are completed.",
 };
 
 export default function PricingPage() {
@@ -14,11 +14,11 @@ export default function PricingPage() {
     <section className="mx-auto flex w-full max-w-[1340px] flex-col gap-12 px-6 py-12">
       <PageHeading
         eyebrow="Pricing"
-        title="Pay once, per celebration."
-        lead="No subscription for hosts. Pick a plan when you're ready to publish. M-Pesa or Card"
+        title="Free during beta."
+        lead="Create, publish and collect RSVPs while the beta is open. Paid plans come later."
       />
 
-      <ul className="grid gap-6 lg:grid-cols-3">
+      <ul className="grid gap-6 lg:grid-cols-2">
         {pricingPlans.map((plan) => (
           <li key={plan.id} className="relative flex">
             {plan.featured ? (

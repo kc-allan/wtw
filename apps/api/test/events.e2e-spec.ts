@@ -123,6 +123,25 @@ describe('Events and RSVP (e2e)', () => {
     expect(page.body.event.title).toBe('E2E Baby Shower');
   });
 
+  it('publishes an event while the date is still undecided', async () => {
+    const response = await api()
+      .post('/api/v1/events')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        typeKey: 'birthday',
+        title: 'Undated Birthday',
+      })
+      .expect(201);
+
+    await api()
+      .post(`/api/v1/events/${response.body.id}/publish`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(200);
+
+    const page = await api().get(`/api/v1/e/${response.body.slug}`).expect(200);
+    expect(page.body.event.startsAt).toBeNull();
+  });
+
   it('turns away an invalid guest token', async () => {
     await api()
       .post(`/api/v1/e/${eventSlug}/rsvp?t=definitely-not-valid`)
@@ -143,12 +162,32 @@ describe('Events and RSVP (e2e)', () => {
     expect(response.body.status).toBe('attending');
   });
 
+  it('accepts a shared-link RSVP and returns a private token for changes', async () => {
+    const response = await api()
+      .post(`/api/v1/e/${eventSlug}/rsvp`)
+      .send({
+        firstName: 'Zawadi',
+        status: 'not_attending',
+        partySize: 1,
+        message: 'Same first name, different guest',
+      })
+      .expect(200);
+
+    expect(response.body.returnToken).toBeTruthy();
+
+    const page = await api()
+      .get(`/api/v1/e/${eventSlug}?t=${response.body.returnToken}`)
+      .expect(200);
+    expect(page.body.guest.firstName).toBe('Zawadi');
+    expect(page.body.guest.rsvp.status).toBe('not_attending');
+  });
+
   it('reports the RSVP summary to the host', async () => {
     const summary = await api()
       .get(`/api/v1/events/${eventId}/rsvps/summary`)
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(200);
 
-    expect(summary.body).toMatchObject({ attending: 1, totalGuests: 1, totalAttendees: 1 });
+    expect(summary.body).toMatchObject({ attending: 1, notAttending: 1, totalGuests: 2, totalAttendees: 1 });
   });
 });
