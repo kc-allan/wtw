@@ -1,4 +1,5 @@
 import type { ThemePalette } from "@/lib/types";
+import { invitationDesign } from "@/lib/invitation-designs";
 
 /**
  * How one theme's invitation is drawn. A template is a small set of choices
@@ -125,7 +126,7 @@ export function templateFor(
 
 /** True when the theme has artwork of its own rather than the group fallback. */
 export function hasDesignedTemplate(themeKey: string): boolean {
-  return themeKey in TEMPLATES;
+  return themeKey in TEMPLATES || invitationDesign(themeKey) !== undefined;
 }
 
 /** Sensible ink when a theme has no palette yet, so nothing renders invisible. */

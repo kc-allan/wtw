@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
+import Link from "next/link";
+import { invitationDesign } from "@/lib/invitation-designs";
 import { InvitationCard, nameLines } from "@/app/_components/invitation-card";
 import { hasDesignedTemplate } from "@/app/_data/templates";
 import { chooseTheme } from "@/lib/event-actions";
@@ -103,6 +105,7 @@ export function TemplatePicker({ event, themes }: { event: EventDetail; themes: 
                   {hasDesignedTemplate(theme.key) ? "" : " · standard layout"}
                 </p>
               </button>
+              {invitationDesign(theme.key) ? <Link href={`/designs/${invitationDesign(theme.key)!.kind}`} target="_blank" className="mt-2 inline-block text-sm text-forest underline underline-offset-4">Preview invitation page</Link> : null}
             </li>
           );
         })}

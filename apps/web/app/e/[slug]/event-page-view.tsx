@@ -1,4 +1,7 @@
 import { EventModuleKey } from "@wtw/shared";
+import type { CSSProperties } from "react";
+import { invitationAccent, invitationDesign } from "@/lib/invitation-designs";
+import { InvitationHero, invitationStyles as styles } from "@/app/_components/invitation-hero";
 import { formatEventDate, formatEventTime } from "@/lib/event-display";
 import type { GalleryPhoto, PublicEvent, PublicGame, RegistryForGuests } from "@/lib/types";
 import { InvitationCard, nameLines } from "@/app/_components/invitation-card";
@@ -11,6 +14,7 @@ import { publicPageSections } from "@/lib/event-public-sections";
 import { MomentsSection } from "./moments-section";
 import { PageNav } from "./page-nav";
 import { RsvpForm } from "./rsvp-form";
+import collectionStyles from "@/app/_components/invitation-collection.module.css";
 
 /**
  * The event exactly as a guest reads it. Kept apart from the fetching so the
@@ -42,7 +46,10 @@ export function EventPageView({
   games: PublicGame[];
   previewMode?: boolean;
 }) {
-  const palette = event.theme?.palette ?? FALLBACK_PALETTE;
+  const design = invitationDesign(event.theme?.key);
+  const basePalette = design?.palette ?? event.theme?.palette ?? FALLBACK_PALETTE;
+  const accent = invitationAccent(modules.find((module) => module.key === EventModuleKey.INVITATION)?.config);
+  const palette = { ...basePalette, accent: accent ?? basePalette.accent };
   const names = nameLines(event.hostNames, event.title);
 
   const enabled = new Set(modules.map((module) => module.key));
@@ -66,18 +73,30 @@ export function EventPageView({
 
   return (
     <div
-      className="min-h-dvh"
-      style={{ backgroundColor: palette.surface, color: palette.ink }}
+      className={`min-h-dvh ${design ? `${styles.landing} ${styles[`${design.kind}Page`] ?? ""} ${collectionStyles[design.kind] ? `${collectionStyles.page} ${collectionStyles[design.kind]}` : ""}` : ""}`}
+      style={{ backgroundColor: palette.surface, color: palette.ink, "--invite-accent": palette.accent } as CSSProperties}
     >
       <PageNav sections={sections} palette={palette} />
 
-      {/* The invitation itself, full bleed, in the theme's own colours. */}
+      {design ? <>
+        <InvitationHero design={design} names={event.hostNames} title={event.title}
+          date={formatEventDate(event.startsAt, event.timezone)} venue={[event.venueName, event.city].filter(Boolean).join(", ")}
+          accent={palette.accent} rsvp={enabled.has(EventModuleKey.RSVP)} />
+        <section id="celebration-details" aria-label="Celebration details" className={styles.details}>
+          <div><span>When</span><strong>{formatEventDate(event.startsAt, event.timezone)}</strong>
+            {event.startsAt ? <p>{formatEventTime(event.startsAt, event.timezone)} · {event.timezone.replaceAll("_", " ")}</p> : null}</div>
+          <div><span>Where</span><strong>{event.venueName || event.city || "Location to be announced"}</strong>
+            {event.venueAddress ? <p>{event.venueAddress}</p> : null}
+            {event.venueName || event.venueAddress || event.city ? <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([event.venueName, event.venueAddress, event.city].filter(Boolean).join(", "))}`} target="_blank" rel="noreferrer">Get directions</a> : null}</div>
+        </section>
+      </> : <>
       <header id="top" className="scroll-mt-20 px-6 py-10 sm:py-16">
         <InvitationCard
           themeKey={event.theme?.key ?? null}
           group={event.theme?.group ?? null}
           eventTypeKey={event.typeKey}
-          palette={palette}
+          palette={basePalette}
+          accentColor={accent}
           content={{
             names,
             themeName: event.theme?.name ?? "",
@@ -107,6 +126,9 @@ export function EventPageView({
           ) : null}
         </div>
       </header>
+      </>}
+
+      <div className={design ? styles.body : undefined}>
 
       <CeremonyProgramme
         ceremonies={ceremonies}
@@ -114,7 +136,7 @@ export function EventPageView({
         palette={palette}
       />
 
-      <EventSections event={event} modules={modules} palette={palette} />
+      <EventSections event={event} modules={modules} palette={palette} design={design} />
 
       {enabled.has(EventModuleKey.RSVP) ? (
         <section
@@ -128,10 +150,11 @@ export function EventPageView({
               id="rsvp-heading"
               className="text-center font-serif text-section font-semibold"
             >
-              Will you be there?
+              {design?.replyHeading ?? (design?.kind === "brunch" ? "A seat with your name on it" : design?.kind === "garden" ? "The pleasure of your company" : "Will you be there?")}
             </h2>
 
             <RsvpForm
+              tone={design && design.category !== "wedding" ? "casual" : "formal"}
               slug={slug}
               token={token}
               guest={guest}
@@ -181,6 +204,7 @@ export function EventPageView({
           palette={palette}
         />
       ) : null}
+      </div>
 
       <footer
         className="px-6 py-10 text-center text-sm"

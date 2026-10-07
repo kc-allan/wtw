@@ -6,7 +6,8 @@ import { useFormStatus } from "react-dom";
 import { EventModuleKey, EventTypeKey } from "@wtw/shared";
 import { InvitationCard, nameLines } from "@/app/_components/invitation-card";
 import { Button, Field, Input, Textarea } from "@/app/_components/ui";
-import { saveEventDetails, toggleModule } from "@/lib/event-actions";
+import { saveEventDetails, saveInvitationAccent, toggleModule } from "@/lib/event-actions";
+import { ACCENT_COLORS, invitationAccent, invitationDesign } from "@/lib/invitation-designs";
 import { eventSurfaceLabel } from "@/lib/event-public-sections";
 import { formatEventDate } from "@/lib/event-display";
 import { toDateInput, toTimeInput } from "@/lib/zoned-datetime";
@@ -100,7 +101,11 @@ export function CustomizeEditor({ event, themes }: { event: EventDetail; themes:
   const [venueName, setVenueName] = useState(event.venueName ?? "");
   const [dateUndecided, setDateUndecided] = useState(event.startsAt === null);
 
-  const [themeKey, setThemeKey] = useState(event.theme?.key ?? null);
+  const themeKey = event.theme?.key ?? null;
+  const design = invitationDesign(themeKey);
+  const [accentColor, setAccentColor] = useState(invitationAccent(event.modules.find((module) => module.key === EventModuleKey.INVITATION)?.config) ?? design?.palette.accent ?? event.theme?.palette.accent ?? ACCENT_COLORS[0].color);
+  const [accentPending, startAccentSave] = useTransition();
+  const [accentMessage, setAccentMessage] = useState("");
   const activeTheme = useMemo(
     () => themes.find((theme) => theme.key === themeKey) ?? null,
     [themes, themeKey],
@@ -115,14 +120,7 @@ export function CustomizeEditor({ event, themes }: { event: EventDetail; themes:
     year: "numeric",
   }).replaceAll("/", ". ");
 
-  /**
-   * Colour swatches. One per distinct accent, because a palette is recognised
-   * by its accent because the backgrounds are all near-white paper.
-   */
-  const swatches = themes.filter(
-    (theme, index) =>
-      themes.findIndex((other) => other.palette.accent === theme.palette.accent) === index,
-  ).slice(0, 6);
+  const swatches = design?.accents ?? ACCENT_COLORS;
 
   return (
     <>
@@ -294,12 +292,13 @@ export function CustomizeEditor({ event, themes }: { event: EventDetail; themes:
           </div>
         </form>
 
-        <div className="flex items-start justify-center">
+        <div className="flex flex-col items-center gap-4">
           <InvitationCard
             themeKey={themeKey}
             group={activeTheme?.group ?? event.theme?.group ?? null}
             eventTypeKey={event.typeKey}
             palette={activeTheme?.palette ?? event.theme?.palette ?? null}
+            accentColor={accentColor}
             content={{
               names,
               themeName: activeTheme?.name ?? event.theme?.name ?? "",
@@ -307,35 +306,39 @@ export function CustomizeEditor({ event, themes }: { event: EventDetail; themes:
             }}
             className="w-full max-w-[330px] aspect-[330/450]"
           />
+          <Link href={`/events/${event.id}/preview`} target="_blank" className="text-sm text-forest underline underline-offset-4">Preview saved invitation page</Link>
+          <Link href={`/events/${event.id}/template`} className="text-sm text-forest underline underline-offset-4">Change design</Link>
         </div>
 
         <div className="rounded-2xl bg-white p-6">
-          <h2 className="font-serif text-xl text-ink/70">Color</h2>
+          <h2 className="font-serif text-xl text-ink/70">Accent color</h2>
           <div className="mt-4 flex flex-wrap gap-3">
-            {swatches.map((theme) => (
+            {swatches.map((swatch) => (
               <button
-                key={theme.key}
+                key={swatch.color}
                 type="button"
-                aria-label={theme.name}
-                aria-pressed={theme.key === themeKey}
+                aria-label={swatch.name}
+                title={swatch.name}
+                aria-pressed={swatch.color === accentColor}
+                disabled={accentPending}
                 onClick={() => {
-                  setThemeKey(theme.key);
-                  setDirty(true);
+                  setAccentColor(swatch.color);
+                  setAccentMessage("Unsaved color");
                 }}
                 className={`size-9 rounded-full ${
-                  theme.key === themeKey
+                  swatch.color === accentColor
                     ? "outline outline-2 outline-offset-2 outline-forest"
                     : ""
                 }`}
-                style={{ backgroundColor: theme.palette.accent }}
+                style={{ backgroundColor: swatch.color }}
               />
             ))}
           </div>
-          {themeKey !== event.theme?.key ? (
-            <p className="mt-3 text-sm text-ink/70">
-              Save changes to keep {activeTheme?.name}.
-            </p>
-          ) : null}
+          <Button type="button" variant="quiet" className="mt-4" disabled={accentPending} onClick={() => startAccentSave(async () => {
+            const result = await saveInvitationAccent(event.id, accentColor);
+            setAccentMessage(result.message ?? "We could not save that color");
+          })}>{accentPending ? "Saving color" : "Save color"}</Button>
+          <p role="status" className="mt-2 text-sm text-ink/70">{accentMessage}</p>
 
           <div className="mt-8 flex items-center justify-between gap-3">
             <h2 className="text-sm tracking-[0.08em] text-muted uppercase">

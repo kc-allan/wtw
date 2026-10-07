@@ -6,6 +6,7 @@ import { PLANS, PLAN_WITH_PREMIUM_DESIGNS, PlanKey, planIncludesPremiumDesigns }
 import type { Theme } from "@/lib/types";
 import { InvitationCard, nameLines } from "@/app/_components/invitation-card";
 import { designCopy, type Collection } from "@/app/_data/invitation-copy";
+import { invitationDesign } from "@/lib/invitation-designs";
 
 export interface BrowseSection {
   collection: Collection;
@@ -169,6 +170,7 @@ function BrowseCollection({
               </div>
 
               <p className="mt-3 text-base font-medium text-black">{design.name}</p>
+              {invitationDesign(design.key) ? <Link href={`/designs/${invitationDesign(design.key)!.kind}`} className="mt-2 text-sm font-medium text-forest underline underline-offset-4">Preview invitation page</Link> : null}
 
               {copy ? (
                 <>

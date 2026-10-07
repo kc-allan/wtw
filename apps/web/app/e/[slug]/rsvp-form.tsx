@@ -15,6 +15,7 @@ export function RsvpForm({
   config,
   palette,
   previewMode = false,
+  tone = "formal",
 }: {
   slug: string;
   token?: string;
@@ -22,6 +23,7 @@ export function RsvpForm({
   config: Record<string, unknown>;
   palette: ThemePalette;
   previewMode?: boolean;
+  tone?: "formal" | "casual";
 }) {
   const action = submitRsvp.bind(null, slug, token ?? "");
   const [state, formAction] = useActionState(action, INITIAL);
@@ -72,9 +74,9 @@ export function RsvpForm({
   );
 
   const choices = [
-    { key: RsvpStatus.ATTENDING, label: "Joyfully accepts" },
+    { key: RsvpStatus.ATTENDING, label: tone === "casual" ? "I'll be there" : "Joyfully accepts" },
     ...(allowMaybe ? [{ key: RsvpStatus.MAYBE, label: "Not sure yet" }] : []),
-    { key: RsvpStatus.NOT_ATTENDING, label: "Regretfully declines" },
+    { key: RsvpStatus.NOT_ATTENDING, label: tone === "casual" ? "I can't make it" : "Regretfully declines" },
   ];
 
   if (isClosed) {

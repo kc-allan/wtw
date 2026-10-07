@@ -60,6 +60,25 @@ describe('EventModulesService', () => {
   });
 
   describe('update', () => {
+    it('saves an invitation accent without replacing its existing content', async () => {
+      eventModule.findUnique.mockResolvedValue({ id: 'm1', config: { headline: 'Come celebrate' } });
+      eventModule.update.mockImplementation(({ data }: { data: { config: unknown } }) =>
+        Promise.resolve({ enabled: true, position: 0, config: data.config }),
+      );
+      const result = await service.update('event-1', EventTypeKey.WEDDING, EventModuleKey.INVITATION, {
+        config: { accentColor: '#87364e' },
+      });
+      expect(result.config).toMatchObject({ headline: 'Come celebrate', accentColor: '#87364e' });
+    });
+
+    it('rejects invalid invitation accent values', async () => {
+      eventModule.findUnique.mockResolvedValue({ id: 'm1', config: {} });
+      await expect(service.update('event-1', EventTypeKey.WEDDING, EventModuleKey.INVITATION, {
+        config: { accentColor: 'url(https://example.com)' },
+      })).rejects.toBeInstanceOf(BadRequestException);
+      expect(eventModule.update).not.toHaveBeenCalled();
+    });
+
     it('refuses a module the event type does not offer', async () => {
       await expect(
         service.update('event-1', EventTypeKey.BIRTHDAY, EventModuleKey.REGISTRY, {
