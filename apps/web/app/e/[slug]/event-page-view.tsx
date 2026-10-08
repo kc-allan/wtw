@@ -15,6 +15,7 @@ import { MomentsSection } from "./moments-section";
 import { PageNav } from "./page-nav";
 import { RsvpForm } from "./rsvp-form";
 import collectionStyles from "@/app/_components/invitation-collection.module.css";
+import { BirthdayWorldHero, birthdayWorldStyles } from "@/app/_components/birthday-worlds";
 
 /**
  * The event exactly as a guest reads it. Kept apart from the fetching so the
@@ -47,6 +48,7 @@ export function EventPageView({
   previewMode?: boolean;
 }) {
   const design = invitationDesign(event.theme?.key);
+  const birthdayWorld = design?.kind === "gaming" || design?.kind === "sporty";
   const basePalette = design?.palette ?? event.theme?.palette ?? FALLBACK_PALETTE;
   const accent = invitationAccent(modules.find((module) => module.key === EventModuleKey.INVITATION)?.config);
   const palette = { ...basePalette, accent: accent ?? basePalette.accent };
@@ -71,24 +73,30 @@ export function EventPageView({
     hasGames: games.length > 0,
   });
 
+  const eventDetails = <section id="celebration-details" aria-label="Celebration details" className={styles.details}>
+    <div><span>{design?.kind === "gaming" ? "Session date" : design?.kind === "sporty" ? "Match day" : "When"}</span><strong>{formatEventDate(event.startsAt, event.timezone)}</strong>
+      {event.startsAt ? <p>{formatEventTime(event.startsAt, event.timezone)} · {event.timezone.replaceAll("_", " ")}</p> : null}</div>
+    <div><span>{design?.kind === "gaming" ? "Meet-up point" : design?.kind === "sporty" ? "Home ground" : "Where"}</span><strong>{event.venueName || event.city || "Location to be announced"}</strong>
+      {event.venueAddress ? <p>{event.venueAddress}</p> : null}
+      {event.venueName || event.venueAddress || event.city ? <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([event.venueName, event.venueAddress, event.city].filter(Boolean).join(", "))}`} target="_blank" rel="noreferrer">Get directions</a> : null}</div>
+  </section>;
+
   return (
     <div
-      className={`min-h-dvh ${design ? `${styles.landing} ${styles[`${design.kind}Page`] ?? ""} ${collectionStyles[design.kind] ? `${collectionStyles.page} ${collectionStyles[design.kind]}` : ""}` : ""}`}
+      className={`min-h-dvh ${design ? `${styles.landing} ${styles[`${design.kind}Page`] ?? ""} ${birthdayWorld ? `${birthdayWorldStyles.page} ${birthdayWorldStyles[design.kind]}` : collectionStyles[design.kind] ? `${collectionStyles.page} ${collectionStyles[design.kind]}` : ""}` : ""}`}
       style={{ backgroundColor: palette.surface, color: palette.ink, "--invite-accent": palette.accent } as CSSProperties}
     >
       <PageNav sections={sections} palette={palette} />
 
       {design ? <>
+        {birthdayWorld ? <BirthdayWorldHero design={design} title={event.title}
+          date={formatEventDate(event.startsAt, event.timezone)} accent={palette.accent}
+          rsvp={enabled.has(EventModuleKey.RSVP)} compact={false} details={eventDetails} /> : <>
         <InvitationHero design={design} names={event.hostNames} title={event.title}
           date={formatEventDate(event.startsAt, event.timezone)} venue={[event.venueName, event.city].filter(Boolean).join(", ")}
           accent={palette.accent} rsvp={enabled.has(EventModuleKey.RSVP)} />
-        <section id="celebration-details" aria-label="Celebration details" className={styles.details}>
-          <div><span>When</span><strong>{formatEventDate(event.startsAt, event.timezone)}</strong>
-            {event.startsAt ? <p>{formatEventTime(event.startsAt, event.timezone)} · {event.timezone.replaceAll("_", " ")}</p> : null}</div>
-          <div><span>Where</span><strong>{event.venueName || event.city || "Location to be announced"}</strong>
-            {event.venueAddress ? <p>{event.venueAddress}</p> : null}
-            {event.venueName || event.venueAddress || event.city ? <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([event.venueName, event.venueAddress, event.city].filter(Boolean).join(", "))}`} target="_blank" rel="noreferrer">Get directions</a> : null}</div>
-        </section>
+        {eventDetails}
+        </>}
       </> : <>
       <header id="top" className="scroll-mt-20 px-6 py-10 sm:py-16">
         <InvitationCard

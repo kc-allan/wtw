@@ -34,6 +34,34 @@ function moduleView(key: EventModuleKey, position: number, config: Record<string
 
 export function invitationSample(design: InvitationDesign, accent: string): { event: PublicEvent["event"]; modules: EventModuleView[] } {
   const sample = { ...SAMPLES[design.category] };
+  if (design.sampleTitle) sample.title = design.sampleTitle;
+  const children = ["space", "dinosaur", "trucks", "rainbow", "mermaid"].includes(design.kind);
+  if (design.kind === "gaming") {
+    sample.names = ["Leo"];
+    sample.venue = "The player lounge";
+    sample.description = "A new birthday level calls for our favourite squad. Join Leo for friendly games, snacks and cake. Whether you play every day or are picking up a controller for the first time, you're on the team.";
+  }
+  if (design.kind === "sporty") {
+    sample.venue = "The club grounds";
+    sample.description = "Nia's birthday team is getting together for an afternoon of friendly games and a well-earned slice of cake. Come ready to cheer, play or simply enjoy the company.";
+  }
+  if (["dinosaur", "trucks"].includes(design.kind)) sample.names = ["Leo"];
+  if (design.kind === "dinosaur") {
+    sample.venue = "The adventure garden";
+    sample.description = "Our little explorer is ready for a roaring birthday. Join Leo for an afternoon of games, discoveries and a very important slice of cake.";
+  }
+  if (design.kind === "trucks") {
+    sample.venue = "The play yard";
+    sample.description = "We've got big plans for Leo's birthday: little builders, plenty of games and a cake worth digging into. Bring your favourite grown-up and join the birthday crew.";
+  }
+  if (design.kind === "rainbow") {
+    sample.venue = "The sunshine room";
+    sample.description = "Bright colours, happy faces and a birthday wish or two. Come celebrate Nia with an afternoon of play, treats and all the people who make her world brighter.";
+  }
+  if (design.kind === "mermaid") {
+    sample.venue = "The coral room";
+    sample.description = "A little make-believe, a lot of birthday magic. Join Nia for an under-the-sea celebration with games, sweet treats and stories to take home.";
+  }
   const coastal = design.kind === "coastal";
   if (design.kind === "space") {
     sample.title = "Leo turns 7";
@@ -42,6 +70,23 @@ export function invitationSample(design: InvitationDesign, accent: string): { ev
     sample.programme = [["Crew check-in", "Meet the other explorers and get ready for launch."], ["Mission: birthday", "Games and adventures for the whole crew."], ["Cake on the moon", "Back to base for cake and birthday wishes."]];
   }
   if (design.kind === "neon") sample.title = "Nia's birthday night";
+  if (design.kind === "cocktail") {
+    sample.venue = "The aperitivo room";
+  }
+  if (design.kind === "forty") {
+    sample.venue = "The courtyard";
+    sample.description = "Forty years of stories, friendships and wonderful surprises. Let's raise a glass to all of it, and to everything still ahead. Come celebrate with Nia.";
+  }
+  if (design.kind === "gilded") sample.venue = "The conservatory";
+  if (design.kind === "champagne") sample.venue = "The reception gardens";
+  if (design.kind === "emerald") sample.venue = "The palm house";
+  if (design.kind === "porcelain") sample.venue = "The blue drawing room";
+  if (design.kind === "pampas") sample.venue = "The meadow house";
+  if (design.kind === "safari") sample.venue = "The acacia garden";
+  if (design.kind === "kitenge") sample.venue = "The courtyard gardens";
+  if (design.kind === "woven") sample.venue = "The sculpture court";
+  if (design.kind === "timber") sample.venue = "The orchard barn";
+  if (["burgundy", "nocturne"].includes(design.kind)) sample.venue = "The evening room";
   if (design.kind === "brunch") {
     sample.title = "Nia's birthday brunch";
     sample.venue = "The breakfast table";
@@ -50,7 +95,7 @@ export function invitationSample(design: InvitationDesign, accent: string): { ev
   if (design.kind === "blacktie") sample.venue = "The grand ballroom";
   if (design.kind === "monochrome") sample.venue = "The gallery";
   if (coastal) sample.venue = "The ocean garden";
-  const hour = design.kind === "neon" || design.kind === "blacktie" ? 15 : design.category === EventTypeKey.CORPORATE ? 6 : 11;
+  const hour = ["neon", "blacktie", "cocktail", "forty", "burgundy", "nocturne"].includes(design.kind) ? 15 : design.category === EventTypeKey.CORPORATE ? 6 : 11;
   const startsAt = `2027-06-19T${String(hour).padStart(2, "0")}:00:00Z`;
   const event: PublicEvent["event"] = {
     id: "sample", slug: "sample", title: sample.title, hostNames: sample.names, description: sample.description,
@@ -79,10 +124,10 @@ export function invitationSample(design: InvitationDesign, accent: string): { ev
     })) }));
   } else {
     modules.push(moduleView(EventModuleKey.VENUE_MAP, 3, { venues: [{ label: sample.venue, address: "Karen, Nairobi, Kenya",
-      directionsNote: design.category === EventTypeKey.CORPORATE ? "Our welcome desk will be at the main entrance. Please arrive a little early to settle in." : "We'll meet you at the garden entrance. Come a little early and make yourself at home.",
+      directionsNote: design.category === EventTypeKey.CORPORATE ? "Our welcome desk will be at the main entrance. Please arrive a little early to settle in." : ["gaming", "sporty"].includes(design.kind) ? "We'll meet you at the main entrance. Come a little early and settle in with the team." : "We'll meet you at the garden entrance. Come a little early and make yourself at home.",
     }] }));
     modules.push(moduleView(EventModuleKey.COUNTDOWN, 4, { targetAt: startsAt }));
   }
-  modules.push(moduleView(EventModuleKey.RSVP, 5, { allowMaybe: false, allowPlusOnes: true, maxPartySize: design.kind === "space" ? 4 : 2, collectMessage: true }));
+  modules.push(moduleView(EventModuleKey.RSVP, 5, { allowMaybe: false, allowPlusOnes: true, maxPartySize: children ? 4 : 2, collectMessage: true }));
   return { event, modules };
 }

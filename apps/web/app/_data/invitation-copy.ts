@@ -593,7 +593,7 @@ export const collections: Record<string, Collection[]> = {
         { id: "all", label: "All", group: null },
         { id: "boys", label: "For boys", group: "Kids (boys)" },
         { id: "girls", label: "For girls", group: "Kids (girls)" },
-        { id: "neutral", label: "For everyone", group: "Gender neutral kids" },
+        { id: "neutral", label: "Neutral", group: "Gender neutral kids" },
       ],
     },
     {

@@ -88,6 +88,7 @@ export function InvitationBrowser({
           section={section}
           eventTypeKey={eventTypeKey}
           names={names}
+          personalized={Boolean(name.trim() || age.trim())}
           dateLabel={sample.dateLabel}
           hasPremium={hasPremium}
         />
@@ -100,12 +101,14 @@ function BrowseCollection({
   section,
   eventTypeKey,
   names,
+  personalized,
   dateLabel,
   hasPremium,
 }: {
   section: BrowseSection;
   eventTypeKey: string;
   names: string[];
+  personalized: boolean;
   dateLabel: string;
   /** Whether this reader's plan includes the designs kept for paying hosts. */
   hasPremium: boolean;
@@ -151,6 +154,8 @@ function BrowseCollection({
       <ul className="grid gap-x-6 gap-y-8 sm:grid-cols-2 xl:grid-cols-4">
         {visible.map((design) => {
           const copy = designCopy[design.key];
+          const landing = invitationDesign(design.key);
+          const previewNames = !personalized && landing?.sampleTitle ? [landing.sampleTitle] : names;
           return (
             <li key={design.key} className="flex h-full flex-col">
               <div className="relative">
@@ -161,7 +166,7 @@ function BrowseCollection({
                 group={design.group}
                 eventTypeKey={eventTypeKey}
                 palette={design.palette}
-                content={{ names, themeName: design.name, dateLabel }}
+                content={{ names: previewNames, themeName: design.name, dateLabel }}
                 // The name sits under the card, so the artwork carries the date.
                 footer="date"
                 className="aspect-266/356"

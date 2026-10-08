@@ -42,7 +42,7 @@ export function EventSections({
     .sort((a, b) => a.position - b.position);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col" data-event-sections>
       {sections.map((module, index) => {
         const rendered = RENDERERS[module.key]?.(module, event, palette);
         if (!rendered) return null;
