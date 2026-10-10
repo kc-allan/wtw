@@ -7,6 +7,7 @@ import { ButtonLink, PageHeading } from "@/app/_components/ui";
 import { celebrationLead, collections } from "@/app/_data/invitation-copy";
 import { InvitationBrowser, type BrowseSection, type SampleContent } from "./invitation-browser";
 import { TypeTabs } from "./type-tabs";
+import { hasDesignedTemplate } from "@/app/_data/templates";
 
 export const metadata: Metadata = {
   title: "Invitations — Worth the Wait",
@@ -58,7 +59,12 @@ export default async function InvitationsPage({ searchParams }: PageProps<"/invi
       return byGroup.get(group) ?? [];
     });
     if (gathered.length > 0) {
-      sections.push({ collection, designs: gathered });
+      sections.push({
+        collection,
+        designs: gathered.sort(
+          (first, second) => Number(hasDesignedTemplate(second.key)) - Number(hasDesignedTemplate(first.key)),
+        ),
+      });
     }
   }
 
@@ -66,7 +72,9 @@ export default async function InvitationsPage({ searchParams }: PageProps<"/invi
     if (!claimed.has(group)) {
       sections.push({
         collection: { title: group, intro: "", groups: [group] },
-        designs: entries,
+        designs: entries.sort(
+          (first, second) => Number(hasDesignedTemplate(second.key)) - Number(hasDesignedTemplate(first.key)),
+        ),
       });
     }
   }

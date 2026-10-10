@@ -80,7 +80,7 @@ function nameFieldConfig(typeKey: EventDetail["typeKey"], websiteEnabled: boolea
   }
 }
 
-export function CustomizeEditor({ event, themes }: { event: EventDetail; themes: Theme[] }) {
+export function CustomizeEditor({ event, themes, accentError = false }: { event: EventDetail; themes: Theme[]; accentError?: boolean }) {
   const save = saveEventDetails.bind(null, event.id);
   const [state, action, pending] = useActionState(save, INITIAL);
   const [dirty, setDirty] = useState(false);
@@ -312,6 +312,7 @@ export function CustomizeEditor({ event, themes }: { event: EventDetail; themes:
 
         <div className="rounded-2xl bg-white p-6">
           <h2 className="font-serif text-xl text-ink/70">Accent color</h2>
+          {accentError ? <p role="alert" className="mt-3 rounded-lg bg-blush px-4 py-3 text-sm text-ember">Your invitation was created, but its selected accent could not be saved. Choose a color here and save it.</p> : null}
           <div className="mt-4 flex flex-wrap gap-3">
             {swatches.map((swatch) => (
               <button

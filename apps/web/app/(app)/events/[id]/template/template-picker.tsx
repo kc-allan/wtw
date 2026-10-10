@@ -21,7 +21,9 @@ export function TemplatePicker({ event, themes }: { event: EventDetail; themes: 
     [themes],
   );
 
-  const visible = group === ALL ? themes : themes.filter((theme) => theme.group === group);
+  const visible = (group === ALL ? themes : themes.filter((theme) => theme.group === group))
+    .slice()
+    .sort((first, second) => Number(hasDesignedTemplate(second.key)) - Number(hasDesignedTemplate(first.key)));
 
   const names = nameLines(event.hostNames, event.title);
   const dateLabel = formatEventDate(event.startsAt, event.timezone, {

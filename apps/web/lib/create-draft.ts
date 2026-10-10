@@ -25,6 +25,8 @@ export interface CreateDraft {
   ceremonies?: CeremonyKey[];
   /** Carried from a template card on the marketing site, when that is the way in. */
   themeKey?: string;
+  /** The accent selected while previewing the design. */
+  accentColor?: string;
 }
 
 const DRAFT_COOKIE = "wtw_draft";
@@ -78,6 +80,9 @@ function parse(raw: string): CreateDraft | null {
     hostRole: isEnumValue(HostRole, draft.hostRole) ? draft.hostRole : undefined,
     ceremonies,
     themeKey: text(draft.themeKey),
+    accentColor: typeof draft.accentColor === "string" && /^#[0-9a-f]{6}$/i.test(draft.accentColor)
+      ? draft.accentColor
+      : undefined,
   };
 }
 

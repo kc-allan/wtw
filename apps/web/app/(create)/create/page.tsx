@@ -9,18 +9,27 @@ import { readDraft } from "@/lib/create-draft";
 import { readAccessToken } from "@/lib/session";
 import { api } from "@/lib/api";
 import type { Theme } from "@/lib/types";
+import { invitationDesign } from "@/lib/invitation-designs";
 
 export const metadata: Metadata = { title: "What are we celebrating? — Worth the Wait" };
 
 export default async function EventTypePage({ searchParams }: PageProps<"/create">) {
-  const { template, error } = await searchParams;
-  const [draft, accessToken, selectedTheme] = await Promise.all([
+  const { template, accent, error } = await searchParams;
+  const [draft, accessToken] = await Promise.all([
     readDraft(),
     readAccessToken(),
-    typeof template === "string"
-      ? api<Theme>(`/themes/${template}`, { auth: false, revalidate: 3600 }).catch(() => null)
-      : null,
   ]);
+  const themeKey = typeof template === "string" ? template : draft?.themeKey;
+  const selectedTheme = themeKey
+    ? await api<Theme>(`/themes/${themeKey}`, { auth: false, revalidate: 3600 }).catch(() => null)
+    : null;
+
+  const selectedAccent = typeof accent === "string" && /^#[0-9a-f]{6}$/i.test(accent)
+    ? accent
+    : draft?.themeKey === selectedTheme?.key ? draft?.accentColor : undefined;
+  const designAccent = selectedTheme
+    ? invitationDesign(selectedTheme.key)?.accents.some((option) => option.color.toLowerCase() === selectedAccent?.toLowerCase())
+    : false;
 
   const steps = createSteps(
     draft?.typeKey ?? selectedTheme?.eventTypeKey ?? EventTypeKey.WEDDING,
@@ -42,6 +51,7 @@ export default async function EventTypePage({ searchParams }: PageProps<"/create
         <EventBasicsForm
           draft={draft}
           themeKey={selectedTheme?.key}
+          initialAccent={designAccent ? selectedAccent : undefined}
           initialType={selectedTheme?.eventTypeKey}
           creationError={typeof error === "string"}
         />

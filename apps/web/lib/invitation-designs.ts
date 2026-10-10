@@ -39,12 +39,12 @@ export const INVITATION_DESIGNS: InvitationDesign[] = [
   },
   {
     key: "birthday-sporty", name: "Sporty", kind: "sporty", category: EventTypeKey.BIRTHDAY,
-    sampleTitle: "Nia's birthday match", image: "/images/invitations/sporty.webp",
+    sampleTitle: "Nia's match day", image: "/images/invitations/sporty.webp",
     description: "A match-day birthday programme with an oversized club masthead, invitation stub and numbered fixture notes.",
     palette: { background: "#eef3fa", surface: "#fffef8", ink: "#293d53", muted: "#5d6d80", accent: "#305d94" },
     accents: [{ name: "Club blue", color: "#305d94" }, { name: "Team red", color: "#a23e36" }, { name: "Field green", color: "#3f6948" }],
     eyebrow: "One birthday. An all-star team.", subtitle: "It wouldn't be the same without you", replyHeading: "You're on the team",
-    sectionLabels: { event_details: "The match-day programme", venue_map: "Our home ground", countdown: "Until the birthday kick-off" },
+    sectionLabels: { event_details: "The match-day programme", venue_map: "Home ground", countdown: "Kick-off" },
   },
   {
     key: "birthday-dinosaur-adventure", name: "Dinosaur Adventure", kind: "dinosaur", category: EventTypeKey.BIRTHDAY,

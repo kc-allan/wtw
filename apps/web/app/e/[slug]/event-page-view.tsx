@@ -86,7 +86,12 @@ export function EventPageView({
   return (
     <div
       className={`min-h-dvh ${design ? `${styles.landing} ${birthdayEdition ? `${birthdayEditionStyles.page} ${birthdayEditionStyles[design.kind]}` : `${styles[`${design.kind}Page`] ?? ""} ${birthdayWorld ? `${birthdayWorldStyles.page} ${birthdayWorldStyles[design.kind]}` : collectionStyles[design.kind] ? `${collectionStyles.page} ${collectionStyles[design.kind]}` : ""}`}` : ""}`}
-      style={{ backgroundColor: palette.surface, color: palette.ink, "--invite-accent": palette.accent } as CSSProperties}
+      style={{
+        backgroundColor: palette.surface,
+        color: palette.ink,
+        "--invite-accent": palette.accent,
+        "--invite-accent-wash": `color-mix(in srgb, ${palette.accent} 12%, ${palette.surface})`,
+      } as CSSProperties}
     >
       <PageNav sections={sections} palette={palette} />
 

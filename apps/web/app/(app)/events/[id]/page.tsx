@@ -167,7 +167,7 @@ export default async function EventHubPage({ params, searchParams }: PageProps<"
 
   return (
     <div className="flex flex-1 flex-col lg:flex-row">
-      <div className="w-full shrink-0 border-b border-rule/40 bg-white px-6 py-10 lg:w-[450px] lg:border-r lg:border-b-0 lg:px-8">
+      <div className="w-full shrink-0 border-b border-rule/40 bg-white px-6 py-10 lg:sticky lg:top-0 lg:h-dvh lg:self-start lg:overflow-y-auto lg:border-r lg:border-b-0 lg:px-8">
         <EventRail
           eventId={id}
           eventTitle={event.title}

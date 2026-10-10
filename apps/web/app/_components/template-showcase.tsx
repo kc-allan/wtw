@@ -4,6 +4,7 @@ import Image from "next/image";
 import { motion } from "motion/react";
 import { Fragment, useRef, useState } from "react";
 import { categories, templatesByCategory } from "@/app/_data/landing";
+import { invitationDesign } from "@/lib/invitation-designs";
 import { TemplateCard } from "./template-card";
 import { useScrollDrift } from "./use-scroll-drift";
 
@@ -21,8 +22,9 @@ export function TemplateShowcase() {
   const stripRef = useRef<HTMLDivElement>(null);
   const { ref: bandRef, x } = useScrollDrift(DRIFT);
 
-  const templates = templatesByCategory[activeCategory] ?? [];
-  const cards = Array.from({ length: REPEATS }, (_, pass) =>
+  const templates = (templatesByCategory[activeCategory] ?? [])
+    .filter((template) => invitationDesign(template.id));
+  const cards = Array.from({ length: templates.length > 1 ? REPEATS : 1 }, (_, pass) =>
     templates.map((template) => ({
       ...template,
       key: `${pass}-${template.id}`,

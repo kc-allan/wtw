@@ -1,4 +1,4 @@
-.landing { --invite-accent: #216574; color: #153b43; letter-spacing: 0; }
+.landing { --invite-accent: #216574; --invite-accent-wash: color-mix(in srgb, var(--invite-accent) 12%, white); color: #153b43; letter-spacing: 0; }
 .landing h1, .landing h2, .landing h3, .hero .title { letter-spacing: 0; }
 .landing a:focus-visible, .hero a:focus-visible { outline: 3px solid var(--invite-accent); outline-offset: 5px; }
 .hero { position: relative; isolation: isolate; min-height: min(780px, 82svh); padding: 66px 24px 76px; display: flex; align-items: center; justify-content: center; overflow: hidden; text-align: center; }
@@ -37,7 +37,7 @@
 .brunch { padding: 36px 24px 290px; min-height: 710px; align-items: flex-start; }
 .brunch .discover { bottom: 8px; }
 .monogram { border: 1px solid var(--invite-accent); border-radius: 50%; width: 60px; height: 60px; display: grid; place-items: center; margin: 0 auto 20px; font-family: Georgia, serif; font-size: 18px; color: var(--invite-accent); }
-.details { display: grid; grid-template-columns: 1fr 1fr; max-width: 1120px; margin: auto; padding: 44px 32px; gap: 30px; border-bottom: 1px solid var(--invite-accent); }
+.details { display: grid; grid-template-columns: 1fr 1fr; max-width: 1120px; margin: auto; padding: 44px 32px; gap: 30px; border-top: 7px solid var(--invite-accent); border-bottom: 1px solid var(--invite-accent); background: var(--invite-accent-wash); }
 .details > div + div { border-left: 1px solid var(--invite-accent); padding-left: 40px; }
 .details span { display: block; color: var(--invite-accent); font-size: 12px; text-transform: uppercase; margin-bottom: 8px; }
 .details strong { display: block; font-family: var(--font-cormorant), Georgia, serif; font-size: 28px; font-weight: 600; }
@@ -69,6 +69,8 @@
 .body { overflow-wrap: anywhere; }
 .body input:not([type="radio"]):not([type="checkbox"]), .body textarea, .body select { border-radius: 2px; }
 .body input[type="radio"] { accent-color: var(--invite-accent); }
+.body :global(#rsvp) button[type="submit"] { background-color: var(--invite-accent); color: #fff; }
+.body :global(#rsvp) input:not([type="radio"]):focus-visible, .body :global(#rsvp) textarea:focus-visible, .body :global(#rsvp) select:focus-visible { outline: 2px solid var(--invite-accent); outline-offset: 2px; }
 .designedSection { padding-block: 80px; }
 .designedSection h2 { font-size: 42px; line-height: 1.15; }
 .designedSection p { line-height: 1.8; }
