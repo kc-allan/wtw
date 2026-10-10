@@ -16,6 +16,7 @@ import { PageNav } from "./page-nav";
 import { RsvpForm } from "./rsvp-form";
 import collectionStyles from "@/app/_components/invitation-collection.module.css";
 import { BirthdayWorldHero, birthdayWorldStyles } from "@/app/_components/birthday-worlds";
+import { BirthdayEditionHero, birthdayEditionStyles, hasBirthdayEdition } from "@/app/_components/birthday-editions";
 
 /**
  * The event exactly as a guest reads it. Kept apart from the fetching so the
@@ -49,6 +50,7 @@ export function EventPageView({
 }) {
   const design = invitationDesign(event.theme?.key);
   const birthdayWorld = design?.kind === "gaming" || design?.kind === "sporty";
+  const birthdayEdition = hasBirthdayEdition(design?.kind);
   const basePalette = design?.palette ?? event.theme?.palette ?? FALLBACK_PALETTE;
   const accent = invitationAccent(modules.find((module) => module.key === EventModuleKey.INVITATION)?.config);
   const palette = { ...basePalette, accent: accent ?? basePalette.accent };
@@ -83,13 +85,15 @@ export function EventPageView({
 
   return (
     <div
-      className={`min-h-dvh ${design ? `${styles.landing} ${styles[`${design.kind}Page`] ?? ""} ${birthdayWorld ? `${birthdayWorldStyles.page} ${birthdayWorldStyles[design.kind]}` : collectionStyles[design.kind] ? `${collectionStyles.page} ${collectionStyles[design.kind]}` : ""}` : ""}`}
+      className={`min-h-dvh ${design ? `${styles.landing} ${birthdayEdition ? `${birthdayEditionStyles.page} ${birthdayEditionStyles[design.kind]}` : `${styles[`${design.kind}Page`] ?? ""} ${birthdayWorld ? `${birthdayWorldStyles.page} ${birthdayWorldStyles[design.kind]}` : collectionStyles[design.kind] ? `${collectionStyles.page} ${collectionStyles[design.kind]}` : ""}`}` : ""}`}
       style={{ backgroundColor: palette.surface, color: palette.ink, "--invite-accent": palette.accent } as CSSProperties}
     >
       <PageNav sections={sections} palette={palette} />
 
       {design ? <>
-        {birthdayWorld ? <BirthdayWorldHero design={design} title={event.title}
+        {birthdayEdition ? <BirthdayEditionHero design={design} title={event.title}
+          date={formatEventDate(event.startsAt, event.timezone)} accent={palette.accent}
+          rsvp={enabled.has(EventModuleKey.RSVP)} details={eventDetails} /> : birthdayWorld ? <BirthdayWorldHero design={design} title={event.title}
           date={formatEventDate(event.startsAt, event.timezone)} accent={palette.accent}
           rsvp={enabled.has(EventModuleKey.RSVP)} compact={false} details={eventDetails} /> : <>
         <InvitationHero design={design} names={event.hostNames} title={event.title}

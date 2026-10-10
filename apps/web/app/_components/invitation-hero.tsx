@@ -3,11 +3,15 @@ import type { CSSProperties } from "react";
 import type { InvitationDesign } from "@/lib/invitation-designs";
 import styles from "./invitation-landing.module.css";
 import { CollectionHero } from "./collection-hero";
+import { BirthdayEditionHero, hasBirthdayEdition } from "./birthday-editions";
 
 export function InvitationHero({ design, names, title, date, venue, accent, rsvp = true, compact = false }: {
   design: InvitationDesign; names: string[]; title: string; date: string; venue?: string;
   accent?: string; rsvp?: boolean; compact?: boolean;
 }) {
+  if (hasBirthdayEdition(design.kind)) {
+    return <BirthdayEditionHero design={design} title={title} date={date} venue={venue} accent={accent} rsvp={rsvp} compact={compact} />;
+  }
   if (!["coastal", "garden", "brunch"].includes(design.kind)) {
     return <CollectionHero design={design} names={names} title={title} date={date} venue={venue} accent={accent} rsvp={rsvp} compact={compact} />;
   }

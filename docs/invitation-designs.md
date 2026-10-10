@@ -6,9 +6,9 @@ Thirty-five landing-page designs are mapped to existing catalogue keys across se
 | --- | --- | --- | --- |
 | Gaming | `birthday-gaming` | Multiplayer lobby, session navigation, grouped event information and a squad reply | `/designs/gaming` |
 | Sporty | `birthday-sporty` | Oversized club masthead, invitation stub, numbered programme and team-sheet reply | `/designs/sporty` |
-| Dinosaur Adventure | `birthday-dinosaur-adventure` | Illustrated expedition, fern-green field notes and a trail-ready reply | `/designs/dinosaur` |
+| Dinosaur Adventure | `birthday-dinosaur-adventure` | Expedition notebook, illustrated specimen, numbered field entries and a trail-ready reply | `/designs/dinosaur` |
 | Construction Trucks | `birthday-construction-trucks` | Worksite-yellow masthead, bold signage, ruled details and a crew reply | `/designs/trucks` |
-| Rainbow | `birthday-rainbow` | Paper-cut rainbow, sky-blue opening and multicolour chapter rules | `/designs/rainbow` |
+| Rainbow | `birthday-rainbow` | Colour-block mural, curved blue illustration plane and alternating full-width colour chapters | `/designs/rainbow` |
 | Mermaid | `birthday-mermaid` | Illustrated underwater storybook, pearly double rules and flowing serif lettering | `/designs/mermaid` |
 | Safari Chic | `wedding-safari-chic` | Field-journal typography, a savannah horizon and ruled programme entries | `/designs/safari` |
 | Kitenge Modern | `wedding-kitenge-modern` | Original wax-print-inspired margins, confident lettering and vivid chapter bands | `/designs/kitenge` |
@@ -22,7 +22,7 @@ Thirty-five landing-page designs are mapped to existing catalogue keys across se
 | White & Gold | `wedding-white-and-gold` | Engraved initials, botanical margins, numbered story chapters and a ruled programme | `/designs/gilded` |
 | Ivory & Champagne | `wedding-ivory-and-champagne` | Reception journal, flowing names, a photographic toast and paired story columns | `/designs/champagne` |
 | Cocktail Party | `birthday-cocktail-party` | Aperitivo menu, painted drinks, burgundy rules and a perforated reply | `/designs/cocktail` |
-| Cheers to 40 | `birthday-cheers-to-40` | Milestone poster, oversized birthday lettering and a photographic keepsake | `/designs/forty` |
+| Cheers to 40 | `birthday-cheers-to-40` | Birthday newspaper, editorial masthead, monochrome photograph, drop caps and columned stories | `/designs/forty` |
 | Floral Garden | `baby-shower-floral-garden` | Seed-packet masthead, botanical specimens and garden-green chapter bands | `/designs/bloom` |
 | Busy Bee | `baby-shower-busy-bee` | Painted honey garden, yellow stationery and striped chapter edges | `/designs/honey` |
 | Coastal | `wedding-coastal-diani-and-lamu` | Destination journal: a couple's monogram, open horizon, numbered editorial chapters and a horizontal itinerary | `/designs/coastal` |
@@ -30,7 +30,7 @@ Thirty-five landing-page designs are mapped to existing catalogue keys across se
 | Black Tie | `wedding-black-tie` | Formal programme, sculptural lilies and fine double rules | `/designs/blacktie` |
 | Tropical Greenery | `wedding-tropical-greenery` | Botanical folio, photographic canopy and open-air chapters | `/designs/tropical` |
 | Modern Monochrome | `wedding-modern-monochrome` | Art-book cover, oversized sans-serif names and editorial story columns | `/designs/monochrome` |
-| Brunch Party | `birthday-brunch-party` | Bistro invitation: painted tableware, picnic checks, double rules and a place-at-the-table reply | `/designs/brunch` |
+| Brunch Party | `birthday-brunch-party` | Bistro menu, table vignette, reservation line, dotted menu columns and a place-at-the-table reply | `/designs/brunch` |
 | Space Explorer | `birthday-space-explorer` | Paper-cut rocket landscape, flight-log details and a launch clock | `/designs/space` |
 | Neon Party | `birthday-neon-party` | Music-poster lettering, concert photography, ticket rules and an acid-yellow countdown | `/designs/neon` |
 | Blue Sky | `baby-shower-blue-sky` | Cloud-blue correspondence, fine rules and a centered, airy invitation | `/designs/sky` |
@@ -61,7 +61,9 @@ The illustrated children's birthday samples also use editable sample names and a
 
 ## Design direction
 
-Gaming and Sporty now use dedicated compositions in `birthday-worlds.tsx` and its CSS module rather than the generic collection hero. Gaming uses a dark lobby, functional anchor navigation, one session-details strip, an asymmetric information grid and a split reply layout. Sporty uses a broad typographic masthead, one date/venue stub, numbered programme rows and a ruled reply form. The existing illustrations act as supporting marks rather than determining the page structure. These two revisions are the current direction under review; the earlier birthday designs are not yet revised to this standard.
+Gaming and Sporty use dedicated compositions in `birthday-worlds.tsx` and its CSS module rather than the generic collection hero. Gaming uses a dark lobby, functional anchor navigation, one session-details strip, an asymmetric information grid and a split reply layout. Sporty uses a broad typographic masthead, one date/venue stub, numbered programme rows and a ruled reply form. The existing illustrations act as supporting marks rather than determining the page structure.
+
+The other nine completed birthday designs now use `birthday-editions.tsx` and its CSS module, bypassing the old collection layout. Dinosaur is an expedition notebook with numbered field entries; Trucks is a work order with a machine floor and ruled job sheet; Rainbow is a mural of full-width colour planes; Mermaid is a storybook with alternating chapters and drop caps; Space is a mission brief with a flight manifest and asymmetric flight log; Neon is a gig poster with an admission strip and event bill; Brunch is a bistro menu with reservation details; Cocktail is an aperitivo menu with a tear-off reply; Forty is a birthday newspaper with editorial columns. Each treatment extends through the details, countdown and RSVP, not only the opening. The milestone layout uses the saved event title without assuming an age.
 
 Their facts and optional modules still come from the shared event renderer. No invented guest counts, teams, scores or game controls appear. Compact catalogue previews share the new compositions, with reduced secondary content to keep the date visible.
 
@@ -184,6 +186,8 @@ Sporty:
 > Use case: illustration-story. Original editorial screen-print illustration for a sporty teen birthday invitation. An orange basketball, black and white football, a blue tennis racket with yellow ball and a red sports pennant, arranged as an energetic wide low still life, complete objects with generous margins. Vintage athletic club programme art, bold navy ink outlines and slightly imperfect printed texture, flat coral, royal blue, grassy green and yellow colours. No text, no numbers, no logos, no people, no brands, no gradients or glow. Genuinely transparent background, no court rectangle.
 
 ## Verification
+
+The nine earlier birthday compositions were checked at 360px, 768px and 1440px for loaded artwork, page width, countdown fit and valid hero anchors. Long-title page checks and personalised catalogue previews cover the same widths. Screenshot inspection led to smaller narrow-layout countdown digits, a corrected Space illustration crop and tighter Neon thumbnail typography. All three accents preserve section backgrounds and image sources on all nine pages. Attendance selection and disabled preview submission were checked; no real replies were sent. Frontend type checking passes. Existing artwork is reused, with no backend or RSVP submission changes.
 
 The Gaming and Sporty composition revision was checked at 360px, 768px and 1440px, including loaded artwork, one details block per page, valid anchor targets, all three accent choices, attendance selection and disabled preview submission. Long-name catalogue previews were checked at all three sizes for horizontal and vertical clipping. Mobile Gaming spacing and compact tablet typography were corrected after screenshot inspection. Frontend type checking passes. A Garden sample smoke check confirms its existing headline, anchor targets and mobile width remain intact. No RSVP submission logic or backend code changed.
 
