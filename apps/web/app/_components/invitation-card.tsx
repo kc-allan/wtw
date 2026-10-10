@@ -4,6 +4,8 @@ import {
   type TemplateDefinition,
 } from "@/app/_data/templates";
 import type { ThemePalette } from "@/lib/types";
+import { invitationDesign } from "@/lib/invitation-designs";
+import { InvitationHero } from "./invitation-hero";
 
 export interface InvitationContent {
   /** One entry per line, so a long pair can break the way the design does. */
@@ -25,12 +27,14 @@ export function InvitationCard({
   palette,
   content,
   footer: footerChoice,
+  accentColor,
   className = "",
 }: {
   themeKey: string | null;
   group: string | null;
   eventTypeKey: string;
   palette: ThemePalette | null;
+  accentColor?: string;
   content: InvitationContent;
   /**
    * Overrides what the template would put under the rule. The browse grid
@@ -40,6 +44,13 @@ export function InvitationCard({
   footer?: TemplateDefinition["footer"];
   className?: string;
 }) {
+  const design = invitationDesign(themeKey);
+  if (design) {
+    return <div className={`overflow-hidden rounded-lg ${className}`}>
+      <InvitationHero design={design} compact names={content.names.flatMap((name) => name.split("&").map((part) => part.trim()).filter(Boolean))}
+        title={content.names.join(" ")} date={content.dateLabel ?? "Date to be announced"} accent={accentColor} />
+    </div>;
+  }
   const template = templateFor(themeKey, group, eventTypeKey);
   const footerKind = footerChoice ?? template.footer;
   const base = palette ?? FALLBACK_PALETTE;
@@ -58,7 +69,7 @@ export function InvitationCard({
   const colours = {
     surface,
     ink: template.ink ?? (onAccent ? base.background : base.ink),
-    accent: template.accent ?? (onAccent ? base.background : base.accent),
+    accent: accentColor ?? template.accent ?? (onAccent ? base.background : base.accent),
   };
   const muteText = onAccent || paletteIsDark;
 

@@ -5,7 +5,7 @@ import { EventStatus, EventTypeKey } from "@wtw/shared";
 import { api } from "@/lib/api";
 import { SITE_URL } from "@/lib/env";
 import { eventSurfaceLabel, publicPageSections } from "@/lib/event-public-sections";
-import type { EventDetail, GalleryPhoto, Guest, Paginated, PublicEvent, RegistryForGuests } from "@/lib/types";
+import type { EventDetail, GalleryPhoto, Guest, Paginated, PublicEvent, PublicGame, RegistryForGuests } from "@/lib/types";
 import { EventRail, type NextTask, type RailSection } from "./_hub/event-rail";
 import { CeremoniesPanel, GuestListPanel, InvitationsPanel, Panel } from "./_hub/panels";
 import { WebsitePages, type WebsitePage } from "./_hub/website-pages";
@@ -21,6 +21,7 @@ interface EventPreview extends Omit<PublicEvent, "guest"> {
   guest: null;
   registry: RegistryForGuests | null;
   gallery: GalleryPhoto[] | null;
+  games: PublicGame[];
 }
 
 function hasText(value: string | null | undefined): boolean {
@@ -116,6 +117,7 @@ export default async function EventHubPage({ params, searchParams }: PageProps<"
     ceremoniesCount: event.ceremonies.length,
     hasGallery: preview?.gallery !== null && preview?.gallery !== undefined,
     hasRegistry,
+    hasGames: (preview?.games ?? []).length > 0,
   }).map((page) => ({
     anchor: page.id,
     label: page.label,
@@ -165,7 +167,7 @@ export default async function EventHubPage({ params, searchParams }: PageProps<"
 
   return (
     <div className="flex flex-1 flex-col lg:flex-row">
-      <div className="w-full shrink-0 border-b border-rule/40 bg-white px-6 py-10 lg:w-[450px] lg:border-r lg:border-b-0 lg:px-8">
+      <div className="w-full shrink-0 border-b border-rule/40 bg-white px-6 py-10 lg:sticky lg:top-0 lg:h-dvh lg:self-start lg:overflow-y-auto lg:border-r lg:border-b-0 lg:px-8">
         <EventRail
           eventId={id}
           eventTitle={event.title}

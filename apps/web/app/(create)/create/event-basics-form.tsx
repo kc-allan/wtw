@@ -35,11 +35,13 @@ const INITIAL: FormState = {};
 export function EventBasicsForm({
   draft,
   themeKey,
+  initialAccent,
   initialType,
   creationError,
 }: {
   draft: CreateDraft | null;
   themeKey?: string;
+  initialAccent?: string;
   initialType?: EventTypeKey;
   creationError?: boolean;
 }) {
@@ -86,6 +88,7 @@ export function EventBasicsForm({
         {/* The real value the API receives, whichever pill is showing. */}
         <input type="hidden" name="typeKey" value={selected} />
         {themeKey ? <input type="hidden" name="themeKey" value={themeKey} /> : null}
+        {initialAccent ? <input type="hidden" name="accentColor" value={initialAccent} /> : null}
       </fieldset>
 
       {isOther ? (

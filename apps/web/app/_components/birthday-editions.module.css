@@ -1,0 +1,354 @@
+.hero { position: relative; isolation: isolate; overflow: hidden; letter-spacing: 0; }
+.title { margin: 0; font: 700 88px/1 var(--font-jost),sans-serif; overflow-wrap: anywhere; text-wrap: balance; letter-spacing: 0; }
+.longTitle .title { font-size: 64px; }
+.kicker { font: 12px/1.6 monospace; text-transform: uppercase; margin-bottom: 22px; }
+.art { position: relative; min-width: 0; height: 290px; }
+.art img { object-fit: contain; }
+.action { display: inline-flex; justify-content: space-between; gap: 24px; align-items: center; padding: 15px 22px; margin-top: 28px; background: var(--invite-accent); color: white; font-size: 14px; max-width: 100%; }
+.action:focus-visible { outline: 3px solid currentColor; outline-offset: 5px; }
+.masthead, .editionLine { display: flex; justify-content: space-between; gap: 20px; padding: 20px 6%; font: 12px/1.5 monospace; text-transform: uppercase; border-bottom: 1px solid currentColor; }
+.previewDate { display: flex; flex-wrap: wrap; gap: 8px 30px; padding: 22px 6%; font: 14px/1.5 monospace; }
+.hero figcaption { font: italic 16px/1.5 Georgia,serif; }
+.page .hero :global(#celebration-details) { max-width: none; margin: 0; border-bottom: 0; padding: 28px 6%; color: inherit; }
+.page .hero :global(#celebration-details) strong { font-size: 26px; }
+.page [data-event-sections] > section { padding: 60px 7%; }
+.page [data-event-sections] > section > div { max-width: 1060px; }
+.page :global(#countdown) ul { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 16px; }
+.page :global(#countdown) li > span:first-child { font-size: 44px; white-space: nowrap; }
+.page :global(#countdown) li > span:last-child { white-space: nowrap; }
+.page :global(#rsvp) { padding: 65px 7%; }
+.page :global(#rsvp-heading) { line-height: 1.1; }
+
+/* An expedition notebook: cover, illustrated specimen, then field entries. */
+.hero.dinosaur { background: #e8efcf; color: #314a2a; }
+.dinosaur .masthead { border-bottom: 2px dashed #65754b; }
+.expedition { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 40px; padding: 55px 6%; }
+.journalTitle { border-left: 8px solid #c2583c; padding-left: 30px; }
+.dinosaur .title { font-family: Georgia,serif; font-style: italic; font-size: 92px; }
+.specimen { border-bottom: 1px solid #65754b; padding-bottom: 15px; }
+.specimen .art { height: 340px; }
+.specimen figcaption { text-align: right; }
+.fieldNotes { border-top: 2px dashed #65754b; background: #fcfcef; }
+.page.dinosaur [data-event-sections] { counter-reset: field; margin-inline: 7%; border-left: 2px dashed #8a9a70; }
+.page.dinosaur [data-event-sections] > section { counter-increment: field; padding: 45px 30px; background: #fffef5 !important; }
+.page.dinosaur [data-event-sections] > section > div { display: grid; grid-template-columns: 230px minmax(0,1fr); gap: 30px; }
+.page.dinosaur h2 { font-family: Georgia,serif; font-style: italic; }
+.page.dinosaur [data-event-sections] h2::before { content: "Field note " counter(field,decimal-leading-zero); display: block; font: 11px/1.5 monospace; text-transform: uppercase; margin-bottom: 16px; }
+.page.dinosaur [data-event-sections] h2 + div { margin-top: 0; }
+.page.dinosaur :global(#rsvp) { border-top: 2px dashed #8a9a70; background: #e8efcf !important; }
+.page.dinosaur :global(#rsvp) > div { max-width: 850px; }
+
+/* A work order, with a machine floor and a ruled job sheet. */
+.hero.trucks { background: #ffd84e; color: #292f32; }
+.workOrder { display: grid; grid-template-columns: 1fr auto; border-bottom: 5px solid #292f32; font: 13px/1.5 monospace; text-transform: uppercase; }
+.workOrder > * { padding: 20px 30px; }
+.workOrder strong { background: #292f32; color: #ffd84e; }
+.siteTitle { padding: 40px 6% 20px; }
+.trucks .title { font-size: 104px; font-weight: 900; text-transform: uppercase; }
+.siteFloor { display: grid; grid-template-columns: 1fr 1fr; align-items: end; gap: 40px; padding: 0 6% 35px; }
+.siteFloor .art { height: 240px; }
+.siteSign { border-left: 4px solid #292f32; padding: 20px 30px; }
+.siteSign p { font: 700 32px/1.1 var(--font-jost),sans-serif; text-transform: uppercase; }
+.jobSheet { background: #fcfcf0; border-block: 8px double #292f32; }
+.page.trucks [data-event-sections] { display: grid; grid-template-columns: 1fr 1fr; background: #fcfcf0; }
+.page.trucks [data-event-sections] > section { background: transparent !important; border: 1px solid #8f9693; padding: 35px; }
+.page.trucks :global(#event_details) { grid-column: 1 / -1; }
+.page.trucks :global(#event_details) > div { display: grid; grid-template-columns: 1fr 2fr; gap: 40px; }
+.page.trucks h2 { font: 800 32px/1.1 var(--font-jost),sans-serif; text-transform: uppercase; }
+.page.trucks :global(#rsvp) { border-top: 12px solid #292f32; background: #ffd84e !important; }
+.page.trucks :global(#rsvp) > div { display: grid; grid-template-columns: 1fr 1.4fr; max-width: 1100px; gap: 60px; }
+.page.trucks :global(#rsvp-heading) { text-align: left; font-size: 54px; }
+.page.trucks :global(#rsvp) input, .page.trucks :global(#rsvp) textarea, .page.trucks :global(#rsvp) button { border-radius: 0; }
+
+/* A colour-block mural, with each chapter occupying its own colour plane. */
+.hero.rainbow { background: #f5b9b5; color: #493348; }
+.colourBanner { display: flex; justify-content: space-between; gap: 20px; padding: 17px 5%; background: #fce58d; color: #493348; font: 13px/1.5 monospace; }
+.mural { display: grid; grid-template-columns: 1.15fr 1fr; }
+.muralTitle { padding: 60px 9%; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
+.rainbow .title { font-weight: 800; font-size: 94px; }
+.muralArt { background: #d5e9fb; padding: 40px 25px; border-radius: 160px 0 0 0; }
+.muralArt .art { height: 260px; }
+.muralArt p { text-align: center; font: italic 30px/1.1 Georgia,serif; margin-top: 25px; }
+.colourDate { background: #dfecc5; border-left: 20px solid #fce58d; }
+.page.rainbow [data-event-sections] > section { border: 0; }
+.page.rainbow :global(#event_details) { background: #fff8e7 !important; border-left: 35px solid #f5b9b5; }
+.page.rainbow :global(#venue_map) { background: #e2edf8 !important; border-right: 35px solid #fce58d; text-align: right; }
+.page.rainbow :global(#countdown) { background: #dfecc5 !important; }
+.page.rainbow :global(#countdown) > div { display: grid; grid-template-columns: 1fr 1.3fr; gap: 40px; align-items: center; }
+.page.rainbow h2 { font: 700 42px/1.1 var(--font-jost),sans-serif; }
+.page.rainbow :global(#rsvp) { background: #f8dada !important; border-top: 18px solid #fce58d; }
+.page.rainbow :global(#rsvp) > div { max-width: 800px; }
+
+/* An underwater story spread, continuing in alternating literary chapters. */
+.hero.mermaid { background: #d9eeeb; color: #345663; }
+.mermaid .masthead { border-bottom: 1px solid #75a49d; font-family: Georgia,serif; text-transform: none; font-style: italic; font-size: 16px; }
+.storySpread { display: grid; grid-template-columns: 1.1fr 1fr; align-items: center; padding: 50px 7% 35px; gap: 40px; }
+.mermaid .title { font: italic 100px/.95 var(--font-cormorant),Georgia,serif; }
+.storyTitle .aside { font: italic 22px/1.5 Georgia,serif; margin-top: 25px; }
+.storyArt { background: #f8e2e8; border-radius: 50% 50% 5% 5%; padding: 30px 15px; }
+.storyArt .art { height: 320px; }
+.storyArt figcaption { text-align: center; }
+.tideLine { background: #f9f9f1; border-top: 8px double #75a49d; }
+.page.mermaid [data-event-sections] > section { background: #fffbf9 !important; }
+.page.mermaid :global(#event_details) > div { margin-left: 8%; max-width: 650px; }
+.page.mermaid :global(#event_details) p::first-letter { font: 70px/.9 Georgia,serif; float: left; padding: 8px 9px 0 0; color: #95607a; }
+.page.mermaid :global(#venue_map) { background: #f8e2e8 !important; }
+.page.mermaid :global(#venue_map) > div { margin-right: 8%; max-width: 650px; text-align: right; }
+.page.mermaid h2 { font: italic 48px/1.1 var(--font-cormorant),Georgia,serif; }
+.page.mermaid :global(#countdown) { background: #d9eeeb !important; text-align: center; }
+.page.mermaid :global(#countdown) > div { max-width: 650px; }
+.page.mermaid :global(#countdown) li > span:first-child { font: italic 54px/1 Georgia,serif; }
+.page.mermaid :global(#rsvp) { border-top: 8px double #75a49d; background: #fffbf9 !important; }
+
+/* A mission brief with an illustrated launch scene and flight manifest. */
+.hero.space { background: #edf6fb; color: #263c50; }
+.missionTop { background: #233f51; color: #f8faf1; display: flex; justify-content: space-between; gap: 20px; padding: 18px 6%; font: 12px/1.5 monospace; text-transform: uppercase; }
+.missionBrief { display: grid; grid-template-columns: 1.3fr 1fr; align-items: center; gap: 50px; padding: 45px 6% 30px; }
+.space .title { font-family: monospace; font-weight: 800; font-size: 78px; text-transform: uppercase; }
+.missionScene .art { height: 260px; }
+.missionScene .art img { object-fit: cover; object-position: center bottom; }
+.missionScene figcaption { border-top: 1px solid #789eac; padding-top: 12px; font-family: monospace; font-size: 12px; }
+.flightManifest { border-block: 2px solid #789eac; }
+.page.space [data-event-sections] { display: grid; grid-template-columns: 1.3fr 1fr; background: #edf6fb; padding: 0 6%; }
+.page.space [data-event-sections] > section { background: transparent !important; padding: 40px 25px; border-bottom: 1px solid #789eac; }
+.page.space :global(#event_details) { grid-row: span 2; border-right: 1px solid #789eac; }
+.page.space h2 { font: 700 28px/1.2 monospace; text-transform: uppercase; }
+.page.space :global(#countdown) li > span:first-child { font-family: monospace; font-size: 36px; }
+.page.space :global(#rsvp) { border-top: 12px solid #233f51; background: #f5f9fc !important; }
+.page.space :global(#rsvp) > div { max-width: 850px; }
+.page.space :global(#rsvp) input, .page.space :global(#rsvp) textarea, .page.space :global(#rsvp) button { border-radius: 0; }
+
+/* A gig poster and admission strip, followed by a compact event bill. */
+.hero.neon { background: #21221d; color: #e7ff73; }
+.gigStrip { display: flex; justify-content: space-between; gap: 20px; font: 14px/1.5 monospace; text-transform: uppercase; padding: 20px 6%; border-block: 10px solid #edacd0; color: #edacd0; }
+.gigPoster { display: grid; grid-template-columns: 1fr 28%; }
+.gigTitle { padding: 45px 8% 55px; }
+.neon .title { font: 900 112px/.9 var(--font-jost),sans-serif; text-transform: uppercase; }
+.gigPoster .art { height: 100%; min-height: 350px; }
+.gigPoster .art img { object-fit: cover; object-position: 58% center; }
+.neon .action { background: #e7ff73; color: var(--invite-accent); }
+.admission { background: #edacd0; color: #352435; display: grid; grid-template-columns: 1fr 250px; align-items: center; padding-right: 6%; }
+.admission > p { font: 16px/1.4 monospace; border-left: 2px dashed #352435; padding-left: 25px; }
+.page.neon [data-event-sections] > section { background: #f8f8ec !important; padding: 40px 7%; }
+.page.neon [data-event-sections] > section > div { display: grid; grid-template-columns: 1fr 1.5fr; gap: 45px; }
+.page.neon h2 { font: 800 40px/1 var(--font-jost),sans-serif; text-transform: uppercase; }
+.page.neon [data-event-sections] h2 + div { margin-top: 0; }
+.page.neon :global(#countdown) { background: #e7ff73 !important; }
+.page.neon :global(#countdown) li > span:first-child { font: 800 58px/1 var(--font-jost),sans-serif; }
+.page.neon :global(#rsvp) { background: #f5d7e7 !important; border-top: 3px dashed #352435; }
+.page.neon :global(#rsvp) > div { display: grid; grid-template-columns: 1fr 1.4fr; gap: 50px; max-width: 1080px; }
+.page.neon :global(#rsvp-heading) { text-align: left; font-size: 64px; }
+
+/* A bistro menu with a table vignette, a reservation line and menu columns. */
+.hero.brunch { background: #fffbe9; color: #304a36; border-inline: 20px solid #507350; }
+.bistroMasthead { display: flex; justify-content: space-between; gap: 20px; padding: 18px 6%; font: italic 18px/1.4 Georgia,serif; border-bottom: 4px double #507350; }
+.menuOpening { padding: 40px 6% 0; text-align: center; }
+.brunch .title { font: italic 98px/1 var(--font-cormorant),Georgia,serif; }
+.tableSetting { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 45px; padding: 15px 10% 35px; }
+.tableSetting .art { height: 230px; }
+.tableNote p { font: 27px/1.3 Georgia,serif; }
+.tableNote { border-left: 1px solid #8a9b71; padding-left: 35px; }
+.reservation { border-block: 4px double #507350; }
+.page.brunch [data-event-sections] { display: grid; grid-template-columns: 1fr 1fr; padding: 25px 7%; background: #fffbe9; }
+.page.brunch [data-event-sections] > section { background: transparent !important; padding: 35px; border-bottom: 2px dotted #8a9b71; }
+.page.brunch :global(#event_details) { border-right: 1px solid #8a9b71; }
+.page.brunch :global(#countdown) { grid-column: 1 / -1; text-align: center; }
+.page.brunch :global(#countdown) > div { max-width: 600px; }
+.page.brunch h2 { font: italic 42px/1.1 Georgia,serif; }
+.page.brunch :global(#rsvp) { background: #edf3e6 !important; border-block: 8px double #507350; }
+.page.brunch :global(#rsvp) > div { max-width: 820px; }
+
+/* Aperitivo signage and a tear-off receipt, with a bar-menu body. */
+.hero.cocktail { background: #612b3e; color: #fff4da; }
+.barSign { display: flex; justify-content: space-between; gap: 20px; padding: 22px 6%; border-bottom: 5px double #edb8b9; font: 13px/1.5 monospace; text-transform: uppercase; }
+.aperitivo { display: grid; grid-template-columns: 1.4fr 1fr; align-items: center; gap: 40px; padding: 45px 7%; }
+.cocktail .title { font: italic 108px/.95 var(--font-cormorant),Georgia,serif; }
+.barIllustration { border-left: 1px solid #edb8b9; padding-left: 30px; }
+.barIllustration .art { height: 290px; }
+.barIllustration p { font: 24px/1.3 Georgia,serif; text-align: center; }
+.cocktail .action { background: #fff4da; color: var(--invite-accent); }
+.barReceipt { background: #f7e4e9; color: #54273a; border-top: 2px dashed #612b3e; }
+.page.cocktail [data-event-sections] > section { background: #fffaf7 !important; padding: 45px 8%; }
+.page.cocktail [data-event-sections] > section > div { display: grid; grid-template-columns: 1fr 1.7fr; gap: 55px; border-bottom: 1px solid #bc8e99; padding-bottom: 25px; }
+.page.cocktail h2 { font: italic 46px/1.1 var(--font-cormorant),Georgia,serif; }
+.page.cocktail [data-event-sections] h2 + div { margin-top: 0; }
+.page.cocktail :global(#countdown) li > span:first-child { font: italic 48px/1 Georgia,serif; }
+.page.cocktail :global(#rsvp) { border-top: 2px dashed #612b3e; background: #f7e4e9 !important; }
+.page.cocktail :global(#rsvp) > div { max-width: 850px; }
+.page.cocktail :global(#rsvp-heading) { text-align: left; border-bottom: 5px double #bc8e99; padding-bottom: 20px; }
+
+/* A milestone newspaper, with editorial columns rather than an assumed age. */
+.hero.forty { background: #f2f5ee; color: #263f35; }
+.newspaperName { font: 700 52px/1 Georgia,serif; text-align: center; margin: 0 6%; padding: 28px 0 20px; border-bottom: 6px double #263f35; }
+.editionLine { margin-inline: 6%; padding: 12px 0; }
+.frontPage { display: grid; grid-template-columns: 1.5fr 1fr; gap: 50px; padding: 45px 6%; }
+.forty .title { font: 600 116px/.92 var(--font-cormorant),Georgia,serif; }
+.frontPage figure { border-left: 1px solid #88988b; padding-left: 30px; }
+.frontPage .art { height: 275px; }
+.frontPage .art img { object-fit: cover; object-position: center 85%; filter: grayscale(1); }
+.frontPage figcaption { margin-top: 15px; }
+.dateline { border-block: 1px solid #88988b; }
+.page.forty [data-event-sections] { display: grid; grid-template-columns: 1.3fr 1fr; padding: 25px 7%; background: #f2f5ee; }
+.page.forty [data-event-sections] > section { padding: 30px; background: transparent !important; }
+.page.forty :global(#event_details) { grid-row: span 2; border-right: 1px solid #88988b; }
+.page.forty :global(#event_details) p { font: 22px/1.7 Georgia,serif; }
+.page.forty :global(#event_details) p::first-letter { font-size: 58px; line-height: .9; float: left; padding: 10px 8px 0 0; }
+.page.forty h2 { font: 600 42px/1 var(--font-cormorant),Georgia,serif; }
+.page.forty :global(#countdown) li > span:first-child { font: 38px/1 Georgia,serif; }
+.page.forty :global(#rsvp) { background: #fffefa !important; border-top: 6px double #263f35; }
+.page.forty :global(#rsvp) > div { display: grid; grid-template-columns: 1fr 1.4fr; max-width: 1100px; gap: 55px; }
+.page.forty :global(#rsvp-heading) { text-align: left; font-size: 56px; }
+
+.dinosaur .masthead, .dinosaur .specimen, .dinosaur .fieldNotes,
+.page.dinosaur [data-event-sections] { border-color: var(--invite-accent); }
+.dinosaur .journalTitle { border-left-color: var(--invite-accent); }
+.page.dinosaur :global(#rsvp) { border-color: var(--invite-accent); }
+.trucks .workOrder, .trucks .siteSign, .trucks .jobSheet,
+.page.trucks [data-event-sections] > section, .page.trucks :global(#rsvp) { border-color: var(--invite-accent); }
+.rainbow .colourBanner, .rainbow .colourDate,
+.page.rainbow :global(#event_details), .page.rainbow :global(#venue_map),
+.page.rainbow :global(#rsvp) { border-color: var(--invite-accent); }
+.mermaid .masthead, .mermaid .tideLine, .mermaid .storyArt,
+.page.mermaid :global(#rsvp) { border-color: var(--invite-accent); }
+.space .missionTop, .space .missionScene figcaption, .space .flightManifest,
+.page.space [data-event-sections] > section, .page.space :global(#event_details),
+.page.space :global(#rsvp) { border-color: var(--invite-accent); }
+.neon .gigStrip, .neon .gigPoster, .neon .admission > p,
+.page.neon :global(#rsvp) { border-color: var(--invite-accent); }
+.hero.brunch, .brunch .bistroMasthead, .brunch .tableNote, .brunch .reservation,
+.page.brunch [data-event-sections] > section, .page.brunch :global(#event_details),
+.page.brunch :global(#rsvp) { border-color: var(--invite-accent); }
+.cocktail .barSign, .cocktail .barIllustration, .cocktail .barReceipt,
+.page.cocktail [data-event-sections] > section > div, .page.cocktail :global(#rsvp),
+.page.cocktail :global(#rsvp-heading) { border-color: var(--invite-accent); }
+.forty .newspaperName, .forty .editionLine, .forty .frontPage figure,
+.forty .dateline, .page.forty :global(#event_details), .page.forty :global(#rsvp) { border-color: var(--invite-accent); }
+
+.hero.longTitle .title { font-size: 64px; }
+.compact { height: 100%; display: flex; flex-direction: column; }
+.compact .masthead, .compact .workOrder, .compact .colourBanner, .compact .missionTop, .compact .gigStrip, .compact .bistroMasthead, .compact .barSign, .compact .editionLine { font-size: 8px; padding: 12px 16px; }
+.compact .masthead > :last-child, .compact .colourBanner > :last-child, .compact .missionTop > :last-child, .compact .gigStrip > :last-child, .compact .bistroMasthead > :last-child, .compact .barSign > :last-child, .compact .editionLine > :last-child { display: none; }
+.compact .kicker { font-size: 8px; margin-bottom: 12px; }
+.hero.compact .title { font-size: 34px; }
+.hero.compact.longTitle .title { font-size: 26px; }
+.compact .art { height: 110px; }
+.compact .previewDate { padding: 13px 16px; font-size: 10px; }
+.compact .fieldNotes, .compact .jobSheet, .compact .colourDate, .compact .tideLine, .compact .flightManifest, .compact .admission, .compact .reservation, .compact .barReceipt, .compact .dateline { margin-top: auto; }
+.compact .expedition { display: block; padding: 18px 16px; }
+.compact .journalTitle { border-left-width: 4px; padding-left: 13px; }
+.compact .specimen { margin-top: 12px; padding-bottom: 0; border: 0; }
+.compact figcaption { display: none; }
+.compact .workOrder { display: block; padding: 0; }
+.compact .workOrder > * { display: block; padding: 8px 16px; font-size: 8px; }
+.compact .workOrder strong { display: none; }
+.compact .siteTitle { padding: 20px 16px 0; }
+.compact .siteFloor { display: block; padding: 10px 16px; }
+.compact .siteSign { display: none; }
+.compact .mural { display: block; }
+.compact .muralTitle { padding: 22px 18px; }
+.compact .muralArt { padding: 10px; border-radius: 70px 0 0 0; }
+.compact .muralArt p { display: none; }
+.compact .storySpread { display: block; padding: 22px 20px 10px; }
+.compact .storyTitle .aside { display: none; }
+.compact .storyArt { margin-top: 14px; padding: 5px; }
+.compact .missionBrief { display: block; padding: 22px 18px; }
+.compact .missionScene { margin-top: 15px; }
+.compact .missionScene .art { height: 95px; }
+.compact .gigPoster { grid-template-columns: 1fr 22%; flex: 1; }
+.compact .gigTitle { padding: 24px 14px; }
+.compact .gigPoster .art { height: 100%; min-height: 0; }
+.compact .admission { display: block; padding: 0; }
+.compact .admission > p { display: none; }
+.compact.brunch { border-inline-width: 8px; }
+.compact .menuOpening { padding: 22px 16px 0; }
+.compact .tableSetting { display: block; padding: 12px 15px; }
+.compact .tableNote { display: none; }
+.compact .aperitivo { display: block; padding: 22px 18px 12px; }
+.compact .barIllustration { border: 0; padding: 10px 0 0; }
+.compact .barIllustration p { display: none; }
+.compact .newspaperName { font-size: 24px; padding: 18px 0 12px; }
+.compact .frontPage { display: block; padding: 20px 18px; }
+.compact .frontPage figure { padding: 0; border: 0; margin-top: 15px; }
+.compact .frontPage .art { height: 100px; }
+
+@media (max-width: 1000px) {
+  .hero:not(.compact) .title { font-size: 70px; }
+  .hero.longTitle:not(.compact) .title { font-size: 54px; }
+  .expedition, .storySpread, .aperitivo, .frontPage { gap: 25px; }
+  .page [data-event-sections] h2 { font-size: 32px; }
+  .page :global(#countdown) li > span:first-child { font-size: 32px; }
+  .page :global(#countdown) li > span:last-child { font-size: 12px; }
+  .page:is(.space, .neon, .mermaid, .cocktail, .forty) :global(#countdown) li > span:first-child { font-size: 28px; }
+  .page.space [data-event-sections], .page.forty [data-event-sections] { grid-template-columns: 1fr 1fr; padding-inline: 3%; }
+}
+@media (max-width: 700px) {
+  .hero:not(.compact) .title { font-size: 54px; }
+  .hero.longTitle:not(.compact) .title { font-size: 42px; }
+  .masthead, .missionTop, .gigStrip, .barSign { font-size: 10px; gap: 15px; }
+  .expedition, .storySpread, .aperitivo, .frontPage, .tableSetting, .missionBrief { grid-template-columns: 1fr; padding: 30px 24px; gap: 25px; }
+  .journalTitle { padding-left: 20px; }
+  .specimen .art, .storyArt .art { height: 210px; }
+  .siteTitle { padding: 30px 24px 10px; }
+  .workOrder { font-size: 10px; }
+  .workOrder > * { padding: 14px; }
+  .siteFloor { grid-template-columns: 1fr; padding: 0 24px 30px; gap: 15px; }
+  .siteFloor .art { height: 170px; }
+  .siteSign { padding: 12px 20px; }
+  .siteSign p { font-size: 23px; }
+  .mural { grid-template-columns: 1fr; }
+  .muralTitle { padding: 35px 24px; }
+  .muralArt { border-radius: 100px 0 0 0; padding: 20px; }
+  .muralArt .art { height: 160px; }
+  .muralArt p { font-size: 24px; margin-top: 10px; }
+  .missionScene .art { height: 190px; }
+  .gigPoster { grid-template-columns: 1fr; }
+  .gigTitle { padding: 40px 24px; }
+  .gigPoster .art { height: 130px; min-height: 0; }
+  .admission { display: block; padding: 0; }
+  .admission > p { display: none; }
+  .hero.brunch { border-inline-width: 8px; }
+  .bistroMasthead { font-size: 13px; }
+  .menuOpening { padding: 30px 20px 0; }
+  .tableSetting { grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px 16px 25px; }
+  .tableSetting .art { height: 150px; }
+  .tableNote { padding-left: 15px; }
+  .tableNote p { font-size: 19px; }
+  .tableNote .action { padding: 12px; gap: 10px; font-size: 12px; }
+  .barIllustration { border-left: 0; border-top: 1px solid #edb8b9; padding: 15px 0 0; display: grid; grid-template-columns: 1fr 1fr; align-items: center; }
+  .barIllustration .art { height: 180px; }
+  .barIllustration p { font-size: 20px; }
+  .newspaperName { font-size: 35px; }
+  .editionLine { font-size: 9px; }
+  .frontPage figure { border-left: 0; padding: 0; }
+  .frontPage .art { height: 160px; }
+  .page .hero :global(#celebration-details) { padding: 25px 24px; }
+  .page .hero :global(#celebration-details) strong { font-size: 24px; }
+  .page [data-event-sections] > section { padding: 35px 24px; }
+  .page.dinosaur [data-event-sections] > section > div,
+  .page.trucks :global(#event_details) > div,
+  .page.rainbow :global(#countdown) > div,
+  .page.neon [data-event-sections] > section > div,
+  .page.cocktail [data-event-sections] > section > div { display: block; }
+  .page.dinosaur [data-event-sections] h2 + div,
+  .page.neon [data-event-sections] h2 + div,
+  .page.cocktail [data-event-sections] h2 + div { margin-top: 22px; }
+  .page.trucks [data-event-sections], .page.space [data-event-sections], .page.brunch [data-event-sections], .page.forty [data-event-sections] { display: block; padding: 0; }
+  .page.space :global(#event_details), .page.brunch :global(#event_details), .page.forty :global(#event_details) { border-right: 0; }
+  .page.trucks :global(#rsvp) > div, .page.neon :global(#rsvp) > div, .page.forty :global(#rsvp) > div { display: block; }
+  .page.trucks :global(#rsvp-heading), .page.neon :global(#rsvp-heading), .page.forty :global(#rsvp-heading) { font-size: 40px; }
+  .page.rainbow :global(#event_details) { border-left-width: 12px; }
+  .page.rainbow :global(#venue_map) { border-right-width: 12px; }
+  .page.mermaid :global(#event_details) > div, .page.mermaid :global(#venue_map) > div { margin-inline: 0; }
+  .page :global(#countdown) li > span:first-child { font-size: 30px; }
+  .page :global(#countdown) ul { gap: 10px; }
+  .hero.compact .title { font-size: 34px; }
+  .hero.compact.longTitle .title { font-size: 26px; }
+  .compact .expedition, .compact .storySpread, .compact .aperitivo, .compact .frontPage, .compact .missionBrief { padding: 20px 16px 12px; }
+  .compact .barIllustration { display: block; }
+  .compact .art, .compact .storyArt .art, .compact .specimen .art { height: 100px; }
+  .compact .gigPoster { grid-template-columns: 1fr 22%; }
+  .compact .gigPoster .art { height: 100%; }
+}
+
+.hero.compact.neon .title { font-size: 28px; }
+.hero.compact.neon.longTitle .title { font-size: 24px; }

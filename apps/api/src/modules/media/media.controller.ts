@@ -1,10 +1,13 @@
 import {
+  BadRequestException,
+  Body,
   Controller,
   Delete,
   Get,
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   UploadedFile as UploadedFileParam,
   UseInterceptors,
@@ -12,9 +15,11 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { BadRequestException } from '@nestjs/common';
 import { CurrentUser, type AuthenticatedUser } from '../../core/auth/current-user.decorator';
 import type { Env } from '../../core/config/env';
+import { ApiZodBody } from '../../core/http/api-zod';
+import { zodBody } from '../../core/http/zod-validation.pipe';
+import { updateMediaSchema, type UpdateMediaInput } from './media.schemas';
 import { MediaService } from './media.service';
 
 @ApiTags('media')
@@ -62,6 +67,18 @@ export class MediaController {
       mimeType: file.mimetype,
       originalName: file.originalname,
     });
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update image caption, alt text, order or visibility' })
+  @ApiZodBody(updateMediaSchema, 'UpdateMedia')
+  update(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('eventId') eventId: string,
+    @Param('id') id: string,
+    @Body(zodBody(updateMediaSchema)) body: UpdateMediaInput,
+  ) {
+    return this.media.update(user.id, eventId, id, body);
   }
 
   @Delete(':id')

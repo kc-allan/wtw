@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { navLinks } from "@/app/_data/landing";
+import { HeaderEventSearch } from "./header-event-search";
 import { MobileNav } from "./mobile-nav";
 import { Wordmark } from "./wordmark";
 
 export function SiteHeaderClient({ signedIn }: { signedIn: boolean }) {
   const pathname = usePathname();
+  const [searchOpen, setSearchOpen] = useState(false);
 
   return (
     <header className="relative z-40 w-full border-b border-rule/40">
@@ -15,7 +18,9 @@ export function SiteHeaderClient({ signedIn }: { signedIn: boolean }) {
         <div className="flex items-center justify-between gap-6">
           <Wordmark className="min-w-0 flex-1" />
 
-          <div className="hidden items-center gap-8 lg:flex">
+          <div aria-hidden={searchOpen} inert={searchOpen}
+            className={`hidden min-w-0 overflow-hidden transition-[max-width,opacity] duration-300 ease-out motion-reduce:transition-none lg:block ${searchOpen ? "max-w-0 opacity-0" : "max-w-[1000px] opacity-100"}`}>
+            <div className="flex items-center gap-8">
             <nav aria-label="Main">
               <ul className="flex items-center gap-[15px]">
                 {navLinks.map((link) => {
@@ -54,9 +59,13 @@ export function SiteHeaderClient({ signedIn }: { signedIn: boolean }) {
                 Create invitation
               </Link>
             </div>
+            </div>
           </div>
 
-          <MobileNav signedIn={signedIn} />
+          <HeaderEventSearch open={searchOpen} onOpenChange={setSearchOpen} />
+          <div aria-hidden={searchOpen} inert={searchOpen} className={searchOpen ? "hidden lg:hidden" : ""}>
+            <MobileNav key={searchOpen ? "search-open" : "search-closed"} signedIn={signedIn} />
+          </div>
         </div>
       </div>
     </header>

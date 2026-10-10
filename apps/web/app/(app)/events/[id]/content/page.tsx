@@ -1,21 +1,25 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { EventModuleKey, EventTypeKey } from "@wtw/shared";
+import { EventModuleKey, EventTypeKey, GameKey } from "@wtw/shared";
 import { BackToEvent } from "../_hub/back-to-event";
 import { Button, Field, Input, Select, Textarea } from "@/app/_components/ui";
 import { api } from "@/lib/api";
 import { formatMoney } from "@/lib/money";
 import { toDateTimeLocalInput } from "@/lib/zoned-datetime";
-import type { EventDetail, EventModuleView } from "@/lib/types";
+import type { EventDetail, EventModuleView, GameDefinitionView, HostGame } from "@/lib/types";
 import {
+  addGame,
   addRegistryItem,
   deleteGalleryImage,
+  deleteGame,
   deleteRegistryItem,
   savePracticalInfo,
   saveRegistrySettings,
   saveRsvpSettings,
   saveStory,
   saveTimeline,
+  updateGalleryImage,
+  updateGame,
   uploadGalleryImage,
 } from "./content-actions";
 
@@ -40,7 +44,18 @@ type MediaAsset = {
   url: string;
   mimeType: string;
   sizeBytes: number;
+  caption: string | null;
+  altText: string | null;
+  position: number;
+  isHidden: boolean;
   createdAt: string;
+};
+
+type GameQuestionRow = {
+  id?: string;
+  prompt: string;
+  options?: string[];
+  correctAnswer?: string;
 };
 
 function moduleFor(event: EventDetail, key: EventModuleKey): EventModuleView | undefined {
@@ -83,13 +98,20 @@ export default async function ContentPage({
 
   const registryModule = moduleFor(event, EventModuleKey.REGISTRY);
   const galleryModule = moduleFor(event, EventModuleKey.GALLERY);
-  const [registryItems, media] = await Promise.all([
+  const gamesModule = moduleFor(event, EventModuleKey.GAMES);
+  const [registryItems, media, gameCatalogue, hostGames] = await Promise.all([
     registryModule?.enabled
       ? api<RegistryItemRow[]>(`/events/${id}/registry`).catch(() => [] as RegistryItemRow[])
       : Promise.resolve([] as RegistryItemRow[]),
     galleryModule
       ? api<MediaAsset[]>(`/events/${id}/media`).catch(() => [] as MediaAsset[])
       : Promise.resolve([] as MediaAsset[]),
+    gamesModule
+      ? api<GameDefinitionView[]>("/games", { auth: false }).catch(() => [] as GameDefinitionView[])
+      : Promise.resolve([] as GameDefinitionView[]),
+    gamesModule
+      ? api<HostGame[]>(`/events/${id}/games`).catch(() => [] as HostGame[])
+      : Promise.resolve([] as HostGame[]),
   ]);
 
   return (
@@ -121,6 +143,13 @@ export default async function ContentPage({
             <RegistrySection event={event} items={registryItems} />
           ) : null}
           {galleryModule ? <GallerySection event={event} media={media} /> : null}
+          {gamesModule ? (
+            <GamesSection
+              event={event}
+              catalogue={gameCatalogue}
+              games={hostGames}
+            />
+          ) : null}
         </div>
 
         <aside className="h-fit rounded-2xl bg-white p-6">
@@ -129,6 +158,7 @@ export default async function ContentPage({
             <li>Story, FAQ and schedule links appear only after content is saved.</li>
             <li>Registry links and gift claims use the live guest access rules.</li>
             <li>Gallery photos publish only when the gallery section is enabled.</li>
+            <li>Games appear after you switch them on and save questions.</li>
           </ul>
           <a
             href={`/events/${event.id}/preview`}
@@ -465,7 +495,7 @@ function RegistrySection({ event, items }: { event: EventDetail; items: Registry
 
 function GallerySection({ event, media }: { event: EventDetail; media: MediaAsset[] }) {
   return (
-    <Panel id="gallery" title="Gallery" lead="Upload the photos that should appear publicly when the gallery section is on.">
+    <Panel id="gallery" title="Gallery" lead="Upload photos, add helpful text and choose the order guests see them in.">
       <form action={uploadGalleryImage.bind(null, event.id)} className="rounded-xl bg-ivory p-4">
         <Field label="Photo" htmlFor="galleryFile" hint="JPEG, PNG, WebP, AVIF or GIF.">
           <Input id="galleryFile" name="file" type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/gif" />
@@ -474,20 +504,163 @@ function GallerySection({ event, media }: { event: EventDetail; media: MediaAsse
       </form>
 
       {media.length > 0 ? (
-        <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-5 grid gap-4 lg:grid-cols-2">
           {media.map((asset) => (
             <li key={asset.id} className="overflow-hidden rounded-xl bg-ivory">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={asset.url} alt="" className="aspect-[4/3] w-full object-cover" />
-              <form action={deleteGalleryImage.bind(null, event.id, asset.id)} className="p-3">
-                <Button type="submit" variant="quiet" className="w-full">Remove photo</Button>
-              </form>
+              <div className="grid gap-3 p-4">
+                <form action={updateGalleryImage.bind(null, event.id, asset.id)} className="grid gap-3">
+                  <Field label="Caption" htmlFor={`gallery-caption-${asset.id}`}>
+                    <Input id={`gallery-caption-${asset.id}`} name="caption" defaultValue={asset.caption ?? ""} />
+                  </Field>
+                  <Field label="Alternative text" htmlFor={`gallery-alt-${asset.id}`} hint="Describe the photo for guests using screen readers.">
+                    <Input id={`gallery-alt-${asset.id}`} name="altText" defaultValue={asset.altText ?? ""} />
+                  </Field>
+                  <Field label="Position" htmlFor={`gallery-position-${asset.id}`}>
+                    <Input id={`gallery-position-${asset.id}`} name="position" type="number" min={0} max={500} defaultValue={asset.position} />
+                  </Field>
+                  <label className="flex items-center gap-3 text-base text-ink">
+                    <input type="checkbox" name="isHidden" defaultChecked={asset.isHidden} className="size-4 accent-forest" />
+                    Hide from guest page
+                  </label>
+                  <Button type="submit" className="self-start">Save photo</Button>
+                </form>
+                <form action={deleteGalleryImage.bind(null, event.id, asset.id)}>
+                  <Button type="submit" variant="quiet" className="w-full">Remove photo</Button>
+                </form>
+              </div>
             </li>
           ))}
         </ul>
       ) : (
         <p className="mt-4 text-base text-ink/70">No photos uploaded yet.</p>
       )}
+    </Panel>
+  );
+}
+
+function quizRows(game: HostGame): GameQuestionRow[] {
+  const rows = Array.isArray(game.config.questions)
+    ? (game.config.questions as GameQuestionRow[])
+    : [];
+  return withBlank(rows, { prompt: "", options: [], correctAnswer: "" });
+}
+
+function gamePrompt(game: HostGame): string {
+  return typeof game.config?.prompt === "string" && game.config.prompt.trim()
+    ? game.config.prompt
+    : game.prompt;
+}
+
+function GamesSection({
+  event,
+  catalogue,
+  games,
+}: {
+  event: EventDetail;
+  catalogue: GameDefinitionView[];
+  games: HostGame[];
+}) {
+  const selected = new Set(games.map((game) => game.key));
+  const available = catalogue.filter((game) => !selected.has(game.key));
+
+  return (
+    <Panel
+      id="games"
+      title="Games"
+      lead="Add light games guests can play from the invitation. Start with a template, then adjust the wording if you want."
+    >
+      <div className="grid gap-6">
+        <div className="rounded-xl bg-ivory p-4">
+          <h3 className="text-lg font-semibold text-black">Add a game</h3>
+          {available.length > 0 ? (
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
+              {available.map((game, index) => (
+                <form key={game.key} action={addGame.bind(null, event.id)} className="rounded-xl bg-white p-4">
+                  <input type="hidden" name="gameKey" value={game.key} />
+                  <input type="hidden" name="position" value={games.length + index} />
+                  <h4 className="font-serif text-xl text-black">{game.name}</h4>
+                  <p className="mt-2 text-sm text-ink/70">{game.prompt}</p>
+                  <Button type="submit" variant="quiet" className="mt-4">Add game</Button>
+                </form>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-3 text-base text-ink/70">Every game in the catalogue has been added.</p>
+          )}
+        </div>
+
+        {games.length > 0 ? (
+          <div className="grid gap-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h3 className="text-lg font-semibold text-black">Games on this event</h3>
+              <a
+                href={`/api/events/${event.id}/games/export`}
+                className="rounded-full border border-forest px-5 py-2.5 text-base font-medium text-forest hover:bg-forest/5"
+              >
+                Download answers
+              </a>
+            </div>
+            {games.map((game) => (
+              <div key={game.id} className="rounded-xl bg-ivory p-4">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <h4 className="font-serif text-xl text-black">{game.name}</h4>
+                    <p className="mt-1 text-sm text-ink/60">
+                      {game.submissionCount} {game.submissionCount === 1 ? "answer" : "answers"}
+                    </p>
+                  </div>
+                  <form action={deleteGame.bind(null, event.id, game.id)}>
+                    <Button type="submit" variant="quiet">Remove</Button>
+                  </form>
+                </div>
+
+                <form action={updateGame.bind(null, event.id, game.id, game.key as GameKey)} className="mt-5 grid gap-4">
+                  <div className="grid gap-4 md:grid-cols-[1fr_120px]">
+                    <Field label="Prompt" htmlFor={`game-prompt-${game.id}`}>
+                      <Input id={`game-prompt-${game.id}`} name="gamePrompt" defaultValue={gamePrompt(game)} />
+                    </Field>
+                    <Field label="Position" htmlFor={`game-position-${game.id}`}>
+                      <Input id={`game-position-${game.id}`} name="position" type="number" min={0} max={50} defaultValue={game.position} />
+                    </Field>
+                  </div>
+
+                  {game.responseKind === "quiz" ? (
+                    <div className="grid gap-3">
+                      <p className="text-base font-medium text-black">Questions</p>
+                      {quizRows(game).map((question, index) => (
+                        <div key={question.id ?? index} className="grid gap-3 rounded-xl bg-white p-4 md:grid-cols-2">
+                          <Field label="Question" htmlFor={`game-question-${game.id}-${index}`} className="md:col-span-2">
+                            <Input id={`game-question-${game.id}-${index}`} name="gameQuestionPrompt" defaultValue={question.prompt} />
+                          </Field>
+                          <Field label="Options" htmlFor={`game-options-${game.id}-${index}`} hint="One option per line. Leave blank for a text answer.">
+                            <Textarea id={`game-options-${game.id}-${index}`} name="gameQuestionOptions" rows={3} defaultValue={(question.options ?? []).join("\n")} />
+                          </Field>
+                          <Field label="Answer key" htmlFor={`game-answer-${game.id}-${index}`} hint="Optional, for the host export only.">
+                            <Input id={`game-answer-${game.id}-${index}`} name="gameQuestionAnswer" defaultValue={question.correctAnswer ?? ""} />
+                          </Field>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  <label className="flex items-center gap-3 text-base text-ink">
+                    <input type="checkbox" name="enabled" defaultChecked={game.enabled} className="size-4 accent-forest" />
+                    Show this game to guests
+                  </label>
+
+                  <Button type="submit" className="self-start">Save game</Button>
+                </form>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="rounded-xl bg-ivory p-4 text-base text-ink/70">
+            No games added yet. Add one from the catalogue above to show it on the guest page.
+          </p>
+        )}
+      </div>
     </Panel>
   );
 }

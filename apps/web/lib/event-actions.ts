@@ -54,6 +54,19 @@ export async function chooseTheme(eventId: string, themeKey: string): Promise<vo
   redirect(`/events/${eventId}/customize`);
 }
 
+export async function saveInvitationAccent(eventId: string, accentColor: string): Promise<FormState> {
+  if (!/^#[0-9a-fA-F]{6}$/.test(accentColor)) return { message: "Choose an accent color" };
+  try {
+    await api(`/events/${eventId}/modules/${EventModuleKey.INVITATION}`, {
+      method: "PATCH", body: { config: { accentColor } },
+    });
+  } catch (error) {
+    return toFormState(error, "We could not save that color");
+  }
+  revalidatePath(`/events/${eventId}`, "layout");
+  return { message: "Color saved" };
+}
+
 export async function saveEventDetails(
   eventId: string,
   _state: FormState,

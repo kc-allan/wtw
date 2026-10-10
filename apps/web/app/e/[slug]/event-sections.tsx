@@ -2,6 +2,8 @@ import { EventModuleKey } from "@wtw/shared";
 import { formatEventDate, formatEventTime } from "@/lib/event-display";
 import type { EventModuleView, PublicEvent, ThemePalette } from "@/lib/types";
 import { Countdown } from "./countdown";
+import type { InvitationDesign } from "@/lib/invitation-designs";
+import styles from "@/app/_components/invitation-landing.module.css";
 
 /**
  * Renders whichever sections the host switched on, in their saved order. The
@@ -28,17 +30,19 @@ export function EventSections({
   event,
   modules,
   palette,
+  design,
 }: {
   event: PublicEvent["event"];
   modules: EventModuleView[];
   palette: ThemePalette;
+  design?: InvitationDesign;
 }) {
   const sections = modules
     .filter((module) => RENDERERS[module.key])
     .sort((a, b) => a.position - b.position);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col" data-event-sections>
       {sections.map((module, index) => {
         const rendered = RENDERERS[module.key]?.(module, event, palette);
         if (!rendered) return null;
@@ -53,15 +57,16 @@ export function EventSections({
             style={{
               backgroundColor: index % 2 === 0 ? palette.surface : `${palette.background}0d`,
             }}
-            className="scroll-mt-20 px-6 py-12"
+            className={`scroll-mt-20 px-6 py-12 ${design ? styles.designedSection : ""}`}
           >
             <div className="mx-auto w-full max-w-[720px]">
+              {design?.kind === "coastal" ? <span className={styles.chapter} aria-hidden>{String(sections.slice(0, index + 1).filter((entry) => RENDERERS[entry.key]?.(entry, event, palette)).length).padStart(2, "0")}</span> : null}
               <h2
                 id={`section-${module.key}`}
                 className="font-serif text-section font-semibold"
                 style={{ color: palette.ink }}
               >
-                {rendered.heading}
+                {design?.sectionLabels?.[module.key] ?? rendered.heading}
               </h2>
               <div className="mt-5" style={{ color: palette.ink }}>
                 {rendered.body}

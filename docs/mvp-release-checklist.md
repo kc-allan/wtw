@@ -51,9 +51,9 @@ Prepared 4 October 2026. Source decisions are recorded in `docs/open-decisions.m
 - [x] Host content area added for story, schedule, FAQ, dress code, accommodation, RSVP settings, registry settings, registry items and gallery uploads.
 - [x] Public registry displays external registries and purchase links.
 - [x] Gallery uploads are host-only and publish through the enabled gallery section.
-- [ ] Baby shower games still need a guest-facing web section and host setup UI.
-- [ ] Invitation image and PDF downloads still need generated artifacts.
-- [ ] Gallery captions, alternative text and manual arrangement need storage support before they can be completed.
+- [x] Baby shower games have host setup, guest-facing play, host preview support and CSV answer export. Verified 5 October 2026 with `pnpm --filter @wtw/shared build`, `pnpm --filter @wtw/web exec tsc --noEmit`, `pnpm --filter @wtw/api test` and `pnpm --filter @wtw/api build`. Closed-game timing and retry-specific UX remain follow-up.
+- [x] Invitation downloads generate SVG image and printable PDF artifacts from saved event content with the live RSVP link. Verified 5 October 2026 with `pnpm --filter @wtw/web exec tsc --noEmit`. QR generation and device inspection remain follow-up.
+- [x] Gallery captions, alternative text, manual ordering and hide-without-delete controls have storage and host/public UI support. Verified 5 October 2026 with `pnpm --filter @wtw/web exec tsc --noEmit`, `pnpm --filter @wtw/api test` and `pnpm --filter @wtw/api build`. Keyboard-specific reorder controls and private media delivery remain follow-up.
 
 ## Stage 4 checks
 
@@ -64,8 +64,8 @@ Prepared 4 October 2026. Source decisions are recorded in `docs/open-decisions.m
 - [x] Footer and app navigation no longer point to unavailable beta routes.
 - [x] Privacy and terms pages added with beta retention, registry and support language.
 - [x] Contact enquiries preserve the full submitted message in the API log.
-- [ ] Contact requests still need a configured monitored delivery destination or database-backed inbox before production launch.
-- [ ] Reminder targeting for pending guests is still not implemented.
+- [x] Contact requests are stored in a database-backed inbox before logging. Verified 5 October 2026 with `pnpm --filter @wtw/api test` and `pnpm --filter @wtw/api build`. A configured outbound support notification remains an operational enhancement.
+- [x] Reminder targeting for pending guests is implemented as a manual review-and-send panel on the Share page, with private events directed to personal links. Verified 5 October 2026 with `pnpm --filter @wtw/web exec tsc --noEmit`. Automated delivery remains out of MVP scope.
 
 ## Follow-up plan checks
 
@@ -77,8 +77,11 @@ Prepared 4 October 2026. Source decisions are recorded in `docs/open-decisions.m
 - [x] External-only registries count as registry content for public and host preview navigation. Verified 5 October 2026 with `pnpm --filter @wtw/web exec tsc --noEmit`.
 - [ ] Save lifecycle across optional content forms still needs input-preserving field errors and navigation protection.
 - [x] Event detail, schedule and RSVP deadline wall times save and reopen in the event timezone. Verified 5 October 2026 with `pnpm --filter @wtw/web exec tsc --noEmit`.
-- [ ] Shared-link RSVP atomicity and retry deduplication still need implementation and tests.
+- [x] Shared-link RSVP failure cleanup is implemented so invalid or closed replies do not leave a pending shared-link guest. Verified 5 October 2026 with `pnpm --filter @wtw/api test` and `pnpm --filter @wtw/api build`.
+- [ ] Shared-link RSVP retry deduplication after a lost successful response still needs an idempotency design and tests.
 - [ ] Private media protection still needs implementation and environment validation.
+- [ ] Game close timing and retry-specific guest feedback still need implementation beyond enabled/disabled host controls.
+- [ ] Invitation downloads still need QR generation, file visual inspection across devices and private-link policy refinement.
 
 ## Verification status
 

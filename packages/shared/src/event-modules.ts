@@ -35,6 +35,7 @@ const money = z.object({
 
 export const moduleConfigSchemas = {
   [EventModuleKey.INVITATION]: z.object({
+    accentColor: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
     headline: z.string().max(120).optional(),
     message: z.string().max(2000).optional(),
     /** Shown on the invite card, e.g. "Kindly respond by 14 June". */

@@ -11,6 +11,10 @@ export enum GameKey {
   ADVICE_FOR_PARENTS = 'advice_for_parents',
   WISHES_FOR_BABY = 'wishes_for_baby',
   BABY_PREDICTIONS = 'baby_predictions',
+  WOULD_MOM_RATHER = 'would_mom_rather',
+  FIND_THE_GUEST = 'find_the_guest',
+  BABY_WORD_SCRAMBLE = 'baby_word_scramble',
+  BABY_SHOWER_BINGO = 'baby_shower_bingo',
 }
 
 /**
@@ -80,6 +84,8 @@ export interface GameDefinition {
   responseKind: GameResponseKind;
   /** Quiz games need host-supplied questions before they can be switched on. */
   requiresHostContent: boolean;
+  /** Starter content the host can use as-is or edit before sharing. */
+  defaultConfig?: GameConfig<GameResponseKind>;
 }
 
 export const GAMES: Record<GameKey, GameDefinition> = {
@@ -145,6 +151,74 @@ export const GAMES: Record<GameKey, GameDefinition> = {
     prompt: 'Make your predictions about baby.',
     responseKind: 'predictions',
     requiresHostContent: false,
+  },
+  [GameKey.WOULD_MOM_RATHER]: {
+    key: GameKey.WOULD_MOM_RATHER,
+    name: 'Would mum rather?',
+    prompt: 'Pick what you think mum would choose.',
+    responseKind: 'quiz',
+    requiresHostContent: false,
+    defaultConfig: {
+      prompt: 'Pick what you think mum would choose.',
+      questions: [
+        { id: 'morning-night', prompt: 'Would mum rather have a quiet morning or a late night?', options: ['Quiet morning', 'Late night'] },
+        { id: 'tea-smoothie', prompt: 'Would mum rather have tea or a smoothie?', options: ['Tea', 'Smoothie'] },
+        { id: 'nap-walk', prompt: 'Would mum rather take a nap or go for a walk?', options: ['Nap', 'Walk'] },
+        { id: 'sweet-salty', prompt: 'Would mum rather snack on something sweet or salty?', options: ['Sweet', 'Salty'] },
+        { id: 'plan-surprise', prompt: 'Would mum rather plan every detail or be surprised?', options: ['Plan every detail', 'Be surprised'] },
+      ],
+    },
+  },
+  [GameKey.FIND_THE_GUEST]: {
+    key: GameKey.FIND_THE_GUEST,
+    name: 'Find the guest',
+    prompt: 'Move around the room and find someone who matches each clue.',
+    responseKind: 'quiz',
+    requiresHostContent: false,
+    defaultConfig: {
+      prompt: 'Move around the room and find someone who matches each clue.',
+      questions: [
+        { id: 'same-month', prompt: 'Find a guest born in the same month as you.', options: [] },
+        { id: 'knows-host-longest', prompt: 'Find the person who has known the host the longest.', options: [] },
+        { id: 'travelled-farthest', prompt: 'Find someone who travelled far to be here.', options: [] },
+        { id: 'has-baby-photo', prompt: 'Find someone who has a baby photo on their phone.', options: [] },
+        { id: 'knows-lullaby', prompt: 'Find someone who can sing a lullaby.', options: [] },
+      ],
+    },
+  },
+  [GameKey.BABY_WORD_SCRAMBLE]: {
+    key: GameKey.BABY_WORD_SCRAMBLE,
+    name: 'Baby word scramble',
+    prompt: 'Unscramble these baby words.',
+    responseKind: 'quiz',
+    requiresHostContent: false,
+    defaultConfig: {
+      prompt: 'Unscramble these baby words.',
+      questions: [
+        { id: 'diaper', prompt: 'R D I A E P', options: [], correctAnswer: 'Diaper' },
+        { id: 'bottle', prompt: 'T B O L T E', options: [], correctAnswer: 'Bottle' },
+        { id: 'stroller', prompt: 'L R S T O L E R', options: [], correctAnswer: 'Stroller' },
+        { id: 'blanket', prompt: 'K B L A N E T', options: [], correctAnswer: 'Blanket' },
+        { id: 'pacifier', prompt: 'R C A P I F I E P', options: [], correctAnswer: 'Pacifier' },
+      ],
+    },
+  },
+  [GameKey.BABY_SHOWER_BINGO]: {
+    key: GameKey.BABY_SHOWER_BINGO,
+    name: 'Baby shower bingo',
+    prompt: 'Mark the moments you spot during the shower.',
+    responseKind: 'quiz',
+    requiresHostContent: false,
+    defaultConfig: {
+      prompt: 'Mark the moments you spot during the shower.',
+      questions: [
+        { id: 'tiny-socks', prompt: 'Someone says tiny socks are adorable.', options: ['Spotted', 'Still looking'] },
+        { id: 'baby-name', prompt: 'Someone guesses the baby name.', options: ['Spotted', 'Still looking'] },
+        { id: 'photo-memory', prompt: 'A guest shares a childhood memory.', options: ['Spotted', 'Still looking'] },
+        { id: 'gift-wrap', prompt: 'A gift has pastel wrapping.', options: ['Spotted', 'Still looking'] },
+        { id: 'parent-advice', prompt: 'Someone gives parenting advice.', options: ['Spotted', 'Still looking'] },
+      ],
+    },
   },
 };
 

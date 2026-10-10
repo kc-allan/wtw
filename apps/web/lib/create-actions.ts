@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { CeremonyKey, EventTypeKey, HostRole, isCeremonyKey, isHostRole } from "@wtw/shared";
+import { CeremonyKey, EventModuleKey, EventTypeKey, HostRole, isCeremonyKey, isHostRole } from "@wtw/shared";
 import { api } from "./api";
 import {
   clearDraft,
@@ -64,6 +64,10 @@ export async function saveEventBasics(
   }
 
   const city = optionalText(formData.get("city"));
+  const accentColor = optionalText(formData.get("accentColor"));
+  if (accentColor && !/^#[0-9a-f]{6}$/i.test(accentColor)) {
+    return { message: "Choose a valid accent color" };
+  }
 
   await writeDraft({
     typeKey: typeKey as EventTypeKey,
@@ -74,6 +78,7 @@ export async function saveEventBasics(
     expectedGuests: optionalNumber(formData.get("expectedGuests")),
     city: city === OTHER_CITY ? optionalText(formData.get("otherCity")) : city,
     themeKey: optionalText(formData.get("themeKey")),
+    accentColor,
   });
 
   return continueAfter("type", typeKey as EventTypeKey);
@@ -131,6 +136,19 @@ export async function createEventFromDraft(): Promise<never> {
   } catch {
     // The account exists by now, so the half-made event is the only casualty.
     redirect("/create?error=1");
+  }
+
+  if (draft.accentColor) {
+    try {
+      await api(`/events/${event.id}/modules/${EventModuleKey.INVITATION}`, {
+        method: "PATCH",
+        body: { config: { accentColor: draft.accentColor } },
+      });
+    } catch {
+      await clearDraft();
+      revalidatePath("/events");
+      redirect(`/events/${event.id}/customize?accentError=1`);
+    }
   }
 
   await clearDraft();

@@ -1,61 +1,32 @@
 import Link from "next/link";
 import type { TemplateCard as TemplateCardData } from "@/app/_data/landing";
 import { designCopy } from "@/app/_data/invitation-copy";
-
-const themes: Record<
-  TemplateCardData["theme"],
-  { surface: string; text: string; rule: string }
-> = {
-  pine: {
-    surface: "bg-pine",
-    text: "text-sand",
-    rule: "bg-sand",
-  },
-  gradient: {
-    surface:
-      "bg-[linear-gradient(141.054deg,#b8472a_0%,#d38324_41.197%,#0e3d3e_100%)]",
-    text: "text-sand",
-    rule: "bg-sand",
-  },
-  ivory: {
-    surface: "bg-ivory",
-    text: "text-clay",
-    rule: "bg-clay",
-  },
-  boho: {
-    surface: "bg-ivory",
-    text: "text-bark",
-    rule: "bg-bark",
-  },
-};
+import { invitationDesign } from "@/lib/invitation-designs";
+import { InvitationHero } from "./invitation-hero";
 
 export function TemplateCard({ template }: { template: TemplateCardData }) {
-  const theme = themes[template.theme];
+  const design = invitationDesign(template.id);
+  if (!design) return null;
+
   const copy = designCopy[template.id];
+  const names = template.names.flatMap((name) => name.split("&").map((part) => part.trim()).filter(Boolean));
 
   return (
     <figure className="flex w-[328px] shrink-0 flex-col">
       <div
-        className={`group relative flex h-[481px] w-full flex-col items-center justify-center overflow-hidden rounded-[10px] border border-chalk px-8 py-6 ${theme.surface} ${theme.text}`}
+        className="group relative h-[481px] w-full overflow-hidden rounded-[10px] border border-chalk bg-white"
       >
-        <div className="flex w-full flex-col items-center gap-4">
-          <div className="flex w-full flex-col items-center gap-2 text-center">
-            <p className="font-accent text-sm tracking-[0.02em]">
-              {template.eyebrow}
-            </p>
-            <p className="font-serif text-2xl font-semibold tracking-[0.02em]">
-              {template.names.map((name) => (
-                <span key={name} className="block">
-                  {name}
-                </span>
-              ))}
-            </p>
-          </div>
-          <span aria-hidden className={`h-px w-[29px] ${theme.rule}`} />
-          <p className="font-accent text-sm tracking-[0.02em]">{template.name}</p>
-        </div>
+        <InvitationHero
+          design={design}
+          names={names}
+          title={template.names.join(" ")}
+          date="Saturday, 16 May 2026"
+          venue="Nairobi"
+          accent={design.palette.accent}
+          compact
+        />
 
-        {/* Hover: the card dims and the action fades in over it. */}
+        {/* The preview remains visible until a visitor focuses or hovers to act. */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity duration-200 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100 motion-reduce:transition-none">
           <Link
             href={`/create?template=${template.id}`}
@@ -69,6 +40,7 @@ export function TemplateCard({ template }: { template: TemplateCardData }) {
 
       {copy ? (
         <figcaption className="mt-3 flex flex-col gap-1 text-left">
+          <span className="text-sm font-medium text-ink">{template.name}</span>
           <span className="text-sm tracking-[0.02em] text-gold">
             {copy.descriptors.join(" • ")}
           </span>

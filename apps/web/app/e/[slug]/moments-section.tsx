@@ -61,10 +61,15 @@ export function MomentsSection({
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={photo.url}
-                  alt=""
+                  alt={photo.altText ?? photo.caption ?? ""}
                   loading="lazy"
                   className="aspect-square w-full object-cover"
                 />
+                {photo.caption ? (
+                  <p className="px-3 py-2 text-sm" style={{ color: palette.muted }}>
+                    {photo.caption}
+                  </p>
+                ) : null}
               </li>
             ))}
           </ul>

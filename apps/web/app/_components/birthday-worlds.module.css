@@ -1,0 +1,164 @@
+.hero { position: relative; isolation: isolate; overflow: hidden; letter-spacing: 0; }
+.masthead { display: flex; justify-content: space-between; gap: 24px; padding: 22px 5%; font: 12px/1.5 monospace; text-transform: uppercase; border-bottom: 1px solid currentColor; }
+.title { overflow-wrap: anywhere; letter-spacing: 0; margin: 0; }
+.kicker { font: 12px/1.6 monospace; text-transform: uppercase; margin-bottom: 24px; }
+.subtitle { font-size: 20px; line-height: 1.5; margin-top: 24px; }
+.action { display: inline-flex; align-items: center; justify-content: space-between; gap: 40px; padding: 18px 24px; font: 15px/1.4 monospace; }
+.action:focus-visible, .lobbyNav a:focus-visible { outline: 3px solid currentColor; outline-offset: 5px; }
+.art { position: relative; pointer-events: none; }
+.art img { object-fit: contain; }
+.hero dt { font: 11px/1.5 monospace; text-transform: uppercase; margin-bottom: 8px; }
+.hero dd { font-size: 18px; line-height: 1.4; overflow-wrap: anywhere; }
+
+.hero.gaming { background: #171c1a; color: #f0f4de; }
+.gaming .masthead { color: #b7c3b2; border-color: #4e5a50; }
+.gaming .masthead span:first-child::before { content: "+"; color: #d9ff78; margin-right: 18px; font-size: 20px; }
+.lobby { position: relative; display: grid; grid-template-columns: 190px minmax(0,1fr); gap: 45px; padding: 60px 5% 85px; min-height: 550px; }
+.lobbyNav { display: flex; flex-direction: column; gap: 8px; padding-top: 10px; }
+.lobbyNav a { display: flex; gap: 16px; padding: 16px 0; font: 13px/1.5 monospace; border-bottom: 1px solid #4e5a50; }
+.lobbyNav span { color: #d9ff78; }
+.gaming .headline { position: relative; z-index: 1; padding-right: 25%; }
+.gaming .kicker { color: #c5cdbd; }
+.gaming .title { font: 800 94px/.98 var(--font-jost), sans-serif; text-transform: uppercase; max-width: 800px; }
+.gaming .subtitle { font-family: monospace; font-size: 16px; }
+.gaming .action { background: #d9ff78; color: #1c2b1b; margin-top: 30px; box-shadow: 6px 6px 0 var(--invite-accent); }
+.gaming .art { position: absolute; width: 32%; height: 290px; right: 1%; bottom: 48px; transform: rotate(-12deg); z-index: 0; }
+.session { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid #4e5a50; margin-inline: 5%; }
+.session > div { padding: 23px 0; }
+.session > div + div { border-left: 1px solid #4e5a50; padding-left: 32px; }
+.gaming .session dt { color: #d9ff78; }
+.gaming.longTitle .title { font-size: 62px; }
+
+.hero.sporty { background: #f7f8f0; color: #b42f28; border-top: 12px solid #b42f28; }
+.sporty .masthead { font-weight: 700; border-bottom: 3px solid #b42f28; }
+.fixture { padding: 40px 6% 22px; position: relative; }
+.sporty .kicker { text-align: right; color: #294e43; }
+.sporty .title { font: 900 116px/.95 var(--font-jost), sans-serif; text-transform: uppercase; max-width: 1100px; text-wrap: balance; }
+.fixtureBottom { display: flex; justify-content: space-between; align-items: center; gap: 24px; min-height: 180px; }
+.sporty .subtitle { color: #294e43; font: italic 28px/1.2 Georgia, serif; margin: 0; }
+.sporty .art { width: 240px; height: 170px; transform: rotate(-8deg); }
+.ticket { display: grid; grid-template-columns: 110px 1fr auto; align-items: center; gap: 30px; margin: 0 6% 40px; padding-top: 26px; border-top: 2px dashed #294e43; color: #294e43; }
+.ticketLabel { font: 11px/1.6 monospace; text-transform: uppercase; border-right: 1px solid #294e43; padding-right: 20px; }
+.ticket dl { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+.sporty .action { background: var(--invite-accent); color: #fff; }
+.sporty.longTitle .title { font-size: 76px; }
+
+.page.gaming { background: #f0f4e8 !important; }
+.page.gaming :global(#celebration-details) { max-width: none; margin: 0; padding: 36px 7%; background: #d9ff78; color: #293c36; border: 0; font-family: monospace; }
+.page.gaming :global(#celebration-details) strong { font-family: monospace; font-size: 25px; }
+.page.gaming [data-event-sections] { display: grid; grid-template-columns: 1.2fr 1fr; padding: 0 7%; background: #f0f4e8; }
+.page.gaming [data-event-sections] > section { background: transparent !important; padding: 55px 0; border-bottom: 1px solid #a5b49d; }
+.page.gaming [data-event-sections] > section > div { max-width: none; }
+.page.gaming :global(#event_details) { padding-right: 60px; grid-row: span 2; border-right: 1px solid #a5b49d; }
+.page.gaming :global(#venue_map), .page.gaming :global(#countdown) { padding-left: 45px; }
+.page.gaming h2 { font-family: monospace; text-transform: uppercase; font-size: 25px; }
+.page.gaming :global(#event_details) h2::before { content: "/ "; }
+.page.gaming :global(#event_details) p { font-size: 23px; line-height: 1.65; }
+.page.gaming :global(#countdown) ul { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; }
+.page.gaming :global(#countdown) li > span:first-child { font: 40px/1.2 monospace; }
+.page.gaming :global(#rsvp) { padding: 65px 7%; border-top: 12px solid #171c1a; background: #e3ebd8 !important; }
+.page.gaming :global(#rsvp) > div { max-width: none; display: grid; grid-template-columns: 1fr 1fr; gap: 70px; }
+.page.gaming :global(#rsvp-heading) { text-align: left; font: 700 64px/1 var(--font-jost),sans-serif; text-transform: uppercase; }
+.page.gaming :global(#rsvp) form { margin-top: 0; }
+.page.gaming :global(#rsvp) input, .page.gaming :global(#rsvp) textarea, .page.gaming :global(#rsvp) button { border-radius: 0; }
+
+.page.sporty :global(#celebration-details) { border-block: 4px solid #294e43; max-width: none; margin: 0; padding: 28px 8%; background: #e8efdf; }
+.page.sporty :global(#celebration-details) span { font-family: monospace; }
+.sporty .ticket:has(> section) { grid-template-columns: 85px minmax(0,1fr) auto; }
+.page.sporty .ticket :global(#celebration-details) { background: transparent; border: 0; padding: 0; gap: 24px; }
+.page.sporty .ticket :global(#celebration-details) > div + div { border-left: 0; padding-left: 0; }
+.page.sporty .ticket :global(#celebration-details) strong { font: 700 20px/1.3 var(--font-jost),sans-serif; }
+.page.sporty .ticket :global(#celebration-details) p { font-size: 12px; }
+.page.sporty [data-event-sections] { counter-reset: programme; }
+.page.sporty [data-event-sections] > section { background: #f7f8f0 !important; border-bottom: 1px solid #b5bda9; padding: 55px 8%; counter-increment: programme; }
+.page.sporty [data-event-sections] > section > div { display: grid; grid-template-columns: 90px 1fr 1.5fr; gap: 30px; max-width: none; }
+.page.sporty [data-event-sections] > section > div::before { content: counter(programme, decimal-leading-zero); font: italic 50px/1 Georgia,serif; color: #b42f28; }
+.page.sporty [data-event-sections] h2 { font: 700 30px/1.1 var(--font-jost),sans-serif; text-transform: uppercase; }
+.page.sporty [data-event-sections] h2 + div { margin-top: 0; }
+.page.sporty :global(#event_details) p { font-size: 20px; line-height: 1.7; }
+.page.sporty :global(#countdown) { background: #e8efdf !important; border-bottom: 10px double #294e43; }
+.page.sporty :global(#countdown) ul { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; }
+.page.sporty :global(#countdown) li > span:first-child { font: 700 46px/1 Georgia,serif; }
+.page.sporty :global(#rsvp) { padding: 65px 8%; background: #f7f8f0 !important; }
+.page.sporty :global(#rsvp) > div { max-width: 960px; border: 2px solid #294e43; padding: 40px; }
+.page.sporty :global(#rsvp-heading) { font: 800 46px/1 var(--font-jost),sans-serif; text-transform: uppercase; text-align: left; border-bottom: 2px solid #294e43; padding-bottom: 25px; }
+.page.sporty :global(#rsvp) input, .page.sporty :global(#rsvp) textarea { border-radius: 0; border-width: 0 0 1px; background: transparent !important; }
+.page.sporty :global(#rsvp) button { border-radius: 0; }
+
+.compact { height: 100%; min-height: 0; }
+.compact .masthead { padding: 12px 15px; font-size: 8px; gap: 10px; }
+.compact .masthead span:last-child { display: none; }
+.compact .kicker { font-size: 8px; margin-bottom: 14px; }
+.hero.compact .title { font-size: 35px; }
+.hero.compact.longTitle .title { font-size: 26px; }
+.compact .subtitle { font-size: 12px; margin-top: 16px; }
+.compact.gaming .lobby { display: block; padding: 25px 20px 115px; min-height: 0; }
+.compact.gaming .headline { padding: 0; }
+.compact.gaming .subtitle { display: none; }
+.compact.gaming .art { height: 100px; width: 150px; bottom: 0; right: 12px; }
+.compact .session { display: block; }
+.compact .session > div { padding: 12px 0; }
+.compact dt { font-size: 8px; margin-bottom: 4px; }
+.compact dd { font-size: 12px; }
+.compact .fixture { padding: 20px 18px 10px; }
+.compact .fixtureBottom { min-height: 110px; }
+.compact.sporty .art { width: 115px; height: 90px; }
+.compact .ticket { display: block; margin: 0 18px 18px; padding-top: 12px; }
+.compact .ticketLabel { display: none; }
+.compact .ticket dl { display: block; }
+
+@media (max-width: 1000px) {
+  .lobby { grid-template-columns: 145px minmax(0,1fr); gap: 28px; }
+  .gaming .title { font-size: 70px; }
+  .sporty .title { font-size: 84px; }
+  .ticket { grid-template-columns: 1fr auto; }
+  .ticketLabel { display: none; }
+  .sporty .ticket:has(> section) { grid-template-columns: minmax(0,1fr) auto; }
+  .page.sporty [data-event-sections] > section > div { grid-template-columns: 50px 1fr 1.5fr; gap: 22px; }
+}
+@media (max-width: 700px) {
+  .masthead { font-size: 9px; padding: 16px 22px; gap: 12px; }
+  .lobby { display: block; padding: 22px 24px 180px; min-height: 0; }
+  .lobbyNav { flex-direction: row; gap: 22px; padding: 0; margin-bottom: 35px; }
+  .lobbyNav a { font-size: 11px; gap: 9px; }
+  .gaming .headline { padding: 0; }
+  .gaming .title { font-size: 58px; }
+  .gaming.longTitle .title { font-size: 42px; }
+  .gaming .art { width: 220px; height: 155px; right: 18px; bottom: 10px; }
+  .gaming .kicker { font-size: 10px; }
+  .session { margin: 0 24px; grid-template-columns: 1fr; }
+  .session > div + div { border-left: 0; border-top: 1px solid #4e5a50; padding-left: 0; }
+  .hero dd { font-size: 16px; }
+  .fixture { padding: 25px 24px 12px; }
+  .sporty .kicker { text-align: left; font-size: 10px; }
+  .sporty .title { font-size: 57px; }
+  .sporty.longTitle .title { font-size: 42px; }
+  .fixtureBottom { min-height: 150px; gap: 10px; }
+  .sporty .subtitle { font-size: 20px; }
+  .sporty .art { width: 150px; height: 125px; flex-shrink: 0; }
+  .ticket { display: block; margin: 0 24px 28px; padding-top: 20px; }
+  .ticket dl { grid-template-columns: 1fr; gap: 20px; }
+  .ticket .action { margin-top: 24px; width: 100%; }
+  .page.gaming [data-event-sections] { display: block; }
+  .page.gaming [data-event-sections] > section { padding: 35px 0; border-right: 0; }
+  .page.gaming :global(#event_details), .page.gaming :global(#venue_map), .page.gaming :global(#countdown) { padding: 35px 0; border-right: 0; grid-row: auto; }
+  .page.gaming :global(#countdown) li > span:first-child { font-size: 32px; white-space: nowrap; }
+  .page.gaming :global(#countdown) li > span:last-child { font-size: 12px; white-space: nowrap; }
+  .page.gaming :global(#event_details) p { font-size: 19px; }
+  .page.gaming :global(#rsvp) > div { grid-template-columns: 1fr; gap: 25px; }
+  .page.gaming :global(#rsvp-heading) { font-size: 44px; }
+  .page.sporty [data-event-sections] > section > div { grid-template-columns: 42px 1fr; gap: 18px; }
+  .page.sporty [data-event-sections] h2 + div { grid-column: 2; }
+  .page.sporty [data-event-sections] > section > div::before { font-size: 32px; }
+  .page.sporty [data-event-sections] h2 { font-size: 25px; }
+  .page.sporty :global(#countdown) h2 + div { grid-column: 1 / -1; }
+  .page.sporty :global(#countdown) li > span:first-child { font-size: 34px; }
+  .page.sporty :global(#rsvp) { padding: 40px 20px; }
+  .page.sporty :global(#rsvp) > div { padding: 24px 18px; }
+  .page.sporty :global(#rsvp-heading) { font-size: 34px; }
+  .hero.compact .title { font-size: 35px; }
+  .hero.compact.longTitle .title { font-size: 26px; }
+  .hero.compact .subtitle { font-size: 12px; }
+  .hero.compact .art { width: 130px; height: 100px; }
+  .hero.compact dd { font-size: 12px; }
+}

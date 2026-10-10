@@ -1,0 +1,748 @@
+.hero { position: relative; isolation: isolate; overflow: hidden; min-height: 640px; padding: 64px 32px 76px; display: grid; place-items: center; text-align: center; }
+.content { position: relative; z-index: 1; width: min(100%, 940px); }
+.art, .artEcho { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.art img, .artEcho img { object-fit: cover; }
+.eyebrow { font-size: 12px; text-transform: uppercase; margin: 0 0 24px; }
+.title { font-family: var(--font-cormorant), Georgia, serif; font-size: 92px; line-height: 1; font-weight: 500; overflow-wrap: anywhere; text-wrap: balance; letter-spacing: 0; }
+.join { display: inline-block; margin-inline: 22px; font-size: .7em; font-style: italic; }
+.subtitle { font-family: Georgia, serif; font-size: 19px; line-height: 1.6; margin: 24px auto 0; max-width: 540px; }
+.facts { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px 24px; margin: 30px auto 0; font-size: 14px; line-height: 1.6; }
+.facts span + span { border-left: 1px solid currentColor; padding-left: 24px; }
+.reply { display: inline-flex; align-items: center; gap: 28px; background: var(--invite-accent); color: #fff; padding: 14px 24px; font-size: 14px; margin-top: 26px; }
+.reply:hover { text-decoration: underline; text-underline-offset: 4px; }
+.discover { position: absolute; z-index: 2; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 12px; display: flex; gap: 18px; white-space: nowrap; }
+.hero a:focus-visible { outline: 3px solid currentColor; outline-offset: 5px; }
+.page :global(#celebration-details) { scroll-margin-top: 80px; }
+.page :global(#rsvp) { padding-block: 80px; }
+.page :global(#rsvp-heading) { font-size: 40px; line-height: 1.2; text-wrap: balance; }
+.page :global(#event_details) p { font-size: 20px; line-height: 1.8; }
+.page :global(#timeline) li { padding-block: 15px; }
+.page :global(#timeline) li > span:first-child { color: var(--invite-accent); opacity: 1; }
+.page :global(#our_story) h3 { font-size: 26px; }
+.page :global(#countdown) ul { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+/* A formal programme, with lilies treated as stage wings. */
+.hero.blacktie { background: #000; color: #fffdf3; min-height: 660px; }
+.blacktie .art { right: auto; width: 25%; opacity: .85; }
+.blacktie .artEcho { left: auto; width: 25%; transform: scaleX(-1); opacity: .85; }
+.blacktie .art img, .blacktie .artEcho img { object-fit: contain; }
+.hero.blacktie::after { content: ''; position: absolute; inset: 26px; border-block: 3px double #b9a982; pointer-events: none; }
+.blacktie .content { max-width: 760px; padding-inline: 25px; }
+.blacktie .title { font-size: 100px; }
+.blacktie .join { display: block; font-size: 46px; margin: 8px 0; color: #d8c799; }
+.blacktie .subtitle { font-style: italic; }
+.blacktie .reply { background: #fffdf3; color: var(--invite-accent); }
+.page.blacktie :global(#celebration-details) { text-align: center; border-bottom: 3px double var(--invite-accent); }
+.page.blacktie :global(#event_details), .page.blacktie :global(#dress_code) { text-align: center; }
+.page.blacktie :global(#timeline) ol { border-block: 3px double var(--invite-accent); padding-block: 18px; }
+.page.blacktie :global(#timeline) h2 { text-align: center; }
+.page.blacktie :global(#timeline) li { border-bottom: 1px solid #dcdad3; }
+.page.blacktie :global(#timeline) li:last-child { border: 0; }
+.page.blacktie :global(#rsvp) { border-top: 3px double var(--invite-accent); }
+
+/* A botanical folio, with a photographic canopy below the lettering. */
+.hero.tropical { background: #edf4e8; padding-bottom: 220px; color: #263c2c; min-height: 680px; }
+.tropical .art { top: auto; height: 190px; clip-path: polygon(0 13%, 15% 0, 36% 12%, 61% 2%, 85% 13%, 100% 0, 100% 100%, 0 100%); }
+.tropical .title { font-style: italic; color: var(--invite-accent); }
+.tropical .join { font-style: normal; }
+.tropical .discover { background: #fbfdf8; padding: 8px 16px; color: #263c2c; }
+.page.tropical :global(#event_details) { text-align: center; }
+.page.tropical :global(#our_story) { border-left: 16px solid #7d9568; }
+.page.tropical :global(#timeline) { background: #edf4e8 !important; }
+.page.tropical :global(#timeline) ol { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 26px; margin-top: 32px; }
+.page.tropical :global(#timeline) li { flex-direction: column; padding-top: 24px; border-top: 1px solid var(--invite-accent); }
+.page.tropical :global(#dress_code) h2 { font-style: italic; }
+.page.tropical :global(#rsvp) { border-top: 12px solid #7d9568; }
+
+/* An art-book cover, with a wide photographic footer and strict rules. */
+.hero.monochrome { background: #f5f5f2; color: #202020; padding-bottom: 240px; text-align: left; min-height: 680px; }
+.monochrome .title { font-family: var(--font-jost), sans-serif; font-size: 90px; font-weight: 500; line-height: 1.05; }
+.monochrome .join { font-family: Georgia, serif; color: var(--invite-accent); }
+.monochrome .content { max-width: 1100px; }
+.monochrome .subtitle { margin-left: 0; }
+.monochrome .facts { justify-content: flex-start; }
+.monochrome .art { top: auto; height: 190px; background: #000; }
+.monochrome .art img { object-fit: contain; filter: grayscale(1); object-position: 76% center; }
+.monochrome .discover { color: white; }
+.page.monochrome :global(#celebration-details) { border-bottom-width: 4px; }
+.page.monochrome h2 { font-family: var(--font-jost), sans-serif; font-weight: 500; }
+.page.monochrome :global(#our_story) ol { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+.page.monochrome :global(#timeline) li { border-top: 1px solid var(--invite-accent); }
+.page.monochrome :global(#rsvp) { border-top: 4px solid var(--invite-accent); }
+
+.hero.space { background: #edf6fb; color: #263c50; min-height: 710px; padding-top: 48px; padding-bottom: 245px; align-items: start; }
+.space .art img { object-position: center bottom; }
+.space .title { font-family: var(--font-jost), sans-serif; font-weight: 700; font-size: 76px; color: var(--invite-accent); }
+.space .eyebrow { font-family: monospace; border-block: 1px solid var(--invite-accent); width: fit-content; margin-inline: auto; padding: 9px 22px; }
+.space .subtitle { font-family: var(--font-jost), sans-serif; }
+.space .discover { background: #fff; padding: 6px 14px; }
+.page.space :global(#celebration-details) { border-block: 2px dashed var(--invite-accent); }
+.page.space :global(#event_details) { text-align: center; }
+.page.space h2 { font-family: var(--font-jost), sans-serif; font-weight: 600; }
+.page.space :global(#timeline) { background: #edf6fb !important; }
+.page.space :global(#timeline) li { border-bottom: 1px dashed var(--invite-accent); }
+.page.space :global(#timeline) li > span:first-child { font-family: monospace; font-size: 20px; }
+.page.space :global(#rsvp) { border-top: 3px dashed var(--invite-accent); }
+
+.hero.neon { background: #171a19; color: #edff82; text-align: left; min-height: 700px; padding-bottom: 240px; }
+.neon .art { top: auto; height: 205px; }
+.neon .art img { object-position: center 48%; }
+.neon .title { font-family: var(--font-jost), sans-serif; text-transform: uppercase; font-weight: 800; font-size: 88px; }
+.neon .content { max-width: 1080px; }
+.neon .eyebrow { color: #fbb1d6; border-bottom: 1px solid #fbb1d6; padding-bottom: 16px; }
+.neon .subtitle { margin-left: 0; font-family: var(--font-jost), sans-serif; }
+.neon .facts { justify-content: flex-start; }
+.neon .reply { background: #edff82; color: var(--invite-accent); }
+.neon .discover { color: #fff; background: #171a19; padding: 8px 16px; }
+.page.neon :global(#celebration-details) { border-block: 2px dashed var(--invite-accent); }
+.page.neon h2 { font-family: var(--font-jost), sans-serif; font-weight: 700; text-transform: uppercase; }
+.page.neon :global(#timeline) { background: #f5edee !important; }
+.page.neon :global(#timeline) li { border-bottom: 1px solid var(--invite-accent); }
+.page.neon :global(#timeline) li > span:first-child { font-size: 26px; font-weight: 600; }
+.page.neon :global(#rsvp) { border-top: 14px solid #dced85; }
+
+.hero.sky { background: #edf6fc; padding-bottom: 230px; color: #33475c; min-height: 650px; }
+.sky .art { top: auto; height: 195px; }
+.sky .art img { object-position: center 70%; }
+.sky .title { font-size: 86px; font-style: italic; color: var(--invite-accent); }
+.sky .reply { border-radius: 50%; padding: 18px 28px; }
+.sky .discover { background: #fffdf8; padding: 8px 14px; }
+.page.sky :global(#celebration-details) { text-align: center; border-bottom: 3px double var(--invite-accent); }
+.page.sky :global(#event_details) { text-align: center; }
+.page.sky :global(#timeline) { background: #edf6fc !important; }
+.page.sky :global(#timeline) h2 { text-align: center; font-style: italic; }
+.page.sky :global(#timeline) ol { max-width: 520px; margin: 25px auto 0; }
+.page.sky :global(#rsvp) { border-top: 3px double var(--invite-accent); }
+
+.hero.explorer { background: #f4f8f3; color: #354b3d; min-height: 710px; padding-top: 50px; padding-bottom: 245px; align-items: start; }
+.explorer .art img { object-position: center bottom; }
+.explorer .title { font-size: 80px; color: var(--invite-accent); }
+.explorer .subtitle { font-style: italic; }
+.explorer .discover { background: #fcfdf9; padding: 8px 16px; }
+.page.explorer :global(#event_details) { text-align: center; }
+.page.explorer :global(#celebration-details) { border-bottom: 2px dashed var(--invite-accent); }
+.page.explorer :global(#timeline) ol { border-left: 2px dashed var(--invite-accent); padding-left: 28px; }
+.page.explorer :global(#timeline) li { position: relative; }
+.page.explorer :global(#timeline) li::before { content: ''; position: absolute; width: 10px; height: 10px; border-radius: 50%; background: var(--invite-accent); left: -34px; top: 21px; }
+.page.explorer :global(#rsvp) { border-top: 2px dashed var(--invite-accent); }
+
+.hero.scholar { background: #f2f4ec; color: #293b32; padding-bottom: 230px; min-height: 690px; }
+.scholar .content { border-top: 5px double var(--invite-accent); padding-top: 25px; }
+.scholar .title { font-size: 88px; }
+.scholar .eyebrow { font-family: Georgia, serif; text-transform: none; font-style: italic; font-size: 18px; }
+.scholar .art { top: auto; height: 190px; }
+.scholar .art img { object-position: center 45%; }
+.scholar .discover { color: #fff; background: #293b32; padding: 7px 14px; }
+.page.scholar :global(#celebration-details) { border-bottom: 5px double var(--invite-accent); }
+.page.scholar :global(#event_details) p { font-family: Georgia, serif; }
+.page.scholar :global(#timeline) { background: #f2f4ec !important; }
+.page.scholar :global(#timeline) h2 { font-variant: small-caps; }
+.page.scholar :global(#timeline) li { border-bottom: 1px solid #c9d1c2; }
+.page.scholar :global(#rsvp) { border-top: 5px double var(--invite-accent); }
+
+.hero.heirloom { background: #fffafb; color: #49333d; min-height: 660px; }
+.heirloom .art { right: auto; width: 17%; }
+.heirloom .artEcho { left: auto; width: 17%; transform: scaleX(-1); }
+.heirloom .content { max-width: 64%; padding-block: 32px; border-block: 3px double var(--invite-accent); }
+.heirloom .title { font-size: 80px; font-style: italic; color: var(--invite-accent); }
+.heirloom .subtitle { font-size: 18px; }
+.page.heirloom :global(#celebration-details), .page.heirloom :global(#event_details) { text-align: center; }
+.page.heirloom :global(#event_details) p { font-family: Georgia, serif; }
+.page.heirloom :global(#timeline) { background: #f9edf0 !important; }
+.page.heirloom :global(#timeline) li { border-bottom: 1px solid #dac1cc; }
+.page.heirloom :global(#rsvp) { border-top: 3px double var(--invite-accent); }
+
+.hero.roses { background: #fff4f4; color: #603747; min-height: 700px; padding-bottom: 225px; border-inline: 16px solid #e8aab7; }
+.roses .art { top: auto; height: 185px; border-top: 8px double #fff4f4; }
+.roses .title { color: var(--invite-accent); font-size: 86px; font-style: italic; }
+.roses .eyebrow { border-bottom: 1px solid var(--invite-accent); width: fit-content; margin-inline: auto; padding-bottom: 12px; }
+.roses .discover { background: #fffdf9; padding: 8px 16px; }
+.page.roses :global(#celebration-details) { border-block: 5px double var(--invite-accent); text-align: center; }
+.page.roses :global(#event_details) { text-align: center; }
+.page.roses :global(#timeline) { background: #fff4f4 !important; }
+.page.roses :global(#timeline) h2 { text-align: center; font-style: italic; }
+.page.roses :global(#timeline) li { border-bottom: 1px dotted var(--invite-accent); }
+.page.roses :global(#rsvp) { border-top: 12px solid #e8aab7; }
+
+.hero.conference { background: #eef2f0; color: #203c38; text-align: left; padding-bottom: 235px; min-height: 650px; }
+.conference .content { max-width: 1120px; }
+.conference .title { font-family: var(--font-jost), sans-serif; font-weight: 600; font-size: 82px; }
+.conference .eyebrow { border-left: 5px solid var(--invite-accent); padding-left: 15px; }
+.conference .subtitle { margin-left: 0; font-family: var(--font-jost), sans-serif; }
+.conference .facts { justify-content: flex-start; }
+.conference .art { top: auto; height: 190px; }
+.conference .art img { object-position: center 48%; }
+.conference .discover { background: #fff; color: #203c38; padding: 8px 16px; }
+.page.conference h2 { font-family: var(--font-jost), sans-serif; font-size: 34px; font-weight: 600; }
+.page.conference :global(#celebration-details) { border-bottom: 5px solid var(--invite-accent); }
+.page.conference :global(#timeline) > div { max-width: 1000px; }
+.page.conference :global(#timeline) li { border-top: 1px solid #aabeb7; gap: 40px; padding-block: 24px; }
+.page.conference :global(#timeline) li > span:first-child { font-size: 24px; font-weight: 500; width: 100px; }
+.page.conference :global(#rsvp) { border-top: 5px solid var(--invite-accent); }
+
+.page.space :global(#venue_map) > div { border-left: 2px dashed var(--invite-accent); padding-left: 30px; }
+.page.space :global(#countdown) { background: #edf6fb !important; border-top: 2px dashed var(--invite-accent); }
+.page.space :global(#countdown) h2 { font-family: monospace; font-size: 24px; text-transform: uppercase; }
+.page.space :global(#countdown) ul { gap: 0; display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); border-block: 1px solid var(--invite-accent); padding-block: 20px; }
+.page.space :global(#countdown) li { text-align: center; border-right: 1px solid var(--invite-accent); }
+.page.space :global(#countdown) li:last-child { border: 0; }
+.page.space :global(#countdown) li > span:first-child { font-family: monospace; font-size: 46px; color: var(--invite-accent); }
+.page.neon :global(#venue_map) { border-left: 16px solid #edff82; }
+.page.neon :global(#countdown) { background: #edff82 !important; }
+.page.neon :global(#countdown) > div { max-width: 1040px; }
+.page.neon :global(#countdown) ul { justify-content: space-between; }
+.page.neon :global(#countdown) li > span:first-child { font-family: var(--font-jost), sans-serif; font-size: 76px; font-weight: 700; line-height: 1.2; }
+.page.sky :global(#venue_map) { text-align: center; background: #edf6fc !important; border-block: 3px double var(--invite-accent); }
+.page.sky :global(#venue_map) h2 { font-style: italic; }
+.page.sky :global(#countdown) { text-align: center; }
+.page.sky :global(#countdown) ul { justify-content: center; gap: 38px; }
+.page.sky :global(#countdown) li > span:first-child { font-family: var(--font-cormorant), Georgia, serif; font-style: italic; font-size: 56px; }
+.page.explorer :global(#venue_map) { background: #eef4ec !important; }
+.page.explorer :global(#venue_map) > div { border-left: 2px dashed var(--invite-accent); padding-left: 35px; }
+.page.explorer :global(#countdown) { text-align: center; }
+.page.explorer :global(#countdown) ul { justify-content: center; padding-block: 24px; border-block: 1px solid #b2c2a9; }
+.page.explorer :global(#countdown) li > span:first-child { font-family: Georgia, serif; font-size: 42px; color: var(--invite-accent); }
+.page.scholar :global(#venue_map) > div { border-top: 4px double var(--invite-accent); padding-top: 24px; }
+.page.scholar :global(#countdown) { background: #f2f4ec !important; text-align: center; }
+.page.scholar :global(#countdown) ul { justify-content: center; gap: 40px; }
+.page.scholar :global(#countdown) li > span:first-child { font-family: var(--font-cormorant), Georgia, serif; font-size: 60px; }
+.page.heirloom :global(#venue_map) { text-align: center; border-block: 3px double var(--invite-accent); }
+.page.heirloom :global(#countdown) { background: #f9edf0 !important; text-align: center; }
+.page.heirloom :global(#countdown) ul { justify-content: center; gap: 40px; }
+.page.heirloom :global(#countdown) li > span:first-child { font-family: Georgia, serif; font-style: italic; font-size: 42px; }
+.page.roses :global(#venue_map) { border-inline: 16px solid #e8aab7; text-align: center; }
+.page.roses :global(#countdown) { background: #fff4f4 !important; text-align: center; }
+.page.roses :global(#countdown) ul { justify-content: center; }
+.page.roses :global(#countdown) li { border-top: 3px double var(--invite-accent); padding-top: 12px; min-width: 75px; }
+.page.roses :global(#countdown) li > span:first-child { font-family: var(--font-cormorant), Georgia, serif; font-size: 54px; color: var(--invite-accent); }
+.page.conference :global(#venue_map) > div { max-width: 1000px; display: grid; grid-template-columns: 260px 1fr; gap: 50px; border-top: 1px solid var(--invite-accent); padding-top: 30px; }
+.page.conference :global(#venue_map) h2 + div { margin-top: 0; }
+.page.conference :global(#countdown) { background: #eef2f0 !important; }
+.page.conference :global(#countdown) > div { max-width: 1000px; display: grid; grid-template-columns: 260px 1fr; gap: 50px; align-items: center; }
+.page.conference :global(#countdown) h2 + div { margin-top: 0; }
+.page.conference :global(#countdown) ul { justify-content: space-between; }
+.page.conference :global(#countdown) li > span:first-child { font-family: var(--font-jost), sans-serif; font-size: 52px; font-weight: 500; }
+
+/* Engraved stationery: botanical margins, a monogram and ruled chapters. */
+.hero.gilded { background: #fff; color: #34382f; min-height: 650px; padding-block: 36px 70px; }
+.gilded .art, .gilded .artEcho { top: 22%; bottom: 10%; width: 17%; }
+.gilded .art { right: auto; transform: rotate(15deg); }
+.gilded .artEcho { left: auto; transform: scaleX(-1) rotate(15deg); }
+.gilded .art img, .gilded .artEcho img { object-fit: contain; filter: sepia(.65) saturate(.55); }
+.gilded .content { width: min(68%, 820px); }
+.initials { font-family: var(--font-cormorant), Georgia, serif; color: var(--invite-accent); font-size: 36px; width: fit-content; margin: 0 auto 25px; border-block: 3px double #bba66e; padding: 10px 26px; }
+.gilded .title { font-size: 92px; color: var(--invite-accent); }
+.gilded .join { display: block; font-size: 36px; margin: 6px 0; }
+.gilded .subtitle { font-style: italic; }
+.gilded .reply { background: transparent; border-block: 1px solid var(--invite-accent); color: var(--invite-accent); }
+.page.gilded :global(#celebration-details) { text-align: center; border-block: 3px double #bba66e; }
+.page.gilded :global(#event_details), .page.gilded :global(#dress_code) { text-align: center; }
+.page.gilded :global(#our_story) ol { counter-reset: chapter; }
+.page.gilded :global(#our_story) li { counter-increment: chapter; border-top: 1px solid #c3b58f; padding-top: 25px; }
+.page.gilded :global(#our_story) h3::before { content: "0" counter(chapter) " / "; font-size: 16px; color: var(--invite-accent); }
+.page.gilded :global(#timeline) ol { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 25px; }
+.page.gilded :global(#timeline) li { flex-direction: column; border-top: 3px double #bba66e; }
+.page.gilded :global(#rsvp) { border-top: 3px double #bba66e; }
+
+/* A reception journal, with a photographic toast beneath the invitation. */
+.hero.champagne { background: #fffefa; min-height: 720px; padding-bottom: 280px; color: #343a30; }
+.champagne .title { font-style: italic; font-size: 96px; color: var(--invite-accent); }
+.champagne .eyebrow { border-block: 1px solid #b6aa89; padding: 10px; width: fit-content; margin-inline: auto; }
+.champagne .art { top: auto; height: 245px; }
+.champagne .art img { object-position: center 76%; }
+.champagne .discover { background: #fffefa; padding: 8px 20px; }
+.page.champagne :global(#celebration-details) { background: #eaf0e9; border-bottom: 1px solid #b6aa89; }
+.page.champagne :global(#our_story) ol { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 50px; }
+.page.champagne :global(#our_story) h3 { font-style: italic; font-size: 36px; }
+.page.champagne :global(#timeline) li { border-bottom: 1px solid #b6aa89; padding-block: 25px; }
+.page.champagne :global(#timeline) li > span:first-child { font-family: Georgia, serif; font-size: 24px; }
+.page.champagne :global(#dress_code) { text-align: center; background: #eaf0e9 !important; }
+.page.champagne :global(#rsvp) { border-top: 8px double #b6aa89; }
+
+/* A cocktail menu: a burgundy masthead and a tear-off reply. */
+.hero.cocktail { background: #f8e4e8; color: #54273a; padding-bottom: 260px; min-height: 750px; border-inline: 16px solid #682f43; }
+.cocktail .title { font-size: 102px; font-style: italic; max-width: 900px; margin-inline: auto; }
+.cocktail .eyebrow { font-family: monospace; border-block: 3px double #682f43; padding: 12px; }
+.cocktail .subtitle { font-family: monospace; font-size: 15px; }
+.cocktail .art { top: auto; bottom: 50px; height: 215px; left: 50%; right: auto; width: min(440px, 86%); transform: translateX(-50%); }
+.cocktail .art img { object-fit: contain; }
+.cocktail .discover { color: #54273a; }
+.page.cocktail :global(#celebration-details) { border-block: 2px dashed var(--invite-accent); }
+.page.cocktail :global(#event_details) { text-align: center; }
+.page.cocktail :global(#event_details) h2 { font-style: italic; font-size: 46px; }
+.page.cocktail :global(#venue_map) > div { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; border-block: 3px double var(--invite-accent); padding-block: 30px; }
+.page.cocktail :global(#venue_map) h2 + div { margin-top: 0; }
+.page.cocktail :global(#countdown) { background: #f8e4e8 !important; }
+.page.cocktail :global(#countdown) li > span:first-child { font-family: Georgia, serif; font-style: italic; color: var(--invite-accent); font-size: 52px; }
+.page.cocktail :global(#rsvp) { border-top: 2px dashed var(--invite-accent); }
+
+/* A milestone poster, using the host's title rather than an assumed age. */
+.hero.forty { background: #eaf1ee; color: #203f37; min-height: 740px; padding: 28px 32px 100px; }
+.forty .content { max-width: 900px; }
+.forty .title { font-size: 150px; color: var(--invite-accent); font-style: italic; max-width: 750px; margin-inline: auto; }
+.forty .eyebrow { margin-bottom: 18px; }
+.forty .art { inset: auto 30px 30px auto; width: 175px; height: 235px; transform: rotate(7deg); border: 8px solid #fff; }
+.forty .art img { object-position: center 84%; }
+.forty .facts { border-block: 1px solid var(--invite-accent); padding-block: 12px; width: fit-content; }
+.page.forty :global(#celebration-details) { border-bottom: 8px solid #d1dfd4; }
+.page.forty h2 { font-style: italic; }
+.page.forty :global(#event_details) { text-align: center; }
+.page.forty :global(#venue_map) { border-left: 18px solid #d1dfd4; }
+.page.forty :global(#countdown) { background: #eaf1ee !important; }
+.page.forty :global(#countdown) li > span:first-child { font-size: 64px; font-family: var(--font-cormorant), Georgia, serif; color: var(--invite-accent); }
+.page.forty :global(#rsvp) { border-top: 2px dashed var(--invite-accent); }
+
+/* A seed-packet masthead, with specimen illustrations in the margins. */
+.hero.bloom { background: #eef3e9; color: #374e39; min-height: 650px; border-block: 10px solid #d3dfc6; }
+.bloom .art, .bloom .artEcho { width: 22%; top: 14%; bottom: 8%; }
+.bloom .art { right: auto; transform: rotate(-12deg); }
+.bloom .artEcho { left: auto; transform: scaleX(-1) rotate(-12deg); }
+.bloom .art img, .bloom .artEcho img { object-fit: contain; }
+.bloom .content { max-width: 62%; }
+.bloom .eyebrow { border-block: 3px double var(--invite-accent); padding-block: 12px; }
+.bloom .title { font-size: 82px; color: var(--invite-accent); }
+.bloom .subtitle { font-style: italic; }
+.page.bloom :global(#celebration-details) { text-align: center; border-bottom: 2px dotted var(--invite-accent); }
+.page.bloom :global(#event_details) { text-align: center; }
+.page.bloom :global(#venue_map) { background: #eef3e9 !important; border-block: 10px solid #d3dfc6; }
+.page.bloom :global(#venue_map) h2 { font-style: italic; }
+.page.bloom :global(#countdown) { text-align: center; }
+.page.bloom :global(#countdown) li { border-block: 1px solid #a4b894; padding-block: 12px; }
+.page.bloom :global(#countdown) li > span:first-child { font-family: var(--font-cormorant), Georgia, serif; font-size: 54px; }
+.page.bloom :global(#rsvp) { border-top: 10px solid #d3dfc6; }
+
+/* Honey-garden stationery, with a painted vignette and narrow striped edges. */
+.hero.honey { background: #fff5c9; color: #34452e; min-height: 770px; padding-bottom: 320px; border-inline: 12px double #d0ad46; }
+.honey .art { top: auto; bottom: 35px; left: 50%; right: auto; width: min(680px, 92%); height: 300px; transform: translateX(-50%); }
+.honey .art img { object-fit: contain; }
+.honey .title { font-size: 86px; color: var(--invite-accent); }
+.honey .eyebrow { font-family: Georgia, serif; text-transform: none; font-style: italic; font-size: 20px; }
+.honey .subtitle { font-family: var(--font-jost), sans-serif; font-size: 17px; }
+.page.honey :global(#celebration-details) { border-block: 6px double #d0ad46; text-align: center; }
+.page.honey :global(#event_details) { text-align: center; }
+.page.honey :global(#venue_map) { border-inline: 12px double #d0ad46; }
+.page.honey :global(#countdown) { background: #fff5c9 !important; text-align: center; }
+.page.honey :global(#countdown) li > span:first-child { font-family: var(--font-cormorant), Georgia, serif; font-size: 54px; color: var(--invite-accent); }
+.page.honey :global(#rsvp) { border-top: 6px double #d0ad46; }
+
+/* Conservatory windows echo in the chapter columns below the opening. */
+.hero.emerald { background: #173e30; color: #fffef1; min-height: 670px; padding-inline: 20%; }
+.emerald .art, .emerald .artEcho { width: 17%; top: 9%; bottom: 9%; border: 1px solid #9baa81; border-radius: 180px 180px 0 0; overflow: hidden; }
+.emerald .art { right: auto; left: 2%; }
+.emerald .artEcho { left: auto; right: 2%; transform: scaleX(-1); }
+.emerald .art img, .emerald .artEcho img { object-position: 25% center; }
+.emerald .title { font-size: 110px; font-style: italic; }
+.emerald .join { display: block; font-size: 38px; color: #dfce9a; margin: 8px 0; }
+.emerald .eyebrow { border-bottom: 1px solid #9baa81; padding-bottom: 18px; }
+.emerald .reply { background: #fffef1; color: var(--invite-accent); }
+.page.emerald :global(#celebration-details) { border-bottom: 3px solid #9baa81; }
+.page.emerald :global(#event_details) { text-align: center; }
+.page.emerald :global(#our_story) ol { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 40px; }
+.page.emerald :global(#our_story) li { border-top: 3px double var(--invite-accent); padding-top: 24px; }
+.page.emerald :global(#our_story) h3 { font-style: italic; }
+.page.emerald :global(#timeline) { border-block: 1px solid #9baa81; background: #edf3ef !important; }
+.page.emerald :global(#timeline) ol { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 24px; }
+.page.emerald :global(#timeline) li { flex-direction: column; border-left: 1px solid #9baa81; padding: 20px; }
+.page.emerald :global(#dress_code) { text-align: center; }
+.page.emerald :global(#rsvp) { border-top: 14px solid #173e30; }
+
+/* Porcelain stationery: one asymmetric specimen and a banded masthead. */
+.hero.porcelain { background: #fffefa; color: #253c6b; min-height: 690px; padding: 64px 17% 100px; border-top: 14px solid #2b4982; border-bottom: 5px double #b79b56; }
+.porcelain .art { right: auto; left: -2%; top: auto; bottom: -45px; width: 28%; height: 470px; transform: rotate(18deg); }
+.porcelain .art img { object-fit: contain; }
+.porcelain .content { border-top: 3px double #b79b56; padding-top: 32px; }
+.porcelain .title { font-size: 104px; }
+.porcelain .join { display: block; font-size: 38px; margin: 12px 0; color: var(--invite-accent); }
+.porcelain .subtitle { font-style: italic; }
+.porcelain .eyebrow { color: var(--invite-accent); }
+.page.porcelain :global(#celebration-details) { border-bottom: 5px double #b79b56; text-align: center; }
+.page.porcelain :global(#event_details) { text-align: center; }
+.page.porcelain :global(#our_story) { border-left: 12px solid #2b4982; }
+.page.porcelain :global(#our_story) li { border-top: 1px solid #b9c7e1; padding-top: 24px; }
+.page.porcelain :global(#timeline) ol { counter-reset: programme; }
+.page.porcelain :global(#timeline) li { position: relative; counter-increment: programme; padding: 24px 0 24px 45px; border-bottom: 1px solid #b9c7e1; }
+.page.porcelain :global(#timeline) li::before { content: counter(programme, upper-roman); position: absolute; left: 0; font-family: Georgia, serif; color: var(--invite-accent); }
+.page.porcelain :global(#dress_code) { border-block: 5px double #b79b56; text-align: center; }
+.page.porcelain :global(#rsvp) { border-top: 14px solid #2b4982; }
+
+/* Dried stems and soft chapter edges, with no ornamental invitation card. */
+.hero.pampas { background: #f8eef0; color: #4b4147; min-height: 690px; padding: 64px 20% 100px 10%; }
+.pampas .art { left: auto; right: -2%; top: 6%; bottom: 0; width: 29%; transform: rotate(-8deg); }
+.pampas .art img { object-fit: contain; }
+.pampas .title { font-size: 110px; font-style: italic; color: var(--invite-accent); }
+.pampas .join { display: block; font-size: 40px; margin: 8px 0; }
+.pampas .eyebrow { text-transform: none; font-family: Georgia, serif; font-style: italic; font-size: 17px; }
+.pampas .facts { border-top: 1px solid #b69a9f; padding-top: 22px; }
+.pampas .reply { border-radius: 0; background: transparent; color: var(--invite-accent); border-bottom: 1px solid var(--invite-accent); padding-inline: 0; }
+.page.pampas :global(#celebration-details) { border-bottom: 2px dashed #bdabb0; }
+.page.pampas :global(#event_details) { text-align: center; }
+.page.pampas h2 { font-style: italic; }
+.page.pampas :global(#our_story) li { border-left: 1px solid #bdabb0; padding-left: 30px; }
+.page.pampas :global(#our_story) li:nth-child(even) { margin-left: 60px; }
+.page.pampas :global(#timeline) { background: #edf2ed !important; }
+.page.pampas :global(#timeline) li { border-bottom: 1px dashed #9db2a2; padding-block: 22px; }
+.page.pampas :global(#timeline) li > span:first-child { font-family: Georgia, serif; font-style: italic; font-size: 22px; }
+.page.pampas :global(#dress_code) { text-align: center; }
+.page.pampas :global(#rsvp) { border-top: 2px dashed #bdabb0; }
+
+/* Field journal: a wide horizon and practical, ruled entries. */
+.hero.safari { background: #edf1e8; color: #35452f; min-height: 710px; padding-bottom: 300px; }
+.safari .art { top: auto; height: 260px; }
+.safari .art img { object-position: center 55%; }
+.safari .eyebrow { font-family: monospace; border-block: 1px solid var(--invite-accent); padding: 10px; }
+.safari .title { font-size: 100px; font-style: italic; color: var(--invite-accent); }
+.safari .facts { font-family: monospace; }
+.safari .discover { background: #fffef8; padding: 8px 18px; }
+.page.safari :global(#celebration-details) { border-block: 2px dashed var(--invite-accent); }
+.page.safari :global(#our_story) li { border-left: 1px solid #99a886; padding-left: 28px; }
+.page.safari :global(#timeline) li { border-top: 1px solid #99a886; padding-block: 25px; }
+.page.safari :global(#timeline) li > span:first-child { font-family: monospace; font-size: 20px; }
+.page.safari :global(#dress_code) { background: #edf1e8 !important; }
+.page.safari :global(#rsvp) { border-top: 2px dashed var(--invite-accent); }
+
+/* Textile margins continue as vivid chapter bands rather than a page tint. */
+.hero.kitenge { background: #fff1d3; color: #224e4b; padding-inline: 19%; min-height: 660px; }
+.kitenge .art, .kitenge .artEcho { width: 14%; }
+.kitenge .art { right: auto; }
+.kitenge .artEcho { left: auto; transform: scaleX(-1); }
+.kitenge .title { font-family: var(--font-jost), sans-serif; font-size: 88px; font-weight: 600; }
+.kitenge .join { display: block; color: var(--invite-accent); font-family: Georgia, serif; font-size: 44px; margin: 14px 0; }
+.kitenge .eyebrow { border-bottom: 5px solid #e4b23b; padding-bottom: 15px; }
+.kitenge .subtitle { font-family: var(--font-jost), sans-serif; }
+.page.kitenge h2 { font-family: var(--font-jost), sans-serif; font-weight: 500; }
+.page.kitenge :global(#celebration-details) { border-block: 8px solid #e4b23b; }
+.page.kitenge :global(#our_story) { border-left: 16px solid #d65c3e; }
+.page.kitenge :global(#our_story) ol { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 32px; }
+.page.kitenge :global(#timeline) { background: #fff1d3 !important; }
+.page.kitenge :global(#timeline) li { border-bottom: 2px dotted var(--invite-accent); padding-block: 24px; }
+.page.kitenge :global(#rsvp) { border-top: 16px solid #224e4b; }
+
+/* Woven brass: an asymmetric composition and gallery-like chapter structure. */
+.hero.woven { background: #212822; color: #fffde9; min-height: 690px; text-align: left; padding: 70px 34% 80px 6%; }
+.woven .art { left: auto; width: 28%; border-left: 10px solid #b89c60; }
+.woven .title { font-family: var(--font-jost), sans-serif; font-size: 84px; font-weight: 400; }
+.woven .join { display: block; font-family: Georgia, serif; font-size: 48px; color: #d8bc7e; margin: 12px 0; }
+.woven .eyebrow { border-left: 5px solid #b89c60; padding-left: 18px; }
+.woven .subtitle { margin-left: 0; }
+.woven .facts { justify-content: flex-start; }
+.woven .reply { background: #fffde9; color: var(--invite-accent); }
+.woven .discover { left: 36%; }
+.page.woven :global(#celebration-details) { border-bottom: 10px solid #b89c60; }
+.page.woven h2 { font-family: var(--font-jost), sans-serif; font-weight: 400; }
+.page.woven :global(#our_story) li { border-top: 5px solid #b89c60; padding-top: 25px; }
+.page.woven :global(#timeline) ol { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 24px; }
+.page.woven :global(#timeline) li { flex-direction: column; border-top: 1px solid var(--invite-accent); }
+.page.woven :global(#dress_code) { border-left: 16px solid #b89c60; }
+.page.woven :global(#rsvp) { border-top: 16px solid #212822; }
+
+.hero.burgundy { background: #531e32; color: #fff1ee; min-height: 750px; padding-bottom: 245px; }
+.burgundy .title { font-size: 112px; font-style: italic; }
+.burgundy .eyebrow { font-family: Georgia, serif; text-transform: none; font-size: 18px; font-style: italic; }
+.burgundy .art { top: auto; height: 190px; border-top: 6px double #d8a6af; }
+.burgundy .art img { object-position: center 35%; }
+.burgundy .reply { background: #fff1ee; color: var(--invite-accent); }
+.burgundy .discover { background: #531e32; padding: 8px 18px; }
+.page.burgundy :global(#celebration-details) { border-bottom: 5px double var(--invite-accent); text-align: center; }
+.page.burgundy :global(#event_details) { text-align: center; }
+.page.burgundy :global(#our_story) ol { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 40px; }
+.page.burgundy :global(#our_story) h3 { font-style: italic; }
+.page.burgundy :global(#timeline) li { border-block-end: 1px solid #cdb1b9; padding-block: 25px; }
+.page.burgundy :global(#dress_code) { text-align: center; border-block: 5px double var(--invite-accent); }
+.page.burgundy :global(#rsvp) { border-top: 16px solid #531e32; }
+
+/* Stepped rules recall an evening programme without enclosing it in a card. */
+.hero.nocturne { background: #191b18; color: #e5d49f; min-height: 710px; padding-top: 195px; }
+.nocturne .art { inset: 25px auto auto 50%; transform: translateX(-50%); width: 160px; height: 145px; border: 4px double #bfa467; }
+.nocturne .art img { object-position: center 85%; }
+.nocturne .content { border-top: 6px double #bfa467; padding-top: 25px; }
+.nocturne .title { font-size: 84px; text-transform: uppercase; }
+.nocturne .join { font-style: normal; font-size: .6em; }
+.nocturne .facts { border-bottom: 1px solid #bfa467; padding-bottom: 20px; }
+.nocturne .reply { background: #fff9e4; color: var(--invite-accent); }
+.page.nocturne :global(#celebration-details) { border-block: 6px double #bfa467; }
+.page.nocturne h2 { text-align: center; }
+.page.nocturne :global(#our_story) li { border-left: 6px double #bfa467; padding-left: 28px; }
+.page.nocturne :global(#timeline) li { border-top: 3px double #bfa467; padding-block: 24px; }
+.page.nocturne :global(#timeline) li > span:first-child { font-family: Georgia, serif; font-size: 23px; }
+.page.nocturne :global(#dress_code) { text-align: center; }
+.page.nocturne :global(#rsvp) { border-top: 12px double #bfa467; }
+
+.hero.timber { background: #edf2eb; color: #414c35; min-height: 650px; padding-top: 155px; }
+.timber .art { bottom: auto; height: 100px; border-bottom: 8px solid #fffcf4; }
+.timber .title { font-size: 104px; font-weight: 600; color: var(--invite-accent); }
+.timber .eyebrow { font-family: monospace; }
+.timber .subtitle { font-style: italic; }
+.timber .facts { border-block: 2px dashed #9eab8c; padding-block: 14px; }
+.page.timber :global(#celebration-details) { border-bottom: 2px dashed #9eab8c; }
+.page.timber :global(#event_details) { text-align: center; }
+.page.timber :global(#our_story) li { border-top: 2px dashed #9eab8c; padding-top: 25px; }
+.page.timber :global(#timeline) { background: #edf2eb !important; }
+.page.timber :global(#timeline) ol { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 25px; }
+.page.timber :global(#timeline) li { flex-direction: column; border-top: 3px solid #9eab8c; }
+.page.timber :global(#rsvp) { border-top: 2px dashed #9eab8c; }
+
+/* Expedition notes, with the illustration kept clear of the event facts. */
+.hero.dinosaur { background: #eaf3df; color: #354c31; min-height: 760px; padding-bottom: 320px; }
+.dinosaur .art { inset: auto auto 38px 50%; width: min(680px,92%); height: 290px; transform: translateX(-50%); }
+.dinosaur .art img { object-fit: contain; }
+.dinosaur .title { font-family: var(--font-jost), sans-serif; font-size: 88px; font-weight: 700; color: var(--invite-accent); }
+.dinosaur .eyebrow { font-family: monospace; border-block: 2px dashed #849964; padding-block: 10px; }
+.dinosaur .subtitle { font-family: var(--font-jost), sans-serif; }
+.page.dinosaur h2 { font-family: var(--font-jost), sans-serif; font-weight: 600; }
+.page.dinosaur :global(#celebration-details) { border-bottom: 2px dashed #849964; }
+.page.dinosaur :global(#event_details) { text-align: center; }
+.page.dinosaur :global(#venue_map) > div { border-left: 3px dashed #849964; padding-left: 28px; }
+.page.dinosaur :global(#countdown) { background: #eaf3df !important; }
+.page.dinosaur :global(#countdown) ul { border-block: 2px dashed #849964; padding-block: 20px; }
+.page.dinosaur :global(#countdown) li > span:first-child { font-family: monospace; color: var(--invite-accent); font-size: 42px; }
+.page.dinosaur :global(#rsvp) { border-top: 2px dashed #849964; }
+
+/* Worksite signage: strong rules, clear labels and a big-day clock. */
+.hero.trucks { background: #fff3bd; color: #343a3e; min-height: 770px; padding-bottom: 330px; border-top: 12px solid #343a3e; }
+.trucks .art { inset: auto auto 40px 50%; width: min(680px,92%); height: 280px; transform: translateX(-50%); }
+.trucks .art img { object-fit: contain; }
+.trucks .title { font-family: var(--font-jost), sans-serif; font-size: 90px; font-weight: 800; text-transform: uppercase; }
+.trucks .eyebrow { font-family: monospace; border-bottom: 3px solid #343a3e; padding-bottom: 16px; }
+.trucks .subtitle { font-family: monospace; font-size: 16px; }
+.trucks .facts { font-family: monospace; }
+.page.trucks h2 { font-family: var(--font-jost), sans-serif; font-weight: 700; }
+.page.trucks :global(#celebration-details) { border-block: 10px double #343a3e; }
+.page.trucks :global(#venue_map) { border-left: 18px solid #e4b936; }
+.page.trucks :global(#countdown) { background: #fff3bd !important; }
+.page.trucks :global(#countdown) ul { gap: 0; border-block: 3px solid #343a3e; padding-block: 20px; }
+.page.trucks :global(#countdown) li { text-align: center; border-right: 1px solid #343a3e; }
+.page.trucks :global(#countdown) li:last-child { border: 0; }
+.page.trucks :global(#countdown) li > span:first-child { font-family: monospace; font-size: 44px; color: var(--invite-accent); }
+.page.trucks :global(#rsvp) { border-top: 12px solid #343a3e; }
+
+/* Paper-cut colour bands recur in the countdown and chapter edges. */
+.hero.rainbow { background: #eef6fb; color: #3d4960; min-height: 730px; padding-top: 260px; }
+.rainbow .art { inset: 20px auto auto 50%; width: min(680px,92%); height: 240px; transform: translateX(-50%); }
+.rainbow .art img { object-fit: contain; }
+.rainbow .title { font-family: var(--font-jost), sans-serif; font-size: 84px; font-weight: 600; color: var(--invite-accent); }
+.rainbow .subtitle { font-family: var(--font-jost), sans-serif; }
+.rainbow .eyebrow { color: #53698a; }
+.page.rainbow h2 { font-family: var(--font-jost), sans-serif; font-weight: 500; }
+.page.rainbow :global(#celebration-details) { border-top: 8px solid #eaaa62; border-bottom: 8px solid #91b994; }
+.page.rainbow :global(#event_details) { text-align: center; }
+.page.rainbow :global(#venue_map) { border-left: 16px solid #ed9eac; }
+.page.rainbow :global(#countdown) { background: #eef6fb !important; text-align: center; }
+.page.rainbow :global(#countdown) li { border-top: 7px solid #ed9eac; padding-top: 16px; }
+.page.rainbow :global(#countdown) li:nth-child(2) { border-color: #eaaa62; }
+.page.rainbow :global(#countdown) li:nth-child(3) { border-color: #91b994; }
+.page.rainbow :global(#countdown) li:nth-child(4) { border-color: #8faad1; }
+.page.rainbow :global(#countdown) li > span:first-child { font-family: var(--font-jost), sans-serif; font-size: 44px; color: var(--invite-accent); }
+.page.rainbow :global(#rsvp) { border-top: 12px solid #8faad1; }
+
+/* Underwater storybook: coral rules and sea-glass chapters. */
+.hero.mermaid { background: #e8f5f3; color: #35545f; min-height: 770px; padding-bottom: 330px; border-inline: 10px double #c79aae; }
+.mermaid .art { inset: auto auto 35px 50%; width: min(680px,92%); height: 300px; transform: translateX(-50%); }
+.mermaid .art img { object-fit: contain; }
+.mermaid .title { font-size: 104px; font-style: italic; color: var(--invite-accent); }
+.mermaid .eyebrow { font-family: Georgia, serif; font-style: italic; text-transform: none; font-size: 18px; }
+.mermaid .facts { border-block: 1px solid #95bbb6; padding-block: 12px; width: fit-content; }
+.page.mermaid h2 { font-style: italic; }
+.page.mermaid :global(#celebration-details) { border-bottom: 6px double #c79aae; text-align: center; }
+.page.mermaid :global(#event_details) { text-align: center; }
+.page.mermaid :global(#venue_map) { background: #f8edef !important; text-align: center; border-block: 6px double #c79aae; }
+.page.mermaid :global(#countdown) { text-align: center; }
+.page.mermaid :global(#countdown) li { border-bottom: 3px double #95bbb6; padding-bottom: 15px; }
+.page.mermaid :global(#countdown) li > span:first-child { font-family: var(--font-cormorant), Georgia, serif; font-size: 60px; font-style: italic; color: var(--invite-accent); }
+.page.mermaid :global(#rsvp) { border-top: 6px double #c79aae; }
+
+/* Arcade signage carries through to the scoreboard and player reply. */
+.hero.gaming { background: #202d28; color: #f6f7db; min-height: 750px; padding-bottom: 290px; border-bottom: 12px solid #b9d99a; }
+.gaming .title { font-family: monospace; font-size: 82px; font-weight: 800; text-transform: uppercase; line-height: 1.08; }
+.gaming .eyebrow { font-family: monospace; color: #b9d99a; padding-block: 12px; border-block: 4px dotted #b9d99a; }
+.gaming .subtitle, .gaming .facts { font-family: monospace; }
+.gaming .art { inset: auto auto 35px 50%; transform: translateX(-50%); width: min(680px,92%); height: 240px; }
+.gaming .art img { object-fit: contain; }
+.gaming .reply { background: #f6f7db; color: var(--invite-accent); box-shadow: 5px 5px 0 #b9d99a; }
+.page.gaming h2 { font-family: monospace; text-transform: uppercase; font-size: 30px; }
+.page.gaming :global(#celebration-details) { border-bottom: 4px dotted var(--invite-accent); }
+.page.gaming :global(#venue_map) > div { border-left: 8px solid #b9d99a; padding-left: 24px; }
+.page.gaming :global(#countdown) { background: #202d28 !important; color: #f6f7db; }
+.page.gaming :global(#countdown) h2, .page.gaming :global(#countdown) h2 + div { color: #f6f7db !important; }
+.page.gaming :global(#countdown) ul { border-block: 4px dotted #b9d99a; padding-block: 25px; }
+.page.gaming :global(#countdown) li > span:first-child { font-family: monospace; font-size: 54px; color: #b9d99a; }
+.page.gaming :global(#rsvp) { border-top: 12px solid #b9d99a; }
+
+/* Athletic-club stationery, from the varsity masthead to the team reply. */
+.hero.sporty { background: #edf3fa; color: #293d53; min-height: 760px; padding-top: 260px; border-top: 14px double #c65c4d; }
+.sporty .art { inset: 18px auto auto 50%; transform: translateX(-50%); width: min(680px,92%); height: 225px; }
+.sporty .art img { object-fit: contain; }
+.sporty .title { font-family: Georgia, serif; text-transform: uppercase; font-weight: 800; font-size: 78px; color: var(--invite-accent); }
+.sporty .eyebrow { font-family: monospace; border-block: 3px double #7b96b5; padding-block: 10px; }
+.sporty .subtitle { font-style: italic; }
+.sporty .facts { font-family: monospace; }
+.page.sporty h2 { font-family: Georgia, serif; font-weight: 700; }
+.page.sporty :global(#celebration-details) { border-bottom: 14px double #c65c4d; }
+.page.sporty :global(#event_details) { text-align: center; }
+.page.sporty :global(#venue_map) > div { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; border-block: 3px double #7b96b5; padding-block: 28px; }
+.page.sporty :global(#venue_map) h2 + div { margin-top: 0; }
+.page.sporty :global(#countdown) { background: #edf3fa !important; text-align: center; }
+.page.sporty :global(#countdown) ul { gap: 0; border-block: 3px solid #7b96b5; padding-block: 24px; }
+.page.sporty :global(#countdown) li + li { border-left: 1px solid #7b96b5; }
+.page.sporty :global(#countdown) li > span:first-child { font-family: Georgia, serif; font-weight: 700; font-size: 56px; color: var(--invite-accent); }
+.page.sporty :global(#rsvp) { border-top: 14px double #c65c4d; }
+
+.hero.longTitle .title { font-size: 66px; }
+.hero.compact { min-height: 0; height: 100%; width: 100%; padding: 24px 18px 110px; }
+.hero.compact .content { max-width: 100%; padding: 0; }
+.hero.compact .title { font-size: 33px; }
+.hero.compact.longTitle .title { font-size: 26px; }
+.hero.compact .eyebrow { font-size: 9px; margin-bottom: 14px; }
+.hero.compact .subtitle { display: none; }
+.hero.compact .facts { font-size: 11px; margin-top: 18px; }
+.hero.compact .join { margin-inline: 6px; }
+.hero.compact .art { height: 90px; }
+.hero.compact.blacktie, .hero.compact.heirloom { padding-bottom: 24px; }
+.hero.compact.blacktie .art, .hero.compact.heirloom .art { height: 100%; }
+.hero.compact.blacktie .art, .hero.compact.blacktie .artEcho { width: 15%; }
+.hero.compact.blacktie .join { font-size: 24px; }
+.hero.compact.heirloom .content { max-width: 76%; }
+.hero.compact.heirloom .art, .hero.compact.heirloom .artEcho { width: 10%; }
+.hero.compact.space .art, .hero.compact.explorer .art { top: auto; height: 210px; }
+.hero.compact.space, .hero.compact.explorer { padding-bottom: 130px; }
+.hero.compact.roses { border-inline-width: 8px; }
+.hero.compact.gilded, .hero.compact.bloom { padding-bottom: 30px; }
+.hero.compact.gilded .content, .hero.compact.bloom .content { width: 76%; max-width: 76%; }
+.hero.compact.gilded .art, .hero.compact.gilded .artEcho, .hero.compact.bloom .art, .hero.compact.bloom .artEcho { width: 18%; height: 75%; }
+.hero.compact .initials { font-size: 20px; padding: 6px 12px; margin-bottom: 12px; }
+.hero.compact.gilded .join { font-size: 20px; margin-block: 4px; }
+.hero.compact.cocktail { border-inline-width: 7px; }
+.hero.compact.cocktail .art { bottom: 10px; }
+.hero.compact.champagne .art img { object-position: center 76%; }
+.hero.compact.forty { padding-bottom: 105px; }
+.hero.compact.forty .art { width: 70px; height: 90px; right: 15px; bottom: 10px; border-width: 4px; }
+.hero.compact.honey { padding-bottom: 135px; border-inline-width: 6px; }
+.hero.compact.honey .art { height: 130px; bottom: 8px; }
+.hero.compact.emerald { padding: 25px 18% 30px; }
+.hero.compact.emerald .art, .hero.compact.emerald .artEcho { width: 13%; height: 80%; }
+.hero.compact.emerald .title { font-size: 34px; }
+.hero.compact.emerald .join, .hero.compact.porcelain .join, .hero.compact.pampas .join { font-size: 22px; margin-block: 6px; }
+.hero.compact.porcelain { padding: 30px 20px 75px; border-top-width: 7px; }
+.hero.compact.porcelain .art { height: 140px; width: 32%; bottom: -12px; }
+.hero.compact.porcelain .content { padding-top: 15px; }
+.hero.compact.pampas { padding: 30px 22% 35px 15px; }
+.hero.compact.pampas .art { height: 90%; width: 30%; }
+.hero.compact.safari { padding-bottom: 135px; }
+.hero.compact.safari .art { height: 115px; }
+.hero.compact.kitenge { padding: 24px 17% 30px; }
+.hero.compact.kitenge .art, .hero.compact.kitenge .artEcho { height: 100%; width: 12%; }
+.hero.compact.kitenge .join { font-size: 24px; margin-block: 8px; }
+.hero.compact.woven { padding: 25px 28% 35px 18px; }
+.hero.compact.woven .art { height: 100%; width: 22%; border-left-width: 5px; }
+.hero.compact.woven .join { font-size: 24px; margin-block: 6px; }
+.hero.compact.burgundy { padding-bottom: 115px; }
+.hero.compact.nocturne { padding: 125px 18px 25px; }
+.hero.compact.nocturne .art { width: 95px; height: 85px; top: 20px; }
+.hero.compact.nocturne .content { padding-top: 15px; }
+.hero.compact.nocturne .facts { margin-top: 12px; padding-bottom: 10px; }
+.hero.compact.timber { padding: 100px 18px 30px; }
+.hero.compact.timber .art { height: 75px; }
+.hero.compact.dinosaur, .hero.compact.trucks, .hero.compact.mermaid { padding-bottom: 165px; }
+.hero.compact.dinosaur .art, .hero.compact.trucks .art, .hero.compact.mermaid .art { height: 145px; bottom: 12px; }
+.hero.compact.rainbow { padding: 155px 18px 25px; }
+.hero.compact.rainbow .art { height: 135px; top: 12px; }
+.hero.compact.mermaid { border-inline-width: 6px; }
+.hero.compact.gaming { padding-bottom: 155px; border-bottom-width: 7px; }
+.hero.compact.gaming .title { font-size: 30px; }
+.hero.compact.gaming .art { height: 135px; bottom: 10px; }
+.hero.compact.sporty { padding: 150px 18px 25px; border-top-width: 10px; }
+.hero.compact.sporty .art { height: 125px; top: 12px; }
+.hero.compact.sporty .title { font-size: 30px; }
+.hero.compact.gaming.longTitle .title, .hero.compact.sporty.longTitle .title { font-size: 24px; }
+
+@media (min-width: 701px) and (max-width: 1100px) {
+  .hero.forty:not(.compact) { padding-bottom: 220px; }
+  .hero.forty:not(.compact) .art { width: 115px; height: 155px; }
+}
+
+@media (max-width: 700px) {
+  .hero.gaming { padding-bottom: 240px; min-height: 690px; }
+  .gaming .art { height: 195px; }
+  .hero.sporty { padding-top: 205px; min-height: 700px; }
+  .sporty .art { height: 170px; }
+  .page.sporty :global(#venue_map) > div { grid-template-columns: 1fr; gap: 24px; }
+  .page.gaming :global(#countdown) li > span:first-child, .page.sporty :global(#countdown) li > span:first-child { font-size: 32px; }
+  .hero.dinosaur, .hero.trucks, .hero.mermaid { min-height: 700px; padding-bottom: 250px; }
+  .dinosaur .art, .trucks .art, .mermaid .art { height: 225px; }
+  .hero.rainbow { padding-top: 200px; min-height: 650px; }
+  .rainbow .art { height: 170px; }
+  .hero.mermaid { border-inline-width: 6px; }
+  .page.dinosaur :global(#countdown) li > span:first-child, .page.trucks :global(#countdown) li > span:first-child, .page.rainbow :global(#countdown) li > span:first-child, .page.mermaid :global(#countdown) li > span:first-child { font-size: 34px; }
+  .hero.safari { padding-bottom: 235px; }
+  .safari .art { height: 200px; }
+  .hero.kitenge { padding: 40px 46px 75px; }
+  .kitenge .art, .kitenge .artEcho { width: 25px; }
+  .hero.woven { padding: 45px 28px 215px; }
+  .woven .art { top: auto; height: 155px; width: 100%; border-left: 0; border-top: 8px solid #b89c60; }
+  .woven .discover { left: 50%; background: #212822; padding: 8px 18px; }
+  .hero.burgundy { padding-bottom: 200px; }
+  .burgundy .art { height: 165px; }
+  .hero.nocturne { padding: 185px 24px 75px; }
+  .hero.timber { padding-top: 135px; }
+  .timber .art { height: 90px; }
+  .page.kitenge :global(#our_story) ol, .page.woven :global(#timeline) ol, .page.burgundy :global(#our_story) ol, .page.timber :global(#timeline) ol { grid-template-columns: 1fr; }
+  .hero.emerald { padding: 42px 42px 75px; }
+  .emerald .art, .emerald .artEcho { width: 28px; top: 25px; bottom: 25px; border-radius: 50px 50px 0 0; }
+  .emerald .art { left: 0; }
+  .emerald .artEcho { right: 0; }
+  .hero.porcelain { padding: 45px 28px 145px; }
+  .porcelain .art { width: 135px; height: 215px; bottom: -50px; left: -20px; }
+  .hero.pampas { padding: 45px 28px 165px; }
+  .pampas .art { top: auto; bottom: -20px; width: 145px; height: 225px; }
+  .page.emerald :global(#our_story) ol, .page.emerald :global(#timeline) ol { grid-template-columns: 1fr; }
+  .page.pampas :global(#our_story) li:nth-child(even) { margin-left: 20px; }
+  .hero.gilded, .hero.bloom { padding-inline: 28px; }
+  .hero.gilded .content, .hero.bloom .content { width: 100%; max-width: 100%; }
+  .hero.gilded .art, .hero.gilded .artEcho, .hero.bloom .art, .hero.bloom .artEcho { width: 15%; top: auto; height: 170px; bottom: 0; }
+  .hero.gilded .title, .hero.bloom .title { font-size: 58px; }
+  .hero.champagne, .hero.cocktail { padding-bottom: 220px; }
+  .champagne .art, .cocktail .art { height: 185px; }
+  .hero.cocktail { border-inline-width: 8px; }
+  .hero.forty { padding-bottom: 180px; }
+  .forty .art { width: 90px; height: 115px; bottom: 35px; right: 25px; border-width: 5px; }
+  .hero.honey { padding-bottom: 245px; min-height: 700px; border-inline-width: 6px; }
+  .honey .art { height: 220px; }
+  .page.gilded :global(#timeline) ol, .page.champagne :global(#our_story) ol, .page.cocktail :global(#venue_map) > div { grid-template-columns: 1fr; gap: 24px; }
+  .page.cocktail :global(#countdown) li > span:first-child, .page.forty :global(#countdown) li > span:first-child, .page.bloom :global(#countdown) li > span:first-child, .page.honey :global(#countdown) li > span:first-child { font-size: 36px; }
+  .hero { min-height: 570px; padding: 45px 24px 65px; }
+  .hero .title { font-size: 56px; }
+  .hero.longTitle .title { font-size: 43px; }
+  .subtitle { font-size: 17px; margin-top: 18px; }
+  .facts { flex-direction: column; gap: 6px; margin-top: 22px; }
+  .facts span + span { border: 0; padding-left: 0; }
+  .join { margin-inline: 10px; }
+  .hero.blacktie .art, .hero.blacktie .artEcho { width: 20%; opacity: .45; }
+  .blacktie .content { padding-inline: 0; }
+  .blacktie .title { font-size: 65px; }
+  .blacktie .join { font-size: 36px; }
+  .hero.tropical, .hero.monochrome, .hero.neon, .hero.sky, .hero.scholar, .hero.roses, .hero.conference { padding-bottom: 195px; }
+  .tropical .art, .monochrome .art, .neon .art, .sky .art, .scholar .art, .roses .art, .conference .art { height: 155px; }
+  .hero.space, .hero.explorer { min-height: 650px; padding-bottom: 230px; }
+  .hero.space .art, .hero.explorer .art { top: auto; height: 250px; }
+  .space .art img, .explorer .art img { object-fit: cover; }
+  .hero.heirloom { padding-inline: 36px; }
+  .heirloom .content { max-width: 100%; }
+  .heirloom .art, .heirloom .artEcho { width: 18px; }
+  .hero.roses { border-inline-width: 8px; }
+  .page :global(#rsvp-heading) { font-size: 34px; }
+  .page :global(#event_details) p { font-size: 18px; }
+  .page.tropical :global(#timeline) ol, .page.monochrome :global(#our_story) ol { grid-template-columns: 1fr; }
+  .page.conference :global(#timeline) li { gap: 20px; }
+  .page.conference :global(#timeline) li > span:first-child { width: 72px; font-size: 20px; }
+  .page.conference :global(#venue_map) > div, .page.conference :global(#countdown) > div { grid-template-columns: 1fr; gap: 24px; }
+  .page.space :global(#countdown) li > span:first-child, .page.conference :global(#countdown) li > span:first-child { font-size: 32px; }
+  .page.neon :global(#countdown) li > span:first-child { font-size: 40px; }
+  .page.sky :global(#countdown) ul, .page.heirloom :global(#countdown) ul, .page.scholar :global(#countdown) ul { gap: 22px; }
+  .page.sky :global(#countdown) li > span:first-child, .page.heirloom :global(#countdown) li > span:first-child { font-size: 36px; }
+  .page.roses :global(#countdown) li { min-width: 0; }
+  .page.roses :global(#countdown) li > span:first-child, .page.scholar :global(#countdown) li > span:first-child { font-size: 38px; }
+  .page :global(#countdown) ul { gap: 12px; }
+  .hero.compact { min-height: 0; padding: 24px 18px 110px; }
+  .hero.compact.blacktie, .hero.compact.heirloom { padding-bottom: 24px; }
+  .hero.compact.space, .hero.compact.explorer { padding-bottom: 130px; }
+  .hero.compact.space .art, .hero.compact.explorer .art { height: 160px; }
+}

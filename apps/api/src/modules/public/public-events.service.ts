@@ -169,6 +169,10 @@ export class PublicEventsService {
     return { added: true };
   }
 
+  async discardGeneralRespondent(eventId: string, guestId: string): Promise<void> {
+    await this.prisma.guest.deleteMany({ where: { id: guestId, eventId, groupLabel: 'Shared link' } });
+  }
+
   async createGeneralRespondent(
     slug: string,
     input: { firstName: string; lastName?: string; email?: string; phone?: string },
@@ -249,9 +253,9 @@ export class PublicEventsService {
   /** The photos on a published event, for the gallery section. */
   async gallery(eventId: string) {
     return this.prisma.mediaAsset.findMany({
-      where: { eventId, kind: 'image' },
-      select: { id: true, url: true, createdAt: true },
-      orderBy: { createdAt: 'desc' },
+      where: { eventId, kind: 'image', isHidden: false },
+      select: { id: true, url: true, caption: true, altText: true, position: true, createdAt: true },
+      orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
       take: 200,
     });
   }
