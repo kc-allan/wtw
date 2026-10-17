@@ -69,13 +69,20 @@ export function invitationSample(design: InvitationDesign, accent: string): { ev
     sample.description = "Our favourite explorer is ready for another trip around the sun. Join Leo for an afternoon of space adventures, birthday cake and a whole crew of friends.";
     sample.programme = [["Crew check-in", "Meet the other explorers and get ready for launch."], ["Mission: birthday", "Games and adventures for the whole crew."], ["Cake on the moon", "Back to base for cake and birthday wishes."]];
   }
-  if (design.kind === "neon") sample.title = "Nia's birthday night";
+  if (design.kind === "neon" || design.kind === "rooftop") sample.title = "Nia's birthday night";
   if (design.kind === "cocktail") {
     sample.venue = "The aperitivo room";
   }
   if (design.kind === "forty") {
     sample.venue = "The courtyard";
     sample.description = "Forty years of stories, friendships and wonderful surprises. Let's raise a glass to all of it, and to everything still ahead. Come celebrate with Nia.";
+  }
+  if (design.kind === "golden-hour") sample.venue = "The terrace room";
+  if (design.kind === "birthday-floral") sample.venue = "The rose garden";
+  if (design.kind === "sweet-sixteen") {
+    sample.names = ["Nia"];
+    sample.venue = "The city garden";
+    sample.description = "Sixteen years of becoming wonderfully, unmistakably you. Join Nia and her favourite people for a milestone night to remember.";
   }
   if (design.kind === "gilded") sample.venue = "The conservatory";
   if (design.kind === "champagne") sample.venue = "The reception gardens";

@@ -1,6 +1,6 @@
 # Invitation designs
 
-Thirty-five landing-page designs are mapped to existing catalogue keys across seven celebration categories. All 16 wedding entries now have landing-page designs. Other undesigned catalogue entries retain their current renderer.
+Fifty-three landing-page designs are mapped to existing catalogue keys across seven celebration categories. All 16 wedding entries now have landing-page designs. Other undesigned catalogue entries retain their current renderer.
 
 | Design | Catalogue key | Composition | Sample |
 | --- | --- | --- | --- |
@@ -39,11 +39,29 @@ Thirty-five landing-page designs are mapped to existing catalogue keys across se
 | Romantic Floral | `anniversary-romantic-floral` | Floral love letter, keepsake borders and tender serif type | `/designs/heirloom` |
 | Champagne & Roses | `bridal-shower-champagne-and-roses` | Rose-pink salon, ribbon stripes and a toast-ready reply | `/designs/roses` |
 | Conference | `corporate-conference` | Architectural signage, clear arrival columns and a focused attendance form | `/designs/conference` |
+| Elegant Gold | `birthday-elegant-gold` | Gilded soirée masthead, toast photograph and a finely ruled evening invitation | `/designs/golden-hour` |
+| Floral | `birthday-floral` | Asymmetric garden letter with a large floral photograph and keepsake details | `/designs/birthday-floral` |
+| Rooftop Party | `birthday-rooftop-party` | After-dark city invitation with a skyline photograph, crisp facts and night-sky palette | `/designs/rooftop` |
+| Sweet 16 | `birthday-sweet-16` | Milestone typography, oversized numeral and a personal, photo-led celebration page | `/designs/sweet-sixteen` |
+| Minimalist Black | `birthday-minimalist-black` | Monochrome typographic grid with a sculptural photographic detail | `/designs/minimal-black` |
+| Champagne Celebration | `birthday-champagne-celebration` | Centered toast invitation with circular champagne photography | `/designs/birthday-champagne` |
+| Tropical | `birthday-tropical` | Botanical outdoor invitation with a full-width landscape image band | `/designs/birthday-tropical` |
+| All White Party | `birthday-all-white-party` | White-on-white open composition with a delicate dress-code vignette | `/designs/all-white` |
+| Black & Gold | `birthday-black-and-gold` | Formal dark invitation with stepped gold details and a champagne vignette | `/designs/birthday-nocturne` |
+| Masquerade | `birthday-masquerade` | Theatrical midnight invitation with a faceted portrait frame | `/designs/masquerade` |
+| Denim & White | `birthday-denim-and-white` | Relaxed blue-and-white layout with stitched-looking rules | `/designs/denim` |
+| Great Gatsby | `birthday-great-gatsby` | Jazz-age inspired broadside with stepped gold rules | `/designs/gatsby` |
+| Casino Night | `birthday-casino-night` | High-contrast game-night layout with a bold house masthead | `/designs/casino` |
+| Roaring 20s | `birthday-roaring-20s` | Vintage evening programme with double-rule framing | `/designs/roaring-twenties` |
+| Fabulous 21 | `birthday-fabulous-21` | Three-column milestone composition with an oversized twenty-one | `/designs/twenty-one` |
+| Dirty 30 | `birthday-dirty-30` | Dark milestone poster with oversized type and a strong image strip | `/designs/dirty-thirty` |
+| Fabulous at 50 | `birthday-fabulous-at-50` | Half-century layout with a large numeral and arched floral portrait | `/designs/fifty` |
+| Diamond Celebration | `birthday-diamond-celebration-60-plus` | Gracious family invitation with a framed portrait and readable type | `/designs/diamond` |
 
 ## Category rollout
 
 - Weddings: all 16 catalogue entries delivered. Existing premium classifications are unchanged.
-- Birthdays: eleven designs delivered, including Gaming and Sporty for the teen collection. Next: remaining adult, milestone, children's and teen themes.
+- Birthdays: twenty-nine designs delivered, including Gaming and Sporty for the teen collection and the adult/milestone collection. Remaining: other adult, children's and teen themes.
 - Baby showers: four designs delivered. Next: the calm contemporary collection and remaining illustrated themes.
 - Graduations, anniversaries, bridal showers and corporate: one starting design each; remaining catalogue entries are still pending.
 
@@ -186,6 +204,12 @@ Sporty:
 > Use case: illustration-story. Original editorial screen-print illustration for a sporty teen birthday invitation. An orange basketball, black and white football, a blue tennis racket with yellow ball and a red sports pennant, arranged as an energetic wide low still life, complete objects with generous margins. Vintage athletic club programme art, bold navy ink outlines and slightly imperfect printed texture, flat coral, royal blue, grassy green and yellow colours. No text, no numbers, no logos, no people, no brands, no gradients or glow. Genuinely transparent background, no court rectangle.
 
 ## Verification
+
+The adult birthday batch adds Elegant Gold, Floral, Rooftop Party and Sweet 16. Each uses a distinct page composition, locally credited artwork and shared saved-event facts, countdown and RSVP sections. Sweet 16 uses its milestone numeral as typography; templates do not infer ages for other birthdays. Compact catalogue cards and sample pages retain their intended layout, and sample RSVP submission remains disabled.
+
+The adult and milestone expansion adds the remaining fourteen non-character birthday catalogue designs. They use distinct editorial frames and responsive layouts, while all event facts and RSVP behavior remain shared. Fixed milestone numerals appear only on designs explicitly named for that milestone; saved event titles remain the source of the live headline.
+
+The adult birthday batch passes the web production build and TypeScript check. `git diff --check` is clean. ESLint remains blocked by the existing ESLint 10 / React plugin incompatibility (`react/display-name` calls the removed `context.getFilename` API); no lint result is claimed for this batch.
 
 The nine earlier birthday compositions were checked at 360px, 768px and 1440px for loaded artwork, page width, countdown fit and valid hero anchors. Long-title page checks and personalised catalogue previews cover the same widths. Screenshot inspection led to smaller narrow-layout countdown digits, a corrected Space illustration crop and tighter Neon thumbnail typography. All three accents preserve section backgrounds and image sources on all nine pages. Attendance selection and disabled preview submission were checked; no real replies were sent. Frontend type checking passes. Existing artwork is reused, with no backend or RSVP submission changes.
 

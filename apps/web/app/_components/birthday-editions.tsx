@@ -4,7 +4,7 @@ import type { InvitationDesign } from "@/lib/invitation-designs";
 import styles from "./birthday-editions.module.css";
 
 export function hasBirthdayEdition(kind?: InvitationDesign["kind"]) {
-  return kind !== undefined && ["dinosaur", "trucks", "rainbow", "mermaid", "space", "neon", "brunch", "cocktail", "forty"].includes(kind);
+  return kind !== undefined && ["dinosaur", "trucks", "rainbow", "mermaid", "space", "neon", "brunch", "cocktail", "forty", "golden-hour", "birthday-floral", "rooftop", "sweet-sixteen", "minimal-black", "birthday-champagne", "birthday-tropical", "all-white", "birthday-nocturne", "masquerade", "denim", "gatsby", "casino", "roaring-twenties", "twenty-one", "dirty-thirty", "fifty", "diamond"].includes(kind);
 }
 
 export function BirthdayEditionHero({ design, title, date, venue, accent, rsvp = true, compact = false, details }: {
@@ -85,6 +85,70 @@ export function BirthdayEditionHero({ design, title, date, venue, accent, rsvp =
         <div className={styles.barReceipt}>{facts}</div>
       </>;
       break;
+    case "golden-hour":
+      content = <>
+        <div className={styles.toastMasthead}><span>An evening to remember</span><span>Birthday soirée</span></div>
+        <div className={styles.toastOpening}><p className={styles.kicker}>A golden kind of gathering</p>{headline}<p className={styles.toastNote}>Good things are even better<br />when we share them.</p>{reply("Save me a place")}</div>
+        <figure className={styles.toastArt}>{art}<figcaption>A toast to another wonderful year.</figcaption></figure>
+        <div className={styles.toastDetails}>{facts}</div>
+      </>;
+      break;
+    case "birthday-floral":
+      content = <>
+        <div className={styles.flowerMasthead}><span>Gathered with love</span><span>A birthday garden party</span></div>
+        <div className={styles.flowerOpening}><div><p className={styles.kicker}>A day in full bloom</p>{headline}<p className={styles.flowerNote}>For all the little moments<br />that make a life lovely.</p>{reply("Join us in the garden")}</div>{art}</div>
+        <div className={styles.flowerDetails}>{facts}</div>
+      </>;
+      break;
+    case "rooftop":
+      content = <>
+        <div className={styles.rooftopMasthead}><span>City lights / good company</span><span>Birthday after dark</span></div>
+        <div className={styles.rooftopOpening}><p className={styles.kicker}>Above the ordinary</p>{headline}<p className={styles.rooftopNote}>The skyline is better<br />with you in it.</p>{reply("Meet us up top")}</div>
+        <div className={styles.rooftopArt}>{art}</div>
+        <div className={styles.rooftopDetails}>{facts}</div>
+      </>;
+      break;
+    case "sweet-sixteen":
+      content = <>
+        <div className={styles.sweetMasthead}><span>One for the memory book</span><span>June / celebration</span></div>
+        <div className={styles.sweetOpening}><span className={styles.sweetNumber} aria-hidden="true">16</span><div><p className={styles.kicker}>A milestone made brighter</p>{headline}<p className={styles.sweetNote}>Sixteen years of becoming<br />wonderfully, unmistakably you.</p>{reply("Be there for the big night")}</div></div>
+        <div className={styles.sweetArt}>{art}</div>
+        <div className={styles.sweetDetails}>{facts}</div>
+      </>;
+      break;
+    case "minimal-black":
+    case "birthday-champagne":
+    case "birthday-tropical":
+    case "all-white":
+    case "birthday-nocturne":
+    case "masquerade":
+    case "denim":
+    case "gatsby":
+    case "casino":
+    case "roaring-twenties":
+    case "twenty-one":
+    case "dirty-thirty":
+    case "fifty":
+    case "diamond": {
+      const milestone = ["twenty-one", "dirty-thirty", "fifty", "diamond"].includes(design.kind);
+      const dark = ["birthday-nocturne", "masquerade", "gatsby", "casino", "roaring-twenties", "dirty-thirty", "fifty"].includes(design.kind);
+      const number = design.kind === "twenty-one" ? "21" : design.kind === "dirty-thirty" ? "30" : design.kind === "fifty" ? "50" : "60+";
+      content = <>
+        <div className={styles.editorialMasthead}><span>{design.eyebrow ?? design.name}</span><span>{dark ? "An evening invitation" : "A birthday gathering"}</span></div>
+        <div className={styles.editorialOpening}>
+          {milestone ? <span className={styles.editorialNumber} aria-hidden="true">{number}</span> : null}
+          <div className={styles.editorialCopy}>
+            <p className={styles.kicker}>{design.eyebrow ?? "A day worth celebrating"}</p>
+            {headline}
+            <p className={styles.editorialSubtitle}>{design.subtitle}</p>
+            {reply(design.replyHeading ?? "Join the celebration")}
+          </div>
+          <figure className={styles.editorialArt}>{art}<figcaption>{design.name} · A day to remember</figcaption></figure>
+        </div>
+        <div className={styles.editorialDetails}>{facts}</div>
+      </>;
+      break;
+    }
     default:
       content = <>
         <div className={styles.newspaperName}>The Good Years</div>
