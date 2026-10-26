@@ -1,0 +1,169 @@
+.hero { position: relative; isolation: isolate; overflow: hidden; min-height: 670px; padding: 36px clamp(22px,7vw,100px) 70px; color: #35453e; }
+.masthead { display: flex; justify-content: space-between; gap: 16px; padding: 13px 0; border-bottom: 1px solid currentColor; font: 11px/1.5 Georgia,serif; letter-spacing: .13em; text-transform: uppercase; }
+.opening { display: grid; grid-template-columns: 1fr .85fr; align-items: center; gap: 7%; max-width: 1100px; min-height: 440px; margin: 35px auto 0; }
+.copy { position: relative; z-index: 1; }
+.kicker { margin: 0 0 20px; font: 12px/1.5 monospace; letter-spacing: .08em; text-transform: uppercase; }
+.title { margin: 0; font: 500 clamp(58px,8vw,100px)/.98 var(--font-cormorant),Georgia,serif; text-wrap: balance; overflow-wrap: anywhere; color: var(--invite-accent); }
+.subtitle { max-width: 440px; margin: 22px 0 0; font: italic 18px/1.6 Georgia,serif; }
+.reply { display: inline-flex; align-items: center; justify-content: space-between; gap: 20px; max-width: 100%; margin-top: 26px; padding: 13px 18px; background: var(--invite-accent); color: #fff; font-size: 14px; }
+.reply:focus-visible, .discover:focus-visible { outline: 3px solid currentColor; outline-offset: 5px; }
+.art { position: relative; min-width: 0; height: 340px; }
+.art img { object-fit: contain; }
+.illustratedArt { display: grid; place-items: center; }
+.illustratedArt svg { display: block; width: min(100%,360px); height: 100%; overflow: visible; }
+.details { position: relative; z-index: 1; width: fit-content; max-width: 100%; margin: 8px auto 0; padding: 13px 22px; border-block: 1px solid currentColor; }
+.facts { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 24px; font: 13px/1.5 Georgia,serif; }
+.facts span + span { padding-left: 24px; border-left: 1px solid currentColor; }
+.discover { position: absolute; bottom: 20px; left: 50%; display: flex; gap: 18px; transform: translateX(-50%); font-size: 12px; white-space: nowrap; }
+.longTitle .title { font-size: clamp(48px,6.5vw,78px); }
+.hero.compact { min-height: 0; height: 100%; padding: 22px 18px 90px; }
+.compact .masthead { font-size: 8px; }
+.compact .opening { display: block; min-height: 0; margin-top: 34px; }
+.compact .title { font-size: 34px; }
+.compact.longTitle .title { font-size: 26px; }
+.compact .kicker { margin-bottom: 12px; font-size: 9px; }
+.compact .subtitle, .compact .discover { display: none; }
+.compact .art { position: absolute; right: 0; bottom: 0; width: 42%; height: 120px; opacity: .82; }
+.compact .details { margin-top: 16px; padding: 7px 10px; }
+.compact .facts { justify-content: flex-start; font-size: 10px; }
+
+/* Pink & Gold: a framed keepsake with a slender botanical side illustration. */
+.pink-gold { background: #fcf3f3; color: #49343b; border: 12px solid #e5d6b8; }
+.pink-gold .opening { grid-template-columns: 1fr .62fr; }
+.pink-gold .art { height: 390px; border-left: 1px solid #bba779; }
+.pink-gold .art img { object-position: left center; }
+.pink-gold .details { border-block: 3px double #bba779; }
+/* Butterfly Wishes: quiet blue correspondence and soft, open margins. */
+.butterfly { background: #f2f7f7; color: #33454a; }
+.butterfly .opening { grid-template-columns: 1fr .7fr; text-align: center; }
+.butterfly .copy { padding: 28px; border: 1px solid #a9bdc2; border-radius: 48% 48% 6px 6px; }
+.butterfly .title { font-style: italic; }
+.butterfly .art { height: 300px; }
+.butterfly .details { border-style: dotted; }
+/* Ballerina Baby: a recital programme with a narrow stage-like image window. */
+.ballerina-baby { background: #fbf0f0; color: #4a353b; border-inline: 14px solid #f0d9dd; }
+.ballerina-baby .opening { grid-template-columns: .9fr .65fr; }
+.ballerina-baby .art { height: 360px; border: 5px double #d3aeb8; border-radius: 48% 48% 0 0; overflow: hidden; }
+.ballerina-baby .art img { object-fit: cover; }
+.ballerina-baby .details { border-bottom: 5px double #d3aeb8; }
+/* Boho Rainbow: an arched vignette rests above an airy, centered invitation. */
+.boho-rainbow { background: #f9f2ec; color: #473d35; }
+.boho-rainbow .opening { grid-template-columns: 1fr; text-align: center; margin-top: 20px; }
+.boho-rainbow .copy { grid-row: 2; }
+.boho-rainbow .art { grid-row: 1; width: min(480px,80%); height: 235px; margin: auto; }
+.boho-rainbow .art img { object-fit: contain; }
+.boho-rainbow .subtitle { margin-inline: auto; }
+.boho-rainbow .details { border-radius: 999px; }
+/* Blush Bloom: botanical letterpress with an inset flower and measured rules. */
+.blush-bloom { background: #f8efee; color: #473737; }
+.blush-bloom .masthead { border-bottom: 3px double #c7a5a0; }
+.blush-bloom .opening { grid-template-columns: 1fr .55fr; }
+.blush-bloom .art { height: 380px; border-right: 1px solid #c7a5a0; }
+.blush-bloom .art img { object-position: left center; }
+.blush-bloom .details { border-block: 3px double #c7a5a0; }
+/* Little Prince: a star-chart composition with a high, open sky. */
+.little-prince { background: #eff3fa; color: #26344c; }
+.little-prince::before { content: "✦     ·       ✧         ·       ✦"; position: absolute; inset: 100px 5% auto; color: #b3bfd4; font-size: clamp(20px,4vw,42px); letter-spacing: .55em; text-align: center; }
+.little-prince .opening { grid-template-columns: 1fr; min-height: 450px; text-align: center; }
+.little-prince .copy { padding-top: 50px; }
+.little-prince .title { max-width: 850px; margin-inline: auto; }
+.little-prince .subtitle { margin-inline: auto; }
+.little-prince .art { position: absolute; inset: auto 5% 0 auto; width: 170px; height: 170px; opacity: .45; }
+.little-prince .details { background: #eff3fa; }
+/* Sailor Baby: a signal-flag masthead and clean, horizontal ship's log. */
+.sailor-baby { background: #edf2f8; color: #23364d; border-top: 12px solid #315b83; }
+.sailor-baby .masthead { border-bottom: 3px double #315b83; font-family: monospace; }
+.sailor-baby .opening { grid-template-columns: 1.2fr .8fr; }
+.sailor-baby .title { font-family: var(--font-jost),sans-serif; font-weight: 600; }
+.sailor-baby .art { height: 300px; border-block: 4px double #315b83; }
+.sailor-baby .details { border: 1px solid #315b83; }
+/* Little Lion: warm sun tones and a centered storybook welcome. */
+.little-lion { background: #fbf3e3; color: #463a2a; }
+.little-lion .opening { grid-template-columns: 1fr; text-align: center; }
+.little-lion .copy { max-width: 850px; margin: auto; }
+.little-lion .title { font-style: italic; }
+.little-lion .subtitle { margin-inline: auto; }
+.little-lion .art { position: absolute; inset: auto 0 0; height: 190px; opacity: .55; }
+.little-lion .details { background: #fbf3e3; }
+/* Woodland Boy: painted field notes and an irregular landscape window. */
+.woodland-baby { background: #eef2e9; color: #354639; }
+.woodland-baby .opening { grid-template-columns: 1fr .9fr; }
+.woodland-baby .art { height: 350px; clip-path: polygon(0 8%,100% 0,94% 92%,7% 100%); }
+.woodland-baby .art img { object-fit: cover; }
+.woodland-baby .kicker, .woodland-baby .facts { font-family: monospace; }
+.woodland-baby .details { border-style: dashed; }
+/* Blue Teddy: rounded nursery stationery with soft double-line details. */
+.blue-teddy { background: #edf4f8; color: #304351; }
+.blue-teddy .opening { grid-template-columns: 1fr .72fr; }
+.blue-teddy .copy { padding: 34px; border: 1px solid #aec3cf; border-radius: 42% 42% 8px 8px; }
+.blue-teddy .art { height: 300px; border-radius: 50%; overflow: hidden; }
+.blue-teddy .art img { object-fit: cover; }
+.blue-teddy .details { border: 3px double #aec3cf; border-radius: 999px; }
+/* Airplanes: a flight-log masthead and a clear route from title to details. */
+.airplanes { background: #edf5f8; color: #2e4655; }
+.airplanes .masthead { font-family: monospace; border-bottom: 2px dashed #7d9cac; }
+.airplanes .opening { grid-template-columns: .9fr 1.1fr; }
+.airplanes .art { height: 300px; }
+.airplanes .art img { object-position: center bottom; }
+.airplanes .details { width: 100%; border-block: 2px dashed #7d9cac; }
+/* Neutral Beige: gallery-like spacing and a tactile, quiet palette. */
+.neutral-beige { background: #f7f3ec; color: #403a32; }
+.neutral-beige .opening { grid-template-columns: 1fr .65fr; }
+.neutral-beige .copy { padding: 28px 0; border-block: 1px solid #c7baa6; }
+.neutral-beige .title { font-size: clamp(54px,7vw,86px); }
+.neutral-beige .art { height: 290px; filter: saturate(.55); }
+.neutral-beige .details { border-color: #c7baa6; }
+/* Sage Green: fine botanical correspondence with a stem-like vertical rule. */
+.sage-baby { background: #eff3ed; color: #344239; }
+.sage-baby .opening { grid-template-columns: 1fr .48fr; }
+.sage-baby .art { height: 390px; border-left: 2px solid #9aae96; }
+.sage-baby .art img { object-position: left center; }
+.sage-baby .details { border-block: 1px solid #9aae96; }
+/* Scandinavian: restrained type, an oversized sun and carefully aligned facts. */
+.scandinavian { background: #f7f7f4; color: #333431; }
+.scandinavian .opening { grid-template-columns: 1fr .62fr; }
+.scandinavian .copy { border-top: 1px solid #c9c6be; padding-top: 25px; }
+.scandinavian .art { height: 260px; border-radius: 50%; background: #e9e6df; overflow: hidden; }
+.scandinavian .art img { object-fit: cover; mix-blend-mode: multiply; }
+.scandinavian .details { border: 0; border-top: 1px solid #c9c6be; }
+/* Earth Tones: a grounded landscape band and tactile editorial details. */
+.earth-baby { background: #f5f0e9; color: #44382c; }
+.earth-baby .opening { grid-template-columns: 1fr; text-align: center; }
+.earth-baby .copy { grid-row: 1; }
+.earth-baby .subtitle { margin-inline: auto; }
+.earth-baby .art { grid-row: 2; width: 100%; height: 170px; }
+.earth-baby .art img { object-fit: cover; }
+.earth-baby .details { background: #f5f0e9; border-block: 1px solid #b49b7e; }
+/* Modern Boho: an asymmetrical pampas edge and offset storybook headline. */
+.modern-boho-baby { background: #f7f1e8; color: #433a30; }
+.modern-boho-baby .opening { grid-template-columns: 1.1fr .7fr; }
+.modern-boho-baby .copy { padding-left: 8%; }
+.modern-boho-baby .title { font-style: italic; }
+.modern-boho-baby .art { height: 410px; }
+.modern-boho-baby .details { margin-left: 8%; border-style: dashed; }
+
+@media (max-width: 700px) {
+  .hero { min-height: 610px; padding: 24px 20px 65px; }
+  .masthead { font-size: 8px; }
+  .opening, .pink-gold .opening, .butterfly .opening, .ballerina-baby .opening, .sailor-baby .opening, .woodland-baby .opening, .blue-teddy .opening, .airplanes .opening, .neutral-beige .opening, .sage-baby .opening, .scandinavian .opening, .modern-boho-baby .opening { display: flex; flex-direction: column; align-items: stretch; gap: 20px; min-height: 0; margin-top: 48px; }
+  .copy, .butterfly .copy, .blue-teddy .copy { padding: 20px; }
+  .title, .longTitle .title { font-size: clamp(44px,12vw,68px); }
+  .subtitle { font-size: 16px; }
+  .art, .pink-gold .art, .butterfly .art, .ballerina-baby .art, .sailor-baby .art, .woodland-baby .art, .blue-teddy .art, .airplanes .art, .neutral-beige .art, .sage-baby .art, .scandinavian .art, .modern-boho-baby .art { height: 150px; }
+  .details { padding: 10px 12px; }
+  .facts { font-size: 11px; }
+  .facts span + span { padding-left: 12px; }
+  .boho-rainbow .opening { display: grid; margin-top: 10px; }
+  .boho-rainbow .art { width: 80%; height: 150px; }
+  .little-prince .art { width: 90px; height: 90px; }
+  .little-lion .opening, .earth-baby .opening { display: grid; }
+  .little-lion .art, .earth-baby .art { height: 130px; }
+  .hero.compact { min-height: 0; padding: 20px 15px 85px; }
+  .compact .opening { display: block; margin-top: 30px; }
+  .compact .title { font-size: 32px; }
+  .compact.longTitle .title { font-size: 25px; }
+  .compact .subtitle, .compact .discover { display: none; }
+  .compact .art { position: absolute; right: 0; bottom: 0; width: 38%; height: 90px; opacity: .75; }
+  .compact .illustratedArt svg { width: 100%; }
+  .compact .details { margin-top: 13px; }
+}

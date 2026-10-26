@@ -14,7 +14,7 @@ export const DESIGN_CATEGORIES = [
 export type InvitationDesign = {
   key: string;
   name: string;
-  kind: "coastal" | "garden" | "brunch" | "blacktie" | "tropical" | "monochrome" | "space" | "neon" | "sky" | "explorer" | "scholar" | "heirloom" | "roses" | "conference" | "gilded" | "champagne" | "cocktail" | "forty" | "bloom" | "honey" | "emerald" | "porcelain" | "pampas" | "safari" | "kitenge" | "woven" | "burgundy" | "nocturne" | "timber" | "dinosaur" | "trucks" | "rainbow" | "mermaid" | "gaming" | "sporty" | "golden-hour" | "birthday-floral" | "rooftop" | "sweet-sixteen" | "minimal-black" | "birthday-champagne" | "birthday-tropical" | "all-white" | "birthday-nocturne" | "masquerade" | "denim" | "gatsby" | "casino" | "roaring-twenties" | "twenty-one" | "dirty-thirty" | "fifty" | "diamond";
+  kind: "coastal" | "garden" | "brunch" | "blacktie" | "tropical" | "monochrome" | "space" | "neon" | "sky" | "explorer" | "scholar" | "heirloom" | "roses" | "conference" | "gilded" | "champagne" | "cocktail" | "forty" | "bloom" | "honey" | "emerald" | "porcelain" | "pampas" | "safari" | "kitenge" | "woven" | "burgundy" | "nocturne" | "timber" | "dinosaur" | "trucks" | "rainbow" | "mermaid" | "gaming" | "sporty" | "golden-hour" | "birthday-floral" | "rooftop" | "sweet-sixteen" | "minimal-black" | "birthday-champagne" | "birthday-tropical" | "all-white" | "birthday-nocturne" | "masquerade" | "denim" | "gatsby" | "casino" | "roaring-twenties" | "twenty-one" | "dirty-thirty" | "fifty" | "diamond" | "pink-gold" | "butterfly" | "ballerina-baby" | "boho-rainbow" | "blush-bloom" | "little-prince" | "sailor-baby" | "little-lion" | "woodland-baby" | "blue-teddy" | "airplanes" | "neutral-beige" | "sage-baby" | "scandinavian" | "earth-baby" | "modern-boho-baby" | "university" | "graduation-nocturne" | "future-chapter" | "anniversary-gold" | "silver-anniversary" | "anniversary-dinner" | "bride-to-be" | "floral-brunch" | "boho-bride" | "modern-corporate" | "awards-gala" | "product-launch" | "networking" | "year-end" | "safari-animals" | "pirate-adventure" | "unicorn-dream" | "fairy-garden" | "birthday-pastel" | "ballerina" | "jungle-adventure" | "under-the-sea" | "circus-day" | "candyland" | "carnival" | "outer-space" | "pyjama-party" | "glow-party" | "graffiti" | "pop-culture" | "k-pop";
   category: EventTypeKey;
   image: string;
   description: string;
@@ -26,6 +26,26 @@ export type InvitationDesign = {
   sectionLabels?: Partial<Record<string, string>>;
   sampleTitle?: string;
 };
+
+const ORIGINAL_BIRTHDAY_DESIGNS: InvitationDesign[] = [
+  { key: "birthday-safari-animals", name: "Safari Animals", kind: "safari-animals", category: EventTypeKey.BIRTHDAY, sampleTitle: "Leo's safari birthday", image: "/images/invitations/explorer.jpg", description: "A field-guide birthday with a painted landscape, specimen notes and a trail-ready reply.", palette: { background: "#eef2e5", surface: "#fffdf6", ink: "#3b4935", muted: "#69715b", accent: "#637342" }, accents: [{ name: "Acacia", color: "#637342" }, { name: "Clay", color: "#a65d3e" }, { name: "River blue", color: "#4d7680" }], eyebrow: "Calling all little explorers", subtitle: "Pack your curiosity for a wild birthday day", replyHeading: "Join the safari" },
+  { key: "birthday-pirates", name: "Pirates", kind: "pirate-adventure", category: EventTypeKey.BIRTHDAY, sampleTitle: "Leo's pirate birthday", image: "/images/invitations/space.png", description: "A treasure-map invitation with chart lines, a bold ship's log and a crew check-in.", palette: { background: "#f3eee0", surface: "#fffaf0", ink: "#453b2a", muted: "#786c57", accent: "#895b2d" }, accents: [{ name: "Treasure gold", color: "#895b2d" }, { name: "Deep sea", color: "#315c68" }, { name: "Flag red", color: "#a74438" }], eyebrow: "Ahoy, birthday crew", subtitle: "A little adventure is waiting on the horizon", replyHeading: "Come aboard" },
+  { key: "birthday-unicorn", name: "Unicorn", kind: "unicorn-dream", category: EventTypeKey.BIRTHDAY, sampleTitle: "Nia's magical birthday", image: "/images/invitations/rainbow.webp", description: "A dreamy storybook invitation with an original rainbow motif and pearly chapter details.", palette: { background: "#f6f0fa", surface: "#fffaff", ink: "#47384f", muted: "#786984", accent: "#8b65a6" }, accents: [{ name: "Violet", color: "#8b65a6" }, { name: "Rose", color: "#a8587c" }, { name: "Sky", color: "#4d779a" }], eyebrow: "A little birthday magic", subtitle: "Follow the colours to a day full of fun", replyHeading: "Join the magical day" },
+  { key: "birthday-fairies", name: "Fairies", kind: "fairy-garden", category: EventTypeKey.BIRTHDAY, sampleTitle: "Nia's fairy-garden birthday", image: "/images/invitations/garden-sprig.png", description: "A tiny-garden invitation with delicate botanical details and a soft, storybook opening.", palette: { background: "#eef4eb", surface: "#fffdf8", ink: "#374739", muted: "#687465", accent: "#66875a" }, accents: [{ name: "Fern", color: "#66875a" }, { name: "Petal", color: "#a46578" }, { name: "Bluebell", color: "#536e8f" }], eyebrow: "A little garden gathering", subtitle: "A sprinkle of wonder, a whole lot of birthday", replyHeading: "Meet us in the garden" },
+  { key: "birthday-pastel", name: "Pastel", kind: "birthday-pastel", category: EventTypeKey.BIRTHDAY, sampleTitle: "A birthday for Nia", image: "/images/invitations/sky.jpg", description: "A soft colour-field invitation with calm typography, open space and a handwritten-feeling welcome.", palette: { background: "#f7f2ef", surface: "#fffdfb", ink: "#453d39", muted: "#79716b", accent: "#b47d82" }, accents: [{ name: "Dusty rose", color: "#b47d82" }, { name: "Sage", color: "#657c68" }, { name: "Periwinkle", color: "#6d79a6" }], eyebrow: "A day in soft colour", subtitle: "The loveliest birthdays are the ones we share", replyHeading: "Save your place" },
+  { key: "birthday-ballerina", name: "Ballerina", kind: "ballerina", category: EventTypeKey.BIRTHDAY, sampleTitle: "Nia's birthday recital", image: "/images/invitations/peonies.jpg", description: "A recital-inspired birthday programme with an arched portrait and graceful stage details.", palette: { background: "#faf0f0", surface: "#fffafa", ink: "#4b363d", muted: "#806b70", accent: "#a96e82" }, accents: [{ name: "Rose", color: "#a96e82" }, { name: "Lilac", color: "#806890" }, { name: "Gold", color: "#907444" }], eyebrow: "A little grace, a lot to celebrate", subtitle: "The stage is set for a lovely birthday", replyHeading: "Join the celebration" },
+  { key: "birthday-jungle-safari", name: "Jungle Safari", kind: "jungle-adventure", category: EventTypeKey.BIRTHDAY, sampleTitle: "Leo's jungle adventure", image: "/images/invitations/explorer.jpg", description: "A leafy expedition invitation with trail notes, layered greens and a base-camp reply.", palette: { background: "#edf3e7", surface: "#fffdf5", ink: "#344533", muted: "#65725a", accent: "#557444" }, accents: [{ name: "Jungle leaf", color: "#557444" }, { name: "Papaya", color: "#ad5a3f" }, { name: "Canopy blue", color: "#467184" }], eyebrow: "The jungle is calling", subtitle: "Bring your best explorer spirit", replyHeading: "Join the expedition" },
+  { key: "birthday-under-the-sea", name: "Under the Sea", kind: "under-the-sea", category: EventTypeKey.BIRTHDAY, sampleTitle: "Nia's undersea birthday", image: "/images/invitations/mermaid.webp", description: "An underwater storybook with original sea-life motifs and flowing, wave-like sections.", palette: { background: "#eaf5f4", surface: "#fffdfb", ink: "#34545c", muted: "#648087", accent: "#387a83" }, accents: [{ name: "Sea glass", color: "#387a83" }, { name: "Coral", color: "#a65369" }, { name: "Lagoon", color: "#3a6684" }], eyebrow: "A birthday beneath the waves", subtitle: "Come explore a little ocean of fun", replyHeading: "Make a splash with us" },
+  { key: "birthday-circus", name: "Circus", kind: "circus-day", category: EventTypeKey.BIRTHDAY, sampleTitle: "The birthday big top", image: "/images/invitations/rainbow.webp", description: "A big-top broadside with striped poster bands, a showtime masthead and a place for the whole crowd.", palette: { background: "#fbf0eb", surface: "#fffaf4", ink: "#47352e", muted: "#7a6358", accent: "#ae4738" }, accents: [{ name: "Big-top red", color: "#ae4738" }, { name: "Ticket gold", color: "#9b7534" }, { name: "Midway blue", color: "#426c8c" }], eyebrow: "Step right up", subtitle: "The birthday show is better with you here", replyHeading: "Save your seat" },
+  { key: "birthday-candyland", name: "Candyland", kind: "candyland", category: EventTypeKey.BIRTHDAY, sampleTitle: "A very sweet birthday", image: "/images/invitations/rainbow.webp", description: "A playful confectionery invitation with colourful candy-dot borders and a menu-like reply.", palette: { background: "#f9eff5", surface: "#fffafd", ink: "#4a3542", muted: "#7d6876", accent: "#b34e85" }, accents: [{ name: "Berry candy", color: "#b34e85" }, { name: "Lemon", color: "#94722d" }, { name: "Mint", color: "#4c8069" }], eyebrow: "A sweet day is on its way", subtitle: "Birthday treats taste better together", replyHeading: "Come have a little fun" },
+  { key: "birthday-carnival", name: "Carnival", kind: "carnival", category: EventTypeKey.BIRTHDAY, sampleTitle: "Nia's birthday carnival", image: "/images/invitations/stage.jpg", description: "A lively midway poster with a bold ticket masthead, bright blocks and a place-at-the-fair reply.", palette: { background: "#fbf2e6", surface: "#fffdf7", ink: "#453a2b", muted: "#796d58", accent: "#b66c2d" }, accents: [{ name: "Carousel orange", color: "#b66c2d" }, { name: "Canopy blue", color: "#416a91" }, { name: "Leaf green", color: "#557343" }], eyebrow: "Welcome to the birthday midway", subtitle: "Games, treats and all our favourite people", replyHeading: "Meet us at the fair" },
+  { key: "birthday-outer-space", name: "Outer Space", kind: "outer-space", category: EventTypeKey.BIRTHDAY, sampleTitle: "Leo's space birthday", image: "/images/invitations/space.png", description: "A paper-cut rocket invitation with a flight manifest and a starry launch countdown.", palette: { background: "#edf4fa", surface: "#fff", ink: "#293e52", muted: "#607487", accent: "#426f98" }, accents: [{ name: "Mission blue", color: "#426f98" }, { name: "Rocket red", color: "#a7473b" }, { name: "Orbit green", color: "#4d765a" }], eyebrow: "Birthday mission control", subtitle: "A new trip around the sun starts here", replyHeading: "Join the flight crew" },
+  { key: "birthday-pyjama", name: "Pyjama", kind: "pyjama-party", category: EventTypeKey.BIRTHDAY, sampleTitle: "Nia's pyjama party", image: "/images/invitations/sky.jpg", description: "A cosy night-in invitation with a moonlit masthead, soft notes and a sleepover checklist feel.", palette: { background: "#f0eff8", surface: "#fff", ink: "#37344b", muted: "#706c85", accent: "#70699d" }, accents: [{ name: "Moonlight", color: "#70699d" }, { name: "Dusty pink", color: "#a56e82" }, { name: "Midnight blue", color: "#3f5a86" }], eyebrow: "Pillows, snacks, birthday", subtitle: "No bedtime stories about going home just yet", replyHeading: "Pack your overnight bag" },
+  { key: "birthday-glow-party", name: "Glow Party", kind: "glow-party", category: EventTypeKey.BIRTHDAY, sampleTitle: "Nia's glow party", image: "/images/invitations/stage.jpg", description: "An after-dark poster with electric colour blocks, a luminous countdown and a bright party bill.", palette: { background: "#171c20", surface: "#21282a", ink: "#eff4e9", muted: "#b6c1b0", accent: "#b1d936" }, accents: [{ name: "Electric lime", color: "#b1d936" }, { name: "Hot pink", color: "#cf4b91" }, { name: "Ultramarine", color: "#536bd3" }], eyebrow: "Lights down. Birthday on.", subtitle: "A little glow goes a long way", replyHeading: "Are you in?" },
+  { key: "birthday-graffiti", name: "Graffiti", kind: "graffiti", category: EventTypeKey.BIRTHDAY, sampleTitle: "Leo's birthday takeover", image: "/images/invitations/stage.jpg", description: "A bold street-poster composition with original abstract paint marks and expressive type.", palette: { background: "#202024", surface: "#29292f", ink: "#f2f0ec", muted: "#c0bdba", accent: "#e36042" }, accents: [{ name: "Spray coral", color: "#e36042" }, { name: "Electric blue", color: "#4c78c5" }, { name: "Acid green", color: "#96b83f" }], eyebrow: "Make some noise", subtitle: "Your name belongs on the guest list", replyHeading: "Pull up" },
+  { key: "birthday-pop-culture", name: "Pop Culture", kind: "pop-culture", category: EventTypeKey.BIRTHDAY, sampleTitle: "Nia's birthday premiere", image: "/images/invitations/stage.jpg", description: "An original premiere-night poster with abstract marquee lights and a headline-worthy birthday bill.", palette: { background: "#f7efea", surface: "#fffdf9", ink: "#403431", muted: "#786963", accent: "#b85c49" }, accents: [{ name: "Marquee coral", color: "#b85c49" }, { name: "Electric blue", color: "#4e6fa1" }, { name: "Gold", color: "#91713b" }], eyebrow: "A birthday premiere", subtitle: "Starring you, in a night worth remembering", replyHeading: "Save the date" },
+  { key: "birthday-k-pop", name: "K-Pop", kind: "k-pop", category: EventTypeKey.BIRTHDAY, sampleTitle: "Nia's birthday encore", image: "/images/invitations/stage.jpg", description: "A concert-bill birthday with original light-stick motifs, fan-club typography and a showtime reply.", palette: { background: "#f6edf6", surface: "#fffaff", ink: "#392e40", muted: "#76677d", accent: "#a64f91" }, accents: [{ name: "Stage pink", color: "#a64f91" }, { name: "Electric blue", color: "#456fc0" }, { name: "Spotlight gold", color: "#937337" }], eyebrow: "One birthday. One big encore.", subtitle: "The best nights are the ones we sing together", replyHeading: "Join the fan club" },
+];
 
 export const INVITATION_DESIGNS: InvitationDesign[] = [
   {
@@ -353,6 +373,118 @@ export const INVITATION_DESIGNS: InvitationDesign[] = [
     sectionLabels: { event_details: "Something sweet to celebrate", venue_map: "Meet us at the hive", countdown: "Counting down to a sweet afternoon" },
   },
   {
+    key: "baby-shower-pink-and-gold", name: "Pink & Gold", kind: "pink-gold", category: EventTypeKey.BABY_SHOWER,
+    sampleTitle: "A little one for Maya", image: "/images/invitations/garden-sprig.png", description: "Soft rose stationery with fine gold rules and a keepsake-style welcome.",
+    palette: { background: "#fcf3f3", surface: "#fffdf9", ink: "#49343b", muted: "#78656a", accent: "#a76b75" },
+    accents: [{ name: "Rose gold", color: "#a76b75" }, { name: "Antique gold", color: "#8a703e" }, { name: "Sage", color: "#52694f" }],
+    eyebrow: "A little love is on the way", subtitle: "Join us for a warm welcome", replyHeading: "We'd love to see you",
+  },
+  {
+    key: "baby-shower-butterfly-wishes", name: "Butterfly Wishes", kind: "butterfly", category: EventTypeKey.BABY_SHOWER,
+    sampleTitle: "Wishes for baby Maya", image: "/images/invitations/sky.jpg", description: "Airy correspondence with delicate wing-shaped motifs and room for heartfelt wishes.",
+    palette: { background: "#f2f7f7", surface: "#fff", ink: "#33454a", muted: "#68797a", accent: "#778fa1" },
+    accents: [{ name: "Dusty blue", color: "#778fa1" }, { name: "Lavender", color: "#826f96" }, { name: "Sage", color: "#52694f" }],
+    eyebrow: "Little wings, big wishes", subtitle: "A new beginning is taking flight", replyHeading: "Share a wish with us",
+  },
+  {
+    key: "baby-shower-ballerina-baby", name: "Ballerina Baby", kind: "ballerina-baby", category: EventTypeKey.BABY_SHOWER,
+    sampleTitle: "A shower for baby Maya", image: "/images/invitations/peonies.jpg", description: "A graceful, recital-inspired invitation with soft blush tones and delicate stage-like framing.",
+    palette: { background: "#fbf0f0", surface: "#fffafa", ink: "#4a353b", muted: "#806970", accent: "#ae7184" },
+    accents: [{ name: "Rose", color: "#ae7184" }, { name: "Champagne", color: "#92784e" }, { name: "Mauve", color: "#806681" }],
+    eyebrow: "A little star is on the way", subtitle: "A graceful afternoon for a growing family", replyHeading: "Join us for a lovely afternoon",
+  },
+  {
+    key: "baby-shower-boho-rainbow", name: "Boho Rainbow", kind: "boho-rainbow", category: EventTypeKey.BABY_SHOWER,
+    sampleTitle: "A rainbow is on the way", image: "/images/invitations/rainbow.webp", description: "A cheerful paper-cut arch framed by soft natural tones and an open invitation layout.",
+    palette: { background: "#f9f2ec", surface: "#fffdf8", ink: "#473d35", muted: "#7c7065", accent: "#b17b59" },
+    accents: [{ name: "Clay", color: "#b17b59" }, { name: "Sage", color: "#63765b" }, { name: "Dusty rose", color: "#a86675" }],
+    eyebrow: "After every little storm", subtitle: "A rainbow, a baby, and a room full of love", replyHeading: "Celebrate this bright beginning",
+  },
+  {
+    key: "baby-shower-blush-bloom", name: "Blush Bloom", kind: "blush-bloom", category: EventTypeKey.BABY_SHOWER,
+    sampleTitle: "A little one is blooming", image: "/images/invitations/garden-sprig.png", description: "An intimate floral announcement with a botanical sprig and softly layered blush sections.",
+    palette: { background: "#f8efee", surface: "#fffafa", ink: "#473737", muted: "#7c6965", accent: "#a76569" },
+    accents: [{ name: "Blush", color: "#a76569" }, { name: "Leaf", color: "#52704f" }, { name: "Bluebell", color: "#536e8f" }],
+    eyebrow: "A little one is blooming", subtitle: "Gather close for a beautiful beginning", replyHeading: "There's room for you in our garden",
+  },
+  {
+    key: "baby-shower-little-prince", name: "Little Prince", kind: "little-prince", category: EventTypeKey.BABY_SHOWER,
+    sampleTitle: "A little prince is on the way", image: "/images/invitations/sky.jpg", description: "A storybook announcement with a starry night-sky palette and a quiet, regal welcome.",
+    palette: { background: "#eff3fa", surface: "#fff", ink: "#26344c", muted: "#66738a", accent: "#54719e" },
+    accents: [{ name: "Royal blue", color: "#54719e" }, { name: "Gold", color: "#8a703e" }, { name: "Dusty rose", color: "#9c6471" }],
+    eyebrow: "A little prince is on the way", subtitle: "A new star joins our constellation", replyHeading: "Join our little celebration",
+  },
+  {
+    key: "baby-shower-sailor-baby", name: "Sailor Baby", kind: "sailor-baby", category: EventTypeKey.BABY_SHOWER,
+    sampleTitle: "Ahoy, baby is on the way", image: "/images/invitations/sky.jpg", description: "Nautical signal flags, crisp navy rules and a shipshape gathering notice.",
+    palette: { background: "#edf2f8", surface: "#fff", ink: "#23364d", muted: "#62758a", accent: "#315b83" },
+    accents: [{ name: "Navy", color: "#315b83" }, { name: "Signal red", color: "#a94b45" }, { name: "Sea glass", color: "#52756c" }],
+    eyebrow: "A little sailor is on the way", subtitle: "All hands together for a happy arrival", replyHeading: "Come aboard",
+  },
+  {
+    key: "baby-shower-little-lion", name: "Little Lion", kind: "little-lion", category: EventTypeKey.BABY_SHOWER,
+    sampleTitle: "A little cub is on the way", image: "/images/invitations/honey-garden.png", description: "Warm sunlit stationery with an original lion illustration and a gathering-place field note.",
+    palette: { background: "#fbf3e3", surface: "#fffdf7", ink: "#463a2a", muted: "#796b56", accent: "#a87b36" },
+    accents: [{ name: "Honey", color: "#a87b36" }, { name: "Fern", color: "#536a48" }, { name: "Clay", color: "#a4573e" }],
+    eyebrow: "A little cub is on the way", subtitle: "Come celebrate our growing family", replyHeading: "Join our gathering",
+  },
+  {
+    key: "baby-shower-woodland-boy", name: "Woodland Boy", kind: "woodland-baby", category: EventTypeKey.BABY_SHOWER,
+    sampleTitle: "A new little adventurer", image: "/images/invitations/explorer.jpg", description: "A gentle woodland story with mossy tones, a painted landscape and a field-note invitation.",
+    palette: { background: "#eef2e9", surface: "#fbfcf8", ink: "#354639", muted: "#667264", accent: "#597048" },
+    accents: [{ name: "Moss", color: "#597048" }, { name: "Lake", color: "#42687a" }, { name: "Rust", color: "#a05d42" }],
+    eyebrow: "A little adventurer is on the way", subtitle: "A new story begins among friends", replyHeading: "Come celebrate the new arrival",
+  },
+  {
+    key: "baby-shower-blue-teddy", name: "Blue Teddy", kind: "blue-teddy", category: EventTypeKey.BABY_SHOWER,
+    sampleTitle: "A little one to cuddle", image: "/images/invitations/sky.jpg", description: "Soft blue nursery stationery with rounded details and a sweet, centered welcome.",
+    palette: { background: "#edf4f8", surface: "#fff", ink: "#304351", muted: "#687984", accent: "#63859b" },
+    accents: [{ name: "Soft blue", color: "#63859b" }, { name: "Warm sand", color: "#927b5b" }, { name: "Sage", color: "#58705b" }],
+    eyebrow: "A little one to cuddle", subtitle: "A soft place, a full heart, a growing family", replyHeading: "We'd love to see you",
+  },
+  {
+    key: "baby-shower-airplanes", name: "Airplanes", kind: "airplanes", category: EventTypeKey.BABY_SHOWER,
+    sampleTitle: "A little one is cleared for takeoff", image: "/images/invitations/space.png", description: "An airy flight-log invitation with a paper-cut sky and a playful route to the gathering.",
+    palette: { background: "#edf5f8", surface: "#fff", ink: "#2e4655", muted: "#687c84", accent: "#4e7f99" },
+    accents: [{ name: "Aviation blue", color: "#4e7f99" }, { name: "Cloud grey", color: "#707e83" }, { name: "Coral", color: "#a95443" }],
+    eyebrow: "A new little passenger is on the way", subtitle: "Ready for the sweetest arrival", replyHeading: "Join the flight crew",
+  },
+  {
+    key: "baby-shower-neutral-beige", name: "Neutral Beige", kind: "neutral-beige", category: EventTypeKey.BABY_SHOWER,
+    sampleTitle: "A little one is on the way", image: "/images/invitations/explorer.jpg", description: "Quiet neutral stationery with tactile paper tones, generous margins and an intimate welcome.",
+    palette: { background: "#f7f3ec", surface: "#fffdf9", ink: "#403a32", muted: "#797166", accent: "#9b8567" },
+    accents: [{ name: "Sand", color: "#9b8567" }, { name: "Olive", color: "#65704e" }, { name: "Terracotta", color: "#a55d43" }],
+    eyebrow: "A little one is on the way", subtitle: "A quiet afternoon for a very big love", replyHeading: "Gather with us",
+  },
+  {
+    key: "baby-shower-sage-green", name: "Sage Green", kind: "sage-baby", category: EventTypeKey.BABY_SHOWER,
+    sampleTitle: "Growing our little family", image: "/images/invitations/garden-sprig.png", description: "Botanical correspondence in muted sage, with a fine-stem illustration and calm, open spacing.",
+    palette: { background: "#eff3ed", surface: "#fff", ink: "#344239", muted: "#647067", accent: "#66806b" },
+    accents: [{ name: "Sage", color: "#66806b" }, { name: "Rose", color: "#986475" }, { name: "Slate blue", color: "#526d83" }],
+    eyebrow: "Our little family is growing", subtitle: "A lovely beginning, shared with you", replyHeading: "Join us in the garden",
+  },
+  {
+    key: "baby-shower-minimal-scandinavian", name: "Minimal Scandinavian", kind: "scandinavian", category: EventTypeKey.BABY_SHOWER,
+    sampleTitle: "A little one, much to love", image: "/images/invitations/sky.jpg", description: "A minimal Nordic layout with precise typography, open space and a soft, natural palette.",
+    palette: { background: "#f7f7f4", surface: "#fff", ink: "#333431", muted: "#73736d", accent: "#85847b" },
+    accents: [{ name: "Stone", color: "#85847b" }, { name: "Pine", color: "#566b59" }, { name: "Blue grey", color: "#5c7788" }],
+    eyebrow: "A little one, much to love", subtitle: "Simple moments. A very big beginning.", replyHeading: "Join us",
+  },
+  {
+    key: "baby-shower-earth-tones", name: "Earth Tones", kind: "earth-baby", category: EventTypeKey.BABY_SHOWER,
+    sampleTitle: "Rooted in love", image: "/images/invitations/explorer.jpg", description: "Layered earth-tone stationery with a landscape band and warmly grounded event details.",
+    palette: { background: "#f5f0e9", surface: "#fffdf8", ink: "#44382c", muted: "#786c5c", accent: "#946d4b" },
+    accents: [{ name: "Ochre", color: "#946d4b" }, { name: "Olive", color: "#64704e" }, { name: "Dusty rose", color: "#9b6870" }],
+    eyebrow: "Rooted in love", subtitle: "A new little life is taking shape", replyHeading: "Gather close",
+  },
+  {
+    key: "baby-shower-modern-boho", name: "Modern Boho", kind: "modern-boho-baby", category: EventTypeKey.BABY_SHOWER,
+    sampleTitle: "A new little chapter", image: "/images/invitations/pampas.webp", description: "An airy modern-boho composition with a botanical sweep, hand-drawn rules and natural colour.",
+    palette: { background: "#f7f1e8", surface: "#fffdf8", ink: "#433a30", muted: "#786f63", accent: "#987956" },
+    accents: [{ name: "Clay", color: "#987956" }, { name: "Eucalyptus", color: "#5c7564" }, { name: "Rose", color: "#a16d76" }],
+    eyebrow: "A new little chapter", subtitle: "Come celebrate what's growing", replyHeading: "We'd love to gather with you",
+  },
+  {
     key: "wedding-coastal-diani-and-lamu", name: "Coastal", kind: "coastal", category: EventTypeKey.WEDDING,
     image: "/images/invitations/coast.png",
     description: "A destination journal with open horizons, editorial chapters and a coastal itinerary.",
@@ -458,6 +590,105 @@ export const INVITATION_DESIGNS: InvitationDesign[] = [
     eyebrow: "Ideas worth bringing together", subtitle: "A meeting of minds", replyHeading: "Confirm your attendance",
     sectionLabels: { event_details: "About the event", venue_map: "Your arrival", countdown: "See you soon" },
   },
+  {
+    key: "graduation-university-elegance", name: "University Elegance", kind: "university", category: EventTypeKey.GRADUATION,
+    sampleTitle: "Wanjiru's graduation", image: "/images/invitations/library.jpg", description: "A formal university announcement with a literary masthead and a library portrait.",
+    palette: { background: "#f1f4f8", surface: "#fff", ink: "#273447", muted: "#657185", accent: "#35547d" },
+    accents: [{ name: "University blue", color: "#35547d" }, { name: "Laurel", color: "#526b4f" }, { name: "Burgundy", color: "#843d4b" }],
+    eyebrow: "A milestone worth celebrating", subtitle: "The work, the people, and everything ahead", replyHeading: "Celebrate the graduate",
+  },
+  {
+    key: "graduation-black-and-gold", name: "Black & Gold", kind: "graduation-nocturne", category: EventTypeKey.GRADUATION,
+    sampleTitle: "The class of 2027", image: "/images/invitations/library.jpg", description: "A commencement evening invitation with formal black paper and a restrained gold seal.",
+    palette: { background: "#191813", surface: "#242119", ink: "#f5efe2", muted: "#bcb39f", accent: "#c6a15b" },
+    accents: [{ name: "Gold", color: "#c6a15b" }, { name: "Ivory", color: "#e8dfc5" }, { name: "Oxford blue", color: "#365276" }],
+    eyebrow: "The next chapter begins", subtitle: "With gratitude for the journey and joy for what follows", replyHeading: "Join the celebration",
+  },
+  {
+    key: "graduation-future-begins", name: "Future Begins", kind: "future-chapter", category: EventTypeKey.GRADUATION,
+    sampleTitle: "Wanjiru's next chapter", image: "/images/invitations/architecture.jpg", description: "A forward-looking commencement design with a clean architectural image and directional type.",
+    palette: { background: "#eef4f7", surface: "#fff", ink: "#263d49", muted: "#647680", accent: "#28718d" },
+    accents: [{ name: "Future blue", color: "#28718d" }, { name: "Cobalt", color: "#3153a1" }, { name: "Copper", color: "#a45f3a" }],
+    eyebrow: "The future begins here", subtitle: "One achievement, a thousand possibilities", replyHeading: "Be there for the next chapter",
+  },
+  {
+    key: "anniversary-gold-celebration", name: "Gold Celebration", kind: "anniversary-gold", category: EventTypeKey.ANNIVERSARY,
+    sampleTitle: "Amina & Daniel, together still", image: "/images/invitations/coupes.jpg", description: "A golden anniversary toast with a generous date line and a keepsake photograph.",
+    palette: { background: "#f7f2e8", surface: "#fffdf9", ink: "#443a2c", muted: "#786c58", accent: "#9b7839" },
+    accents: [{ name: "Heirloom gold", color: "#9b7839" }, { name: "Rosewood", color: "#864b58" }, { name: "Olive", color: "#59623f" }],
+    eyebrow: "Still choosing each other", subtitle: "A life built together deserves a toast", replyHeading: "Celebrate with us",
+  },
+  {
+    key: "anniversary-silver-anniversary", name: "Silver Anniversary", kind: "silver-anniversary", category: EventTypeKey.ANNIVERSARY,
+    sampleTitle: "Amina & Daniel's silver anniversary", image: "/images/invitations/calla.jpg", description: "A silver anniversary keepsake with cool-toned rules and a sculptural portrait window.",
+    palette: { background: "#f1f2f3", surface: "#fff", ink: "#30343a", muted: "#717780", accent: "#727e8d" },
+    accents: [{ name: "Silver", color: "#727e8d" }, { name: "Blue grey", color: "#526d83" }, { name: "Rose", color: "#986475" }],
+    eyebrow: "Twenty-five years, still us", subtitle: "The best part has always been sharing it", replyHeading: "Join our celebration",
+  },
+  {
+    key: "anniversary-elegant-dinner", name: "Elegant Dinner", kind: "anniversary-dinner", category: EventTypeKey.ANNIVERSARY,
+    sampleTitle: "An evening for Amina & Daniel", image: "/images/invitations/coupes.jpg", description: "An intimate candlelit dinner invitation with a dark palette and a fine-ruled menu-like layout.",
+    palette: { background: "#1c1915", surface: "#27221b", ink: "#f4efe6", muted: "#c4bbaa", accent: "#b08d52" },
+    accents: [{ name: "Brass", color: "#b08d52" }, { name: "Ivory", color: "#e6dcc8" }, { name: "Burgundy", color: "#814354" }],
+    eyebrow: "An evening for two, shared with you", subtitle: "Join us for dinner and a toast to the years", replyHeading: "Save your place at the table",
+  },
+  {
+    key: "bridal-shower-bride-to-be", name: "Bride to Be", kind: "bride-to-be", category: EventTypeKey.BRIDAL_SHOWER,
+    sampleTitle: "A toast to Amina", image: "/images/invitations/peonies.jpg", description: "A ribboned salon invitation with a prominent bride-to-be headline and a toast-ready reply.",
+    palette: { background: "#f8eff0", surface: "#fffafa", ink: "#503843", muted: "#806977", accent: "#a76c7c" },
+    accents: [{ name: "Rose", color: "#a76c7c" }, { name: "Burgundy", color: "#753946" }, { name: "Sage", color: "#52694f" }],
+    eyebrow: "For the bride-to-be", subtitle: "An afternoon of flowers, friendship and happy plans", replyHeading: "Join us for a toast",
+  },
+  {
+    key: "bridal-shower-floral-brunch", name: "Floral Brunch", kind: "floral-brunch", category: EventTypeKey.BRIDAL_SHOWER,
+    sampleTitle: "Brunch for the bride-to-be", image: "/images/invitations/brunch-table.png", description: "A garden-brunch menu with a floral note, a bright table vignette and easy reservation details.",
+    palette: { background: "#f9f3eb", surface: "#fffdf8", ink: "#463b2e", muted: "#786e5d", accent: "#a96848" },
+    accents: [{ name: "Terracotta", color: "#a96848" }, { name: "Sage", color: "#52694f" }, { name: "Blue", color: "#496a88" }],
+    eyebrow: "A table for the bride", subtitle: "Coffee, flowers and a little celebration", replyHeading: "Save a seat at brunch",
+  },
+  {
+    key: "bridal-shower-boho-bride", name: "Boho Bride", kind: "boho-bride", category: EventTypeKey.BRIDAL_SHOWER,
+    sampleTitle: "A little love before the wedding", image: "/images/invitations/pampas.webp", description: "An airy botanical gathering with a relaxed handwritten-feeling masthead and staggered details.",
+    palette: { background: "#f7f1e9", surface: "#fffdf8", ink: "#473f36", muted: "#7a7065", accent: "#947358" },
+    accents: [{ name: "Clay", color: "#947358" }, { name: "Eucalyptus", color: "#587260" }, { name: "Rose", color: "#a16d76" }],
+    eyebrow: "A little celebration before forever", subtitle: "Gather close for the bride-to-be", replyHeading: "Celebrate with us",
+  },
+  {
+    key: "corporate-modern-corporate", name: "Modern Corporate", kind: "modern-corporate", category: EventTypeKey.CORPORATE,
+    sampleTitle: "The annual gathering", image: "/images/invitations/architecture.jpg", description: "A clean corporate invitation with architectural imagery, clear arrival facts and a focused response.",
+    palette: { background: "#eff2f5", surface: "#fff", ink: "#283443", muted: "#687481", accent: "#2f6fa8" },
+    accents: [{ name: "Corporate blue", color: "#2f6fa8" }, { name: "Teal", color: "#246b65" }, { name: "Brick", color: "#a04432" }],
+    eyebrow: "An invitation to connect", subtitle: "A thoughtful day with colleagues and partners", replyHeading: "Confirm your attendance",
+  },
+  {
+    key: "corporate-awards-gala", name: "Awards Gala", kind: "awards-gala", category: EventTypeKey.CORPORATE,
+    sampleTitle: "The annual awards evening", image: "/images/invitations/stage.jpg", description: "A formal stage-lit gala invitation with a dark opening and a clear evening programme.",
+    palette: { background: "#1b181e", surface: "#252129", ink: "#f2eef4", muted: "#beb8c2", accent: "#c6a15b" },
+    accents: [{ name: "Gold", color: "#c6a15b" }, { name: "Silver", color: "#9b9ba4" }, { name: "Cobalt", color: "#4b68a3" }],
+    eyebrow: "An evening to recognise excellence", subtitle: "Join us to honour the people moving us forward", replyHeading: "Reserve your place",
+  },
+  {
+    key: "corporate-product-launch", name: "Product Launch", kind: "product-launch", category: EventTypeKey.CORPORATE,
+    sampleTitle: "A first look at what's next", image: "/images/invitations/architecture.jpg", description: "A product reveal with a bold architectural crop, precise typography and an arrival-focused information grid.",
+    palette: { background: "#171b22", surface: "#222730", ink: "#f1f3f6", muted: "#b5bac3", accent: "#5e8df5" },
+    accents: [{ name: "Launch blue", color: "#5e8df5" }, { name: "Signal coral", color: "#cb624d" }, { name: "Mint", color: "#53a58c" }],
+    eyebrow: "A first look", subtitle: "Be among the first to see what comes next", replyHeading: "Register your attendance",
+  },
+  {
+    key: "corporate-networking-event", name: "Networking Event", kind: "networking", category: EventTypeKey.CORPORATE,
+    sampleTitle: "The people & ideas exchange", image: "/images/invitations/architecture.jpg", description: "A bright, approachable networking invitation with open space for practical arrival information.",
+    palette: { background: "#f2f4f0", surface: "#fff", ink: "#303b32", muted: "#6c756d", accent: "#5f844c" },
+    accents: [{ name: "Leaf", color: "#5f844c" }, { name: "Blue", color: "#426e94" }, { name: "Rust", color: "#a85d41" }],
+    eyebrow: "Good conversations start here", subtitle: "Meet people, exchange ideas, make new connections", replyHeading: "Let us know you're coming",
+  },
+  {
+    key: "corporate-end-of-year-party", name: "End of Year Party", kind: "year-end", category: EventTypeKey.CORPORATE,
+    sampleTitle: "A year worth celebrating", image: "/images/invitations/coupes.jpg", description: "A year-end toast with a festive dark palette, celebratory details and an informal party feel.",
+    palette: { background: "#1b1720", surface: "#25202b", ink: "#f3eff5", muted: "#bdb5c4", accent: "#b3873f" },
+    accents: [{ name: "Warm gold", color: "#b3873f" }, { name: "Berry", color: "#9f4d68" }, { name: "Pine", color: "#52705b" }],
+    eyebrow: "Here's to everything we made happen", subtitle: "One more good evening before the new year", replyHeading: "Celebrate the year with us",
+  },
+  ...ORIGINAL_BIRTHDAY_DESIGNS,
 ];
 
 export const ACCENT_COLORS = [

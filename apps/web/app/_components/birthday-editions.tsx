@@ -110,7 +110,7 @@ export function BirthdayEditionHero({ design, title, date, venue, accent, rsvp =
       break;
     case "sweet-sixteen":
       content = <>
-        <div className={styles.sweetMasthead}><span>One for the memory book</span><span>June / celebration</span></div>
+        <div className={styles.sweetMasthead}><span>One for the memory book</span><span>Sweet 16 celebration</span></div>
         <div className={styles.sweetOpening}><span className={styles.sweetNumber} aria-hidden="true">16</span><div><p className={styles.kicker}>A milestone made brighter</p>{headline}<p className={styles.sweetNote}>Sixteen years of becoming<br />wonderfully, unmistakably you.</p>{reply("Be there for the big night")}</div></div>
         <div className={styles.sweetArt}>{art}</div>
         <div className={styles.sweetDetails}>{facts}</div>

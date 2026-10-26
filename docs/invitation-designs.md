@@ -1,6 +1,6 @@
 # Invitation designs
 
-Fifty-three landing-page designs are mapped to existing catalogue keys across seven celebration categories. All 16 wedding entries now have landing-page designs. Other undesigned catalogue entries retain their current renderer.
+One hundred landing-page designs are mapped to existing catalogue keys across seven celebration categories. All wedding, baby-shower, graduation, anniversary, bridal-shower and corporate catalogue entries now have landing-page designs. The remaining birthday entries are third-party character or brand themes; they retain their current renderer pending appropriate artwork and licensing review.
 
 | Design | Catalogue key | Composition | Sample |
 | --- | --- | --- | --- |
@@ -57,13 +57,60 @@ Fifty-three landing-page designs are mapped to existing catalogue keys across se
 | Dirty 30 | `birthday-dirty-30` | Dark milestone poster with oversized type and a strong image strip | `/designs/dirty-thirty` |
 | Fabulous at 50 | `birthday-fabulous-at-50` | Half-century layout with a large numeral and arched floral portrait | `/designs/fifty` |
 | Diamond Celebration | `birthday-diamond-celebration-60-plus` | Gracious family invitation with a framed portrait and readable type | `/designs/diamond` |
+| Safari Animals | `birthday-safari-animals` | Field-guide birthday with expedition notes and an original mascot illustration | `/designs/safari-animals` |
+| Pirates | `birthday-pirates` | Treasure-map invitation with a ship's log and crew check-in | `/designs/pirate-adventure` |
+| Unicorn | `birthday-unicorn` | Storybook composition with an original unicorn motif and pearly details | `/designs/unicorn-dream` |
+| Fairies | `birthday-fairies` | Garden invitation with an original winged motif and botanical linework | `/designs/fairy-garden` |
+| Pastel | `birthday-pastel` | Soft colour-field invitation with open space and centered type | `/designs/birthday-pastel` |
+| Ballerina | `birthday-ballerina` | Recital-inspired birthday programme with a ribboned star motif | `/designs/ballerina` |
+| Jungle Safari | `birthday-jungle-safari` | Leafy expedition with original foliage illustration and base-camp reply | `/designs/jungle-adventure` |
+| Under the Sea | `birthday-under-the-sea` | Underwater storybook with original sea-life motifs and wave-like sections | `/designs/under-the-sea` |
+| Circus | `birthday-circus` | Big-top broadside with striped poster bands and showtime masthead | `/designs/circus-day` |
+| Candyland | `birthday-candyland` | Confectionery invitation with original candy motifs and dotted details | `/designs/candyland` |
+| Carnival | `birthday-carnival` | Midway poster with an original wheel motif and bright geometric panels | `/designs/carnival` |
+| Outer Space | `birthday-outer-space` | Paper-cut rocket invitation with a flight manifest and launch countdown | `/designs/outer-space` |
+| Pyjama | `birthday-pyjama` | Moonlit sleepover invitation with a cosy night-sky composition | `/designs/pyjama-party` |
+| Glow Party | `birthday-glow-party` | After-dark poster with electric colour, luminous geometry and countdown | `/designs/glow-party` |
+| Graffiti | `birthday-graffiti` | Street-poster composition with original abstract paint marks | `/designs/graffiti` |
+| Pop Culture | `birthday-pop-culture` | Premiere-night poster with abstract marquee lights and a bold event bill | `/designs/pop-culture` |
+| K-Pop | `birthday-k-pop` | Concert-bill layout with original light-stick motifs and a showtime reply | `/designs/k-pop` |
+| Pink & Gold | `baby-shower-pink-and-gold` | Framed keepsake invitation with rose paper and fine gold rules | `/designs/pink-gold` |
+| Butterfly Wishes | `baby-shower-butterfly-wishes` | Airy blue correspondence with soft, open margins | `/designs/butterfly` |
+| Ballerina Baby | `baby-shower-ballerina-baby` | Recital-inspired invitation with an arched, stage-like image window | `/designs/ballerina-baby` |
+| Boho Rainbow | `baby-shower-boho-rainbow` | Centered storybook layout with an original paper-cut rainbow | `/designs/boho-rainbow` |
+| Blush Bloom | `baby-shower-blush-bloom` | Botanical letterpress composition with measured double rules | `/designs/blush-bloom` |
+| Little Prince | `baby-shower-little-prince` | Open star-chart layout with a storybook sky and quiet typography | `/designs/little-prince` |
+| Sailor Baby | `baby-shower-sailor-baby` | Navy flight-log style with signal-like rules and clear event facts | `/designs/sailor-baby` |
+| Little Lion | `baby-shower-little-lion` | Warm sun-toned storybook composition with a centered welcome | `/designs/little-lion` |
+| Woodland Boy | `baby-shower-woodland-boy` | Painted landscape with irregular field-note framing | `/designs/woodland-baby` |
+| Blue Teddy | `baby-shower-blue-teddy` | Rounded nursery stationery and soft blue double-line details | `/designs/blue-teddy` |
+| Airplanes | `baby-shower-airplanes` | Flight-log masthead with a paper-cut sky and route-like details | `/designs/airplanes` |
+| Neutral Beige | `baby-shower-neutral-beige` | Gallery-like spacing with a tactile neutral palette | `/designs/neutral-beige` |
+| Sage Green | `baby-shower-sage-green` | Fine botanical correspondence with a vertical stem-like rule | `/designs/sage-baby` |
+| Minimal Scandinavian | `baby-shower-minimal-scandinavian` | Restrained type, open space and carefully aligned facts | `/designs/scandinavian` |
+| Earth Tones | `baby-shower-earth-tones` | Grounded landscape band and tactile editorial details | `/designs/earth-baby` |
+| Modern Boho | `baby-shower-modern-boho` | Asymmetric botanical sweep and offset storybook headline | `/designs/modern-boho-baby` |
+| University Elegance | `graduation-university-elegance` | Formal university announcement with literary masthead and library portrait | `/designs/university` |
+| Graduation Black & Gold | `graduation-black-and-gold` | Commencement evening invitation with black paper and restrained gold rules | `/designs/graduation-nocturne` |
+| Future Begins | `graduation-future-begins` | Forward-looking commencement layout with directional typography | `/designs/future-chapter` |
+| Gold Celebration | `anniversary-gold-celebration` | Golden anniversary toast with a keepsake photograph | `/designs/anniversary-gold` |
+| Silver Anniversary | `anniversary-silver-anniversary` | Cool-toned keepsake with a sculptural portrait window | `/designs/silver-anniversary` |
+| Elegant Dinner | `anniversary-elegant-dinner` | Candlelit dinner invitation with fine-ruled details | `/designs/anniversary-dinner` |
+| Bride to Be | `bridal-shower-bride-to-be` | Ribboned salon invitation with a toast-ready reply | `/designs/bride-to-be` |
+| Floral Brunch | `bridal-shower-floral-brunch` | Bistro-menu layout with a cheerful table vignette | `/designs/floral-brunch` |
+| Boho Bride | `bridal-shower-boho-bride` | Asymmetric botanical sweep and relaxed editorial masthead | `/designs/boho-bride` |
+| Modern Corporate | `corporate-modern-corporate` | Architectural crop, clear hierarchy and practical event facts | `/designs/modern-corporate` |
+| Awards Gala | `corporate-awards-gala` | Stage-lit evening invitation with formal programme framing | `/designs/awards-gala` |
+| Product Launch | `corporate-product-launch` | Dark, directional reveal layout with arrival-focused information | `/designs/product-launch` |
+| Networking Event | `corporate-networking-event` | Open, bright layout for practical arrival information | `/designs/networking` |
+| End of Year Party | `corporate-end-of-year-party` | Festive evening toast with a dark palette and double rules | `/designs/year-end` |
 
 ## Category rollout
 
 - Weddings: all 16 catalogue entries delivered. Existing premium classifications are unchanged.
-- Birthdays: twenty-nine designs delivered, including Gaming and Sporty for the teen collection and the adult/milestone collection. Remaining: other adult, children's and teen themes.
-- Baby showers: four designs delivered. Next: the calm contemporary collection and remaining illustrated themes.
-- Graduations, anniversaries, bridal showers and corporate: one starting design each; remaining catalogue entries are still pending.
+- Birthdays: forty-six designs delivered, including the original children's themes, teen collection and adult/milestone collection. The remaining nineteen character/brand themes need appropriate artwork and licensing review.
+- Baby showers: all twenty catalogue designs delivered, including the calm contemporary and illustrated collections.
+- Graduations, anniversaries, bridal showers and corporate: all catalogue designs delivered.
 
 Public stock assets are appropriate when they carry the visual idea. Character-based entries need suitable artwork, not unrelated photographs or misleading substitutes.
 
@@ -208,6 +255,18 @@ Sporty:
 The adult birthday batch adds Elegant Gold, Floral, Rooftop Party and Sweet 16. Each uses a distinct page composition, locally credited artwork and shared saved-event facts, countdown and RSVP sections. Sweet 16 uses its milestone numeral as typography; templates do not infer ages for other birthdays. Compact catalogue cards and sample pages retain their intended layout, and sample RSVP submission remains disabled.
 
 The adult and milestone expansion adds the remaining fourteen non-character birthday catalogue designs. They use distinct editorial frames and responsive layouts, while all event facts and RSVP behavior remain shared. Fixed milestone numerals appear only on designs explicitly named for that milestone; saved event titles remain the source of the live headline.
+
+The baby-shower expansion completes all twenty catalogue entries. The sixteen added designs use celebration-specific invitation layouts with the existing shared event details, countdown, registry, games and RSVP rules; sample pages continue to show only modules supported by the shared sample renderer. No event-type permissions or backend capabilities changed.
+
+The occasion expansion completes the graduation, anniversary, bridal-shower and corporate catalogues. Fourteen additional designs use distinct composition families while event facts and guest actions continue to come from the shared renderer. Wedding story and programme modules remain wedding-only.
+
+The occasion expansion passes the web production build and TypeScript check; `git diff --check` is clean. The design selector continues to group entries by their existing celebration type and preserves seeded premium classifications.
+
+The original playful-birthday batch adds seventeen non-character designs with original inline vector motifs. These artwork marks are decorative and do not depict licensed characters, actual guests or venues. The existing sample party-size rules and disabled preview RSVP remain unchanged.
+
+The playful-birthday expansion passes the web production build and TypeScript check. Registry coverage checks confirm 16/16 wedding, 20/20 baby-shower, 4/4 graduation, 4/4 anniversary, 4/4 bridal-shower and 6/6 corporate designs, plus 46/65 birthday designs. `git diff --check` is clean.
+
+The completed baby-shower collection passes the web production build and TypeScript check; `git diff --check` is clean. New illustrations are original inline vector motifs and do not depict a host's actual venue or guests.
 
 The adult birthday batch passes the web production build and TypeScript check. `git diff --check` is clean. ESLint remains blocked by the existing ESLint 10 / React plugin incompatibility (`react/display-name` calls the removed `context.getFilename` API); no lint result is claimed for this batch.
 

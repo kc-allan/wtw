@@ -4,6 +4,9 @@ import type { InvitationDesign } from "@/lib/invitation-designs";
 import styles from "./invitation-landing.module.css";
 import { CollectionHero } from "./collection-hero";
 import { BirthdayEditionHero, hasBirthdayEdition } from "./birthday-editions";
+import { BabyShowerEditionHero, hasBabyShowerEdition } from "./baby-shower-editions";
+import { hasOccasionEdition, OccasionEditionHero } from "./occasion-editions";
+import { BirthdayPlayfulHero, hasPlayfulBirthdayEdition } from "./birthday-playful-editions";
 
 export function InvitationHero({ design, names, title, date, venue, accent, rsvp = true, compact = false }: {
   design: InvitationDesign; names: string[]; title: string; date: string; venue?: string;
@@ -11,6 +14,15 @@ export function InvitationHero({ design, names, title, date, venue, accent, rsvp
 }) {
   if (hasBirthdayEdition(design.kind)) {
     return <BirthdayEditionHero design={design} title={title} date={date} venue={venue} accent={accent} rsvp={rsvp} compact={compact} />;
+  }
+  if (hasBabyShowerEdition(design.kind)) {
+    return <BabyShowerEditionHero design={design} title={title} date={date} venue={venue} accent={accent} rsvp={rsvp} compact={compact} />;
+  }
+  if (hasOccasionEdition(design.kind)) {
+    return <OccasionEditionHero design={design} names={names} title={title} date={date} venue={venue} accent={accent} rsvp={rsvp} compact={compact} />;
+  }
+  if (hasPlayfulBirthdayEdition(design.kind)) {
+    return <BirthdayPlayfulHero design={design} title={title} date={date} venue={venue} accent={accent} rsvp={rsvp} compact={compact} />;
   }
   if (!["coastal", "garden", "brunch"].includes(design.kind)) {
     return <CollectionHero design={design} names={names} title={title} date={date} venue={venue} accent={accent} rsvp={rsvp} compact={compact} />;

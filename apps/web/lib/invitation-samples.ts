@@ -35,7 +35,9 @@ function moduleView(key: EventModuleKey, position: number, config: Record<string
 export function invitationSample(design: InvitationDesign, accent: string): { event: PublicEvent["event"]; modules: EventModuleView[] } {
   const sample = { ...SAMPLES[design.category] };
   if (design.sampleTitle) sample.title = design.sampleTitle;
-  const children = ["space", "dinosaur", "trucks", "rainbow", "mermaid"].includes(design.kind);
+  if (design.sampleTitle?.includes("Nadia")) sample.names = ["Nadia"];
+  if (design.sampleTitle?.includes("Leo")) sample.names = ["Leo"];
+  const children = ["space", "dinosaur", "trucks", "rainbow", "mermaid", "safari-animals", "pirate-adventure", "unicorn-dream", "fairy-garden", "birthday-pastel", "ballerina", "jungle-adventure", "under-the-sea", "circus-day", "candyland", "carnival", "outer-space"].includes(design.kind);
   if (design.kind === "gaming") {
     sample.names = ["Leo"];
     sample.venue = "The player lounge";
@@ -69,7 +71,7 @@ export function invitationSample(design: InvitationDesign, accent: string): { ev
     sample.description = "Our favourite explorer is ready for another trip around the sun. Join Leo for an afternoon of space adventures, birthday cake and a whole crew of friends.";
     sample.programme = [["Crew check-in", "Meet the other explorers and get ready for launch."], ["Mission: birthday", "Games and adventures for the whole crew."], ["Cake on the moon", "Back to base for cake and birthday wishes."]];
   }
-  if (design.kind === "neon" || design.kind === "rooftop") sample.title = "Nia's birthday night";
+  if (design.kind === "neon") sample.title = "Nia's birthday night";
   if (design.kind === "cocktail") {
     sample.venue = "The aperitivo room";
   }
@@ -84,6 +86,25 @@ export function invitationSample(design: InvitationDesign, accent: string): { ev
     sample.venue = "The city garden";
     sample.description = "Sixteen years of becoming wonderfully, unmistakably you. Join Nia and her favourite people for a milestone night to remember.";
   }
+  if (["university", "graduation-nocturne", "future-chapter"].includes(design.kind)) sample.venue = "The university hall";
+  if (["anniversary-gold", "silver-anniversary"].includes(design.kind)) sample.venue = "The garden room";
+  if (design.kind === "anniversary-dinner") sample.venue = "The candlelit dining room";
+  if (design.kind === "bride-to-be") sample.venue = "The rose salon";
+  if (design.kind === "floral-brunch") sample.venue = "The garden table";
+  if (design.kind === "boho-bride") sample.venue = "The meadow room";
+  if (["modern-corporate", "product-launch"].includes(design.kind)) sample.venue = "The assembly hall";
+  if (design.kind === "awards-gala") sample.venue = "The grand ballroom";
+  if (design.kind === "networking") sample.venue = "The atrium";
+  if (design.kind === "year-end") sample.venue = "The terrace room";
+  if (["safari-animals", "jungle-adventure"].includes(design.kind)) sample.venue = "The adventure garden";
+  if (design.kind === "pirate-adventure") sample.venue = "The harbour garden";
+  if (["unicorn-dream", "fairy-garden"].includes(design.kind)) sample.venue = "The storybook garden";
+  if (["birthday-pastel", "ballerina"].includes(design.kind)) sample.venue = "The little theatre";
+  if (["under-the-sea", "outer-space"].includes(design.kind)) sample.venue = "The discovery room";
+  if (["circus-day", "carnival"].includes(design.kind)) sample.venue = "The fairground";
+  if (design.kind === "candyland") sample.venue = "The sweet shop garden";
+  if (design.kind === "pyjama-party") sample.venue = "The sleepover den";
+  if (["glow-party", "graffiti", "pop-culture", "k-pop"].includes(design.kind)) sample.venue = "The celebration hall";
   if (design.kind === "gilded") sample.venue = "The conservatory";
   if (design.kind === "champagne") sample.venue = "The reception gardens";
   if (design.kind === "emerald") sample.venue = "The palm house";

@@ -1,0 +1,133 @@
+.hero { position: relative; isolation: isolate; overflow: hidden; min-height: 650px; padding: 36px clamp(22px,7vw,100px) 72px; }
+.masthead { display: flex; justify-content: space-between; gap: 16px; padding: 13px 0; border-bottom: 1px solid currentColor; font: 11px/1.5 monospace; letter-spacing: .1em; text-transform: uppercase; }
+.layout { display: grid; grid-template-columns: 1fr .85fr; align-items: center; gap: 7%; max-width: 1120px; min-height: 430px; margin: 38px auto 0; }
+.copy { position: relative; z-index: 1; }
+.kicker { margin: 0 0 18px; font: 12px/1.5 monospace; letter-spacing: .08em; text-transform: uppercase; }
+.title { margin: 0; font: 500 clamp(56px,7.5vw,94px)/.98 var(--font-cormorant),Georgia,serif; text-wrap: balance; overflow-wrap: anywhere; color: var(--invite-accent); }
+.subtitle { max-width: 460px; margin: 21px 0 0; font: 17px/1.6 Georgia,serif; }
+.couple { margin: 0 0 12px; font: italic 24px/1.2 var(--font-cormorant),Georgia,serif; color: var(--invite-accent); }
+.reply { display: inline-flex; justify-content: space-between; gap: 22px; align-items: center; margin-top: 25px; padding: 13px 19px; background: var(--invite-accent); color: #fff; font-size: 14px; }
+.reply:focus-visible, .discover:focus-visible { outline: 3px solid currentColor; outline-offset: 5px; }
+.art { position: relative; min-width: 0; height: 330px; }
+.art img { object-fit: cover; }
+.details { position: relative; z-index: 1; display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 28px; width: fit-content; max-width: 100%; margin: 8px auto 0; padding: 13px 20px; border-block: 1px solid currentColor; font: 13px/1.5 Georgia,serif; }
+.details span + span { border-left: 1px solid currentColor; padding-left: 28px; }
+.discover { position: absolute; bottom: 20px; left: 50%; display: flex; gap: 16px; transform: translateX(-50%); font-size: 12px; white-space: nowrap; }
+.longTitle .title { font-size: clamp(45px,6vw,72px); }
+.hero.compact { min-height: 0; height: 100%; padding: 22px 18px 86px; }
+.compact .masthead { font-size: 8px; }
+.compact .layout { display: block; min-height: 0; margin-top: 32px; }
+.compact .title { font-size: 32px; }
+.compact.longTitle .title { font-size: 25px; }
+.compact .subtitle, .compact .couple, .compact .discover { display: none; }
+.compact .art { position: absolute; right: 0; bottom: -105px; width: 40%; height: 115px; opacity: .8; }
+.compact .details { justify-content: flex-start; margin: 14px 0 0; padding: 7px 9px; font-size: 10px; }
+.compact .details span + span { padding-left: 8px; }
+
+/* Commencement editions. */
+.university { background: #f1f4f8; color: #273447; }
+.university .layout { grid-template-columns: 1fr 1fr; }
+.university .copy { border-top: 5px double #35547d; padding-top: 24px; }
+.university .art { height: 350px; }
+.university .details { border-block: 5px double #35547d; }
+.graduation-nocturne { background: #191813; color: #f5efe2; }
+.graduation-nocturne .masthead { border-block: 4px double #c6a15b; }
+.graduation-nocturne .layout { grid-template-columns: 1fr; text-align: center; }
+.graduation-nocturne .subtitle { margin-inline: auto; }
+.graduation-nocturne .art { position: absolute; inset: auto 0 0; height: 135px; opacity: .35; }
+.graduation-nocturne .details { border: 3px double #c6a15b; background: #191813; }
+.future-chapter { background: #eef4f7; color: #263d49; }
+.future-chapter .layout { grid-template-columns: 1.2fr .8fr; }
+.future-chapter .copy { border-left: 6px solid #28718d; padding: 15px 0 15px 28px; }
+.future-chapter .title { font-family: var(--font-jost),sans-serif; font-weight: 600; }
+.future-chapter .art { height: 300px; clip-path: polygon(10% 0,100% 0,100% 100%,0 86%); }
+.future-chapter .details { width: 100%; border-block: 2px solid #28718d; }
+/* Anniversaries: keepsake frames distinguish golden, silver and dinner editions. */
+.anniversary-gold { background: #f7f2e8; color: #443a2c; }
+.anniversary-gold .layout { grid-template-columns: 1fr .75fr; }
+.anniversary-gold .art { height: 300px; border-radius: 50%; overflow: hidden; }
+.anniversary-gold .title { font-style: italic; }
+.anniversary-gold .details { border-block: 3px double #bba577; }
+.silver-anniversary { background: #f1f2f3; color: #30343a; }
+.silver-anniversary .layout { grid-template-columns: .7fr 1fr; }
+.silver-anniversary .art { order: -1; height: 345px; border: 1px solid #abb2bc; padding: 9px; }
+.silver-anniversary .title { font-family: var(--font-jost),sans-serif; font-weight: 400; }
+.silver-anniversary .details { border-block: 1px solid #abb2bc; }
+.anniversary-dinner { background: #1c1915; color: #f4efe6; }
+.anniversary-dinner .layout { grid-template-columns: 1fr .8fr; }
+.anniversary-dinner .copy { border-top: 1px solid #b08d52; padding-top: 24px; }
+.anniversary-dinner .art { height: 280px; border: 1px solid #b08d52; padding: 8px; }
+.anniversary-dinner .details { border-block: 1px solid #b08d52; }
+/* Bridal showers: salon, bistro and bohemian stationery treatments. */
+.bride-to-be { background: #f8eff0; color: #503843; border-inline: 12px solid #ecd8dc; }
+.bride-to-be .layout { grid-template-columns: 1fr .65fr; }
+.bride-to-be .art { height: 350px; border-radius: 45% 45% 0 0; overflow: hidden; }
+.bride-to-be .title { font-style: italic; }
+.bride-to-be .details { border-block: 3px double #b98996; }
+.floral-brunch { background: #f9f3eb; color: #463b2e; }
+.floral-brunch .layout { grid-template-columns: 1fr; text-align: center; }
+.floral-brunch .copy { max-width: 850px; margin: auto; }
+.floral-brunch .subtitle { margin-inline: auto; }
+.floral-brunch .art { position: absolute; inset: auto 0 0; height: 150px; opacity: .7; }
+.floral-brunch .details { background: #f9f3eb; border-style: dotted; }
+.boho-bride { background: #f7f1e9; color: #473f36; }
+.boho-bride .layout { grid-template-columns: 1.2fr .7fr; }
+.boho-bride .copy { padding-left: 8%; }
+.boho-bride .title { font-style: italic; }
+.boho-bride .art { height: 380px; }
+.boho-bride .details { margin-left: 8%; border-style: dashed; }
+/* Corporate events: sharply different arrival, reveal and gathering hierarchies. */
+.modern-corporate { background: #eff2f5; color: #283443; }
+.modern-corporate .layout { grid-template-columns: 1.1fr .9fr; }
+.modern-corporate .copy { border-left: 5px solid #2f6fa8; padding-left: 25px; }
+.modern-corporate .title { font-family: var(--font-jost),sans-serif; font-weight: 600; }
+.modern-corporate .details { width: 100%; justify-content: flex-start; border-bottom: 4px solid #2f6fa8; }
+.awards-gala { background: #1b181e; color: #f2eef4; }
+.awards-gala .layout { grid-template-columns: 1fr; text-align: center; }
+.awards-gala .copy { max-width: 900px; margin: auto; }
+.awards-gala .title { font-style: italic; }
+.awards-gala .subtitle { margin-inline: auto; }
+.awards-gala .art { position: absolute; inset: auto 0 0; height: 185px; opacity: .5; }
+.awards-gala .details { background: #1b181e; border: 3px double #c6a15b; }
+.product-launch { background: #171b22; color: #f1f3f6; }
+.product-launch .layout { grid-template-columns: 1fr .8fr; }
+.product-launch .copy { border-top: 8px solid #5e8df5; padding-top: 24px; }
+.product-launch .title { font-family: var(--font-jost),sans-serif; font-weight: 600; }
+.product-launch .art { height: 350px; clip-path: polygon(0 10%,100% 0,92% 100%,10% 88%); }
+.product-launch .details { width: 100%; justify-content: flex-start; border-block: 1px solid #5e8df5; }
+.networking { background: #f2f4f0; color: #303b32; }
+.networking .layout { grid-template-columns: 1fr; min-height: 360px; }
+.networking .copy { max-width: 950px; }
+.networking .title { font-family: var(--font-jost),sans-serif; font-weight: 500; }
+.networking .art { position: absolute; inset: auto 0 0; height: 155px; opacity: .28; }
+.networking .details { background: #f2f4f0; border-block: 2px solid #5f844c; }
+.year-end { background: #1b1720; color: #f3eff5; }
+.year-end .layout { grid-template-columns: 1fr .9fr; }
+.year-end .title { font-style: italic; }
+.year-end .art { height: 310px; border: 6px double #b3873f; padding: 8px; }
+.year-end .details { border-block: 3px double #b3873f; }
+.page.university :global(#rsvp), .page.future-chapter :global(#rsvp), .page.modern-corporate :global(#rsvp), .page.product-launch :global(#rsvp) { border-top: 5px solid var(--invite-accent); }
+.page.graduation-nocturne :global(#rsvp), .page.anniversary-dinner :global(#rsvp), .page.awards-gala :global(#rsvp), .page.year-end :global(#rsvp) { border-top: 5px double var(--invite-accent); }
+.page.anniversary-gold :global(#rsvp), .page.silver-anniversary :global(#rsvp), .page.bride-to-be :global(#rsvp), .page.floral-brunch :global(#rsvp), .page.boho-bride :global(#rsvp), .page.networking :global(#rsvp) { border-top: 2px solid var(--invite-accent); }
+
+@media (max-width: 700px) {
+  .hero { min-height: 610px; padding: 24px 20px 62px; }
+  .masthead { font-size: 8px; }
+  .layout, .university .layout, .future-chapter .layout, .anniversary-gold .layout, .silver-anniversary .layout, .anniversary-dinner .layout, .bride-to-be .layout, .boho-bride .layout, .modern-corporate .layout, .product-launch .layout, .year-end .layout { display: flex; flex-direction: column; align-items: stretch; gap: 20px; min-height: 0; margin-top: 48px; }
+  .title, .longTitle .title { font-size: clamp(44px,12vw,68px); }
+  .subtitle { font-size: 15px; }
+  .art, .university .art, .anniversary-gold .art, .silver-anniversary .art, .anniversary-dinner .art, .bride-to-be .art, .boho-bride .art, .modern-corporate .art, .product-launch .art, .year-end .art { height: 145px; }
+  .silver-anniversary .art { order: initial; }
+  .details { padding: 9px 12px; font-size: 11px; }
+  .details span + span { padding-left: 12px; }
+  .graduation-nocturne .layout, .floral-brunch .layout, .awards-gala .layout, .networking .layout { display: grid; min-height: 0; margin-top: 48px; }
+  .graduation-nocturne .art, .floral-brunch .art, .awards-gala .art, .networking .art { height: 115px; }
+  .hero.compact { min-height: 0; padding: 20px 16px 84px; }
+  .compact .layout { display: block; min-height: 0; margin-top: 28px; }
+  .compact .title { font-size: 30px; }
+  .compact.longTitle .title { font-size: 24px; }
+  .compact .subtitle, .compact .couple, .compact .discover { display: none; }
+  .compact .art { position: absolute; right: 0; bottom: 0; width: 40%; height: 90px; opacity: .75; }
+  .compact .details { justify-content: flex-start; margin: 12px 0 0; padding: 6px 8px; font-size: 9px; }
+  .compact .details span + span { padding-left: 7px; }
+}
