@@ -4,6 +4,8 @@ import { extname, join, resolve } from 'node:path';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { Env } from '../../core/config/env';
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 export interface StoredFile {
   storageKey: string;
@@ -26,6 +28,7 @@ export const MEDIA_STORAGE = Symbol('MEDIA_STORAGE');
 export interface MediaStorage {
   save(file: UploadedFile): Promise<StoredFile>;
   remove(storageKey: string): Promise<void>;
+  url(storageKey: string): Promise<string>;
 }
 
 /**
@@ -66,5 +69,52 @@ export class LocalDiskStorage implements MediaStorage {
         throw error;
       }
     }
+  }
+
+  url(storageKey: string): Promise<string> {
+    return Promise.resolve(`${this.publicPath}/${encodeURIComponent(storageKey)}`);
+  }
+}
+
+/** R2 uses the S3 API with private-by-default objects and short-lived reads. */
+@Injectable()
+export class R2Storage implements MediaStorage {
+  private readonly client: S3Client;
+  private readonly bucket: string;
+  private readonly ttl: number;
+
+  constructor(@Inject(ConfigService) config: ConfigService<Env, true>) {
+    const accountId = config.get('R2_ACCOUNT_ID', { infer: true }) ?? '';
+    this.bucket = config.get('R2_BUCKET', { infer: true })!;
+    this.ttl = config.get('MEDIA_SIGNED_URL_TTL_SECONDS', { infer: true });
+    this.client = new S3Client({
+      region: 'auto',
+      endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
+      credentials: {
+        accessKeyId: config.get('R2_ACCESS_KEY_ID', { infer: true }) ?? '',
+        secretAccessKey: config.get('R2_SECRET_ACCESS_KEY', { infer: true }) ?? '',
+      },
+    });
+  }
+
+  async save(file: UploadedFile): Promise<StoredFile> {
+    const extension = extname(file.originalName).toLowerCase().slice(0, 10);
+    const storageKey = `${randomUUID()}${/^\.[a-z0-9]+$/.test(extension) ? extension : ''}`;
+    await this.client.send(new PutObjectCommand({
+      Bucket: this.bucket,
+      Key: storageKey,
+      Body: file.buffer,
+      ContentType: file.mimeType,
+      CacheControl: 'private, max-age=0, no-store',
+    }));
+    return { storageKey, url: '', sizeBytes: file.buffer.byteLength };
+  }
+
+  async remove(storageKey: string): Promise<void> {
+    await this.client.send(new DeleteObjectCommand({ Bucket: this.bucket, Key: storageKey }));
+  }
+
+  async url(storageKey: string): Promise<string> {
+    return getSignedUrl(this.client, new GetObjectCommand({ Bucket: this.bucket, Key: storageKey }), { expiresIn: this.ttl });
   }
 }

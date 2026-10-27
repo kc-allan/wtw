@@ -18,6 +18,7 @@ export async function joinGuestList(
     await api(`/e/${slug}/guest-list`, {
       method: "POST",
       auth: false,
+      turnstileToken: String(formData.get("cf-turnstile-response") ?? ""),
       body: {
         firstName,
         lastName: optionalText(formData.get("lastName")),

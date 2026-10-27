@@ -1,11 +1,16 @@
 import {
   ConflictException,
   Injectable,
+  Logger,
+  OnModuleDestroy,
+  OnModuleInit,
   ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService, type JwtSignOptions } from '@nestjs/jwt';
+import { Prisma } from '@prisma/client';
+import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'node:crypto';
 import * as argon2 from 'argon2';
 import { PlanKey } from '@wtw/shared';
 import type { Env } from '../../core/config/env';
@@ -19,6 +24,8 @@ import type { GoogleAuthInput, LoginInput, RegisterInput } from './auth.schemas'
 export interface AuthTokens {
   accessToken: string;
   refreshToken: string;
+  accessTokenExpiresAt: number;
+  refreshTokenExpiresAt: number;
 }
 
 export interface AuthResult extends AuthTokens {
@@ -39,13 +46,30 @@ function nameFromEmail(email: string): string {
 }
 
 @Injectable()
-export class AuthService {
+export class AuthService implements OnModuleInit, OnModuleDestroy {
+  private readonly logger = new Logger(AuthService.name);
+  private replayCleanupTimer: NodeJS.Timeout | undefined;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
     private readonly config: ConfigService<Env, true>,
     private readonly google: GoogleIdentityService,
   ) {}
+
+  onModuleInit(): void {
+    this.replayCleanupTimer = setInterval(() => {
+      void this.prisma.refreshToken.updateMany({
+        where: { replayExpiresAt: { lte: new Date() } },
+        data: { replayTokensCiphertext: null, replayExpiresAt: null },
+      }).catch(() => this.logger.warn('Could not clear expired refresh replay data'));
+    }, 15_000);
+    this.replayCleanupTimer.unref();
+  }
+
+  onModuleDestroy(): void {
+    if (this.replayCleanupTimer) clearInterval(this.replayCleanupTimer);
+  }
 
   async register(input: RegisterInput): Promise<AuthResult> {
     const name = input.name ?? nameFromEmail(input.email);
@@ -138,22 +162,44 @@ export class AuthService {
 
   async refresh(rawRefreshToken: string): Promise<AuthTokens> {
     const tokenHash = hashToken(rawRefreshToken);
-    const stored = await this.prisma.refreshToken.findUnique({
-      where: { tokenHash },
-      include: { user: { select: { id: true, email: true } } },
+    return this.prisma.$transaction(async (tx) => {
+      const rows = await tx.$queryRaw<{ id: string }[]>`
+        SELECT "id" FROM "refresh_tokens" WHERE "tokenHash" = ${tokenHash} FOR UPDATE
+      `;
+      if (!rows[0]) throw new UnauthorizedException('Refresh token is no longer valid');
+
+      const stored = await tx.refreshToken.findUnique({
+        where: { id: rows[0].id },
+        include: { user: { select: { id: true, email: true } } },
+      });
+      if (!stored) throw new UnauthorizedException('Refresh token is no longer valid');
+
+      const now = Date.now();
+      if (stored.revokedAt) {
+        if (
+          !stored.replayTokensCiphertext ||
+          !stored.replayExpiresAt ||
+          stored.replayExpiresAt.getTime() <= now
+        ) {
+          throw new UnauthorizedException('Refresh token is no longer valid');
+        }
+        return this.decryptReplayTokens(stored.replayTokensCiphertext);
+      }
+      if (stored.expiresAt.getTime() <= now) {
+        throw new UnauthorizedException('Refresh token is no longer valid');
+      }
+
+      const tokens = await this.issueTokensIn(tx, stored.user.id, stored.user.email);
+      await tx.refreshToken.update({
+        where: { id: stored.id },
+        data: {
+          revokedAt: new Date(now),
+          replayTokensCiphertext: this.encryptReplayTokens(tokens),
+          replayExpiresAt: new Date(now + 30_000),
+        },
+      });
+      return tokens;
     });
-
-    if (!stored || stored.revokedAt || stored.expiresAt.getTime() < Date.now()) {
-      throw new UnauthorizedException('Refresh token is no longer valid');
-    }
-
-    // Rotate: the presented token is spent even if the client never sees the reply.
-    await this.prisma.refreshToken.update({
-      where: { id: stored.id },
-      data: { revokedAt: new Date() },
-    });
-
-    return this.issueTokens(stored.user.id, stored.user.email);
   }
 
   async logout(rawRefreshToken: string): Promise<void> {
@@ -238,16 +284,98 @@ export class AuthService {
       },
     );
 
+    const decoded = this.jwt.decode(accessToken);
+    if (!decoded || typeof decoded.exp !== 'number') {
+      throw new ServiceUnavailableException('Could not determine session expiry');
+    }
     const refreshToken = generateRawToken();
+    const refreshTokenExpiresAt = this.refreshExpiry();
     await this.prisma.refreshToken.create({
       data: {
         userId,
         tokenHash: hashToken(refreshToken),
-        expiresAt: this.refreshExpiry(),
+        expiresAt: refreshTokenExpiresAt,
       },
     });
 
-    return { accessToken, refreshToken };
+    return {
+      accessToken,
+      refreshToken,
+      accessTokenExpiresAt: decoded.exp * 1000,
+      refreshTokenExpiresAt: refreshTokenExpiresAt.getTime(),
+    };
+  }
+
+  private async issueTokensIn(
+    tx: Prisma.TransactionClient,
+    userId: string,
+    email: string,
+  ): Promise<AuthTokens> {
+    const accessToken = await this.jwt.signAsync(
+      { sub: userId, email },
+      {
+        secret: this.config.get('JWT_ACCESS_SECRET', { infer: true }),
+        expiresIn: this.config.get('JWT_ACCESS_TTL', { infer: true }) as JwtSignOptions['expiresIn'],
+      },
+    );
+    const decoded = this.jwt.decode(accessToken);
+    if (!decoded || typeof decoded.exp !== 'number') {
+      throw new ServiceUnavailableException('Could not determine session expiry');
+    }
+
+    const refreshToken = generateRawToken();
+    const refreshTokenExpiresAt = this.refreshExpiry();
+    await tx.refreshToken.create({
+      data: { userId, tokenHash: hashToken(refreshToken), expiresAt: refreshTokenExpiresAt },
+    });
+    return {
+      accessToken,
+      refreshToken,
+      accessTokenExpiresAt: decoded.exp * 1000,
+      refreshTokenExpiresAt: refreshTokenExpiresAt.getTime(),
+    };
+  }
+
+  private encryptReplayTokens(tokens: AuthTokens): string {
+    const key = createHash('sha256')
+      .update(this.config.get('JWT_REFRESH_REPLAY_SECRET', { infer: true }))
+      .digest();
+    const iv = randomBytes(12);
+    const cipher = createCipheriv('aes-256-gcm', key, iv);
+    const encrypted = Buffer.concat([
+      cipher.update(JSON.stringify(tokens), 'utf8'),
+      cipher.final(),
+    ]);
+    return [iv, cipher.getAuthTag(), encrypted]
+      .map((part) => part.toString('base64url'))
+      .join('.');
+  }
+
+  private decryptReplayTokens(value: string): AuthTokens {
+    try {
+      const [ivText, tagText, payloadText] = value.split('.');
+      if (!ivText || !tagText || !payloadText) throw new Error('Malformed replay token');
+      const key = createHash('sha256')
+        .update(this.config.get('JWT_REFRESH_REPLAY_SECRET', { infer: true }))
+        .digest();
+      const decipher = createDecipheriv('aes-256-gcm', key, Buffer.from(ivText, 'base64url'));
+      decipher.setAuthTag(Buffer.from(tagText, 'base64url'));
+      const plaintext = Buffer.concat([
+        decipher.update(Buffer.from(payloadText, 'base64url')),
+        decipher.final(),
+      ]).toString('utf8');
+      const tokens: unknown = JSON.parse(plaintext);
+      if (
+        typeof tokens !== 'object' || tokens === null ||
+        typeof (tokens as AuthTokens).accessToken !== 'string' ||
+        typeof (tokens as AuthTokens).refreshToken !== 'string' ||
+        typeof (tokens as AuthTokens).accessTokenExpiresAt !== 'number' ||
+        typeof (tokens as AuthTokens).refreshTokenExpiresAt !== 'number'
+      ) throw new Error('Malformed replay token');
+      return tokens as AuthTokens;
+    } catch {
+      throw new UnauthorizedException('Refresh token is no longer valid');
+    }
   }
 
   private refreshExpiry(): Date {

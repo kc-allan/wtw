@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { Button, Field, Textarea } from "@/app/_components/ui";
+import { TurnstileWidget } from "@/app/_components/turnstile-widget";
 import type { FormState } from "@/lib/form-state";
 import { addGuests } from "./guest-actions";
 
@@ -50,6 +51,7 @@ export function AddGuests({ eventId }: { eventId: string }) {
           }}
           className="mt-5 flex flex-col gap-4"
         >
+          <TurnstileWidget action="guest_add" />
           <Field label="Guests" htmlFor="guests">
             <Textarea
               id="guests"

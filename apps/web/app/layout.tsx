@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { TurnstileLoader } from "./_components/turnstile-loader";
 import { Cormorant_Garamond, Jost, Poppins } from "next/font/google";
 import "./globals.css";
 
@@ -35,7 +36,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       data-scroll-behavior="smooth"
       className={`${poppins.variable} ${cormorantGaramond.variable} ${jost.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        {children}
+        <TurnstileLoader />
+      </body>
     </html>
   );
 }

@@ -42,16 +42,20 @@ export class PublicController {
     private readonly games: GamesService,
   ) {}
 
+  @Get('sitemap')
+  @ApiOperation({ summary: 'Published public events for the sitemap' })
+  sitemap() {
+    return this.publicEvents.indexableSlugs();
+  }
+
   @Get(':slug')
   @ApiOperation({ summary: 'The public event page with its enabled modules' })
   @ApiQuery({ name: 't', required: false, description: 'Guest invitation token' })
-  @ApiQuery({ name: 'code', required: false, description: 'Access code for private events' })
   get(
     @Param('slug') slug: string,
     @Query('t') token?: string,
-    @Query('code') code?: string,
   ) {
-    return this.publicEvents.getBySlug(slug, token, code);
+    return this.publicEvents.getBySlug(slug, token);
   }
 
   @Post(':slug/rsvp')
@@ -74,26 +78,12 @@ export class PublicController {
     if (!body.firstName) {
       throw new BadRequestException('Tell us your name so the hosts know who replied');
     }
-
-    const respondent = await this.publicEvents.createGeneralRespondent(slug, {
-      firstName: body.firstName,
-      lastName: body.lastName,
-      email: body.email,
-      phone: body.phone,
-    });
-
-    try {
-      const response = await this.rsvp.submit(
-        respondent.eventId,
-        respondent.guestId,
-        respondent.invitationId,
-        body,
-      );
-      return { response, returnToken: respondent.rawToken };
-    } catch (error) {
-      await this.publicEvents.discardGeneralRespondent(respondent.eventId, respondent.guestId);
-      throw error;
+    if (!body.idempotencyKey) {
+      throw new BadRequestException('Please refresh the page and try again');
     }
+
+    const { eventId } = await this.publicEvents.requireAccess(slug);
+    return this.rsvp.submitPublicLink(eventId, body as PublicRsvpInput & { firstName: string }, body.idempotencyKey);
   }
 
   @Post(':slug/guest-list')
@@ -112,26 +102,22 @@ export class PublicController {
   @Get(':slug/gallery')
   @ApiOperation({ summary: 'Photos on a published event' })
   @ApiQuery({ name: 't', required: false, description: 'Guest invitation token' })
-  @ApiQuery({ name: 'code', required: false, description: 'Access code for private events' })
   async gallery(
     @Param('slug') slug: string,
     @Query('t') token?: string,
-    @Query('code') code?: string,
   ) {
-    const { eventId } = await this.publicEvents.requireAccess(slug, token, code);
+    const { eventId } = await this.publicEvents.requireAccess(slug, token);
     return this.publicEvents.gallery(eventId);
   }
 
   @Get(':slug/registry')
   @ApiOperation({ summary: 'The gift registry as guests see it' })
   @ApiQuery({ name: 't', required: false, description: 'Guest invitation token' })
-  @ApiQuery({ name: 'code', required: false, description: 'Access code for private events' })
   async registryItems(
     @Param('slug') slug: string,
     @Query('t') token?: string,
-    @Query('code') code?: string,
   ) {
-    const { eventId } = await this.publicEvents.requireAccess(slug, token, code);
+    const { eventId } = await this.publicEvents.requireAccess(slug, token);
     return this.registry.listForGuests(eventId);
   }
 
@@ -140,31 +126,27 @@ export class PublicController {
   @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @ApiOperation({ summary: 'Reserve a gift, or record a cash contribution' })
   @ApiQuery({ name: 't', required: false, description: 'Guest invitation token' })
-  @ApiQuery({ name: 'code', required: false, description: 'Access code for private events' })
   @ApiZodBody(claimRegistryItemSchema, 'ClaimRegistryItem')
   async claimRegistryItem(
     @Param('slug') slug: string,
     @Param('itemId') itemId: string,
     @Body(zodBody(claimRegistryItemSchema)) body: ClaimRegistryItemInput,
     @Query('t') token?: string,
-    @Query('code') code?: string,
   ) {
     // A guest without a token can still give, so long as they can reach the
     // page at all; the claim simply carries the name they typed.
-    const { eventId, guest } = await this.publicEvents.requireAccess(slug, token, code);
+    const { eventId, guest } = await this.publicEvents.requireAccess(slug, token);
     return this.registry.claim(eventId, itemId, guest?.id ?? null, body);
   }
 
   @Get(':slug/games')
   @ApiOperation({ summary: 'Games guests can play, without the answer keys' })
   @ApiQuery({ name: 't', required: false, description: 'Guest invitation token' })
-  @ApiQuery({ name: 'code', required: false, description: 'Access code for private events' })
   async gameList(
     @Param('slug') slug: string,
     @Query('t') token?: string,
-    @Query('code') code?: string,
   ) {
-    const { eventId } = await this.publicEvents.requireAccess(slug, token, code);
+    const { eventId } = await this.publicEvents.requireAccess(slug, token);
     return this.games.listForGuests(eventId);
   }
 
@@ -173,16 +155,14 @@ export class PublicController {
   @Throttle({ default: { limit: 20, ttl: 60_000 } })
   @ApiOperation({ summary: 'Submit an answer to one of the games' })
   @ApiQuery({ name: 't', required: false, description: 'Guest invitation token' })
-  @ApiQuery({ name: 'code', required: false, description: 'Access code for private events' })
   @ApiZodBody(submitGameSchema, 'SubmitGame')
   async submitGame(
     @Param('slug') slug: string,
     @Param('gameInstanceId') gameInstanceId: string,
     @Body(zodBody(submitGameSchema)) body: SubmitGameInput,
     @Query('t') token?: string,
-    @Query('code') code?: string,
   ) {
-    const { eventId, guest } = await this.publicEvents.requireAccess(slug, token, code);
+    const { eventId, guest } = await this.publicEvents.requireAccess(slug, token);
     return this.games.submit(eventId, gameInstanceId, guest?.id ?? null, body);
   }
 }

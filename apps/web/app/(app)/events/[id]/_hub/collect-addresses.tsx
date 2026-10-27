@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { setGuestListForm } from "@/lib/event-actions";
+import { TurnstileWidget } from "@/app/_components/turnstile-widget";
 
 const ACTION =
   "block w-full rounded-full border border-forest px-5 py-3 text-center text-base text-forest transition-colors hover:bg-forest/5 disabled:opacity-60";
@@ -35,6 +36,8 @@ export function CollectAddresses({
 
   if (!isOpen) {
     return (
+      <div>
+      <TurnstileWidget action="event_update" />
       <button
         type="button"
         disabled={pending}
@@ -48,6 +51,7 @@ export function CollectAddresses({
       >
         {pending ? "One moment…" : "Open the form"}
       </button>
+      </div>
     );
   }
 

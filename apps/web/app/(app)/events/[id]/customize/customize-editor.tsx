@@ -6,6 +6,7 @@ import { useFormStatus } from "react-dom";
 import { EventModuleKey, EventTypeKey } from "@wtw/shared";
 import { InvitationCard, nameLines } from "@/app/_components/invitation-card";
 import { Button, Field, Input, Textarea } from "@/app/_components/ui";
+import { TurnstileWidget } from "@/app/_components/turnstile-widget";
 import { saveEventDetails, saveInvitationAccent, toggleModule } from "@/lib/event-actions";
 import { ACCENT_COLORS, invitationAccent, invitationDesign } from "@/lib/invitation-designs";
 import { eventSurfaceLabel } from "@/lib/event-public-sections";
@@ -125,6 +126,8 @@ export function CustomizeEditor({ event, themes, accentError = false }: { event:
   return (
     <>
       <div className="mt-8 flex flex-wrap items-start justify-between gap-4">
+        <TurnstileWidget action="event_update" />
+        <TurnstileWidget action="event_module" />
         <div>
           <h1 className="font-serif text-section font-semibold text-black">Make it yours</h1>
           <p className="mt-1 text-base tracking-[0.02em] text-ink/70">

@@ -10,6 +10,7 @@ export const joinGuestListSchema = z.object({
 });
 
 export const publicRsvpSchema = submitRsvpSchema.extend({
+  idempotencyKey: z.string().regex(/^[A-Za-z0-9_-]{43}$/).optional(),
   firstName: z.string().min(1).max(80).trim().optional(),
   lastName: z.string().max(80).trim().optional(),
   email: z.string().email().toLowerCase().trim().optional(),

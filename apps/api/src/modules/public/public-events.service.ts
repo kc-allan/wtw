@@ -4,15 +4,16 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { EventStatus, EventVisibility, InvitationChannel, InvitationStatus } from '@wtw/shared';
-import { generateRawToken, hashToken } from '../../core/crypto/tokens';
+import { EventStatus, EventVisibility, InvitationStatus } from '@wtw/shared';
+import { hashToken } from '../../core/crypto/tokens';
 import {
   toDbEventStatus,
-  toDbInvitationChannel,
   toDbInvitationStatus,
   toDbVisibility,
 } from '../../core/prisma/enums';
 import { PrismaService } from '../../core/prisma/prisma.service';
+import { MEDIA_STORAGE, type MediaStorage } from '../media/media.storage';
+import { Inject } from '@nestjs/common';
 import { EventModulesService } from '../events/event-modules.service';
 
 export interface ResolvedGuest {
@@ -63,21 +64,29 @@ export class PublicEventsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly modules: EventModulesService,
+    @Inject(MEDIA_STORAGE) private readonly storage: MediaStorage,
   ) {}
+
+  async indexableSlugs() {
+    return this.prisma.event.findMany({
+      where: { status: 'published', visibility: 'public' },
+      select: { slug: true, updatedAt: true },
+      orderBy: { updatedAt: 'desc' },
+    });
+  }
 
   /**
    * The access rules every guest route shares: the event must be published,
-   * and a private one needs either a valid invitation token or the host's
-   * access code. Returns the guest the token belongs to, when there is one.
+   * and a private one needs a valid invitation token. Returns the guest the
+   * token belongs to, when there is one.
    */
   async requireAccess(
     slug: string,
     rawToken?: string,
-    accessCode?: string,
   ): Promise<{ eventId: string; guest: ResolvedGuest | null }> {
     const event = await this.prisma.event.findUnique({
       where: { slug },
-      select: { id: true, status: true, visibility: true, accessCode: true },
+      select: { id: true, status: true, visibility: true },
     });
 
     if (!event || event.status !== toDbEventStatus(EventStatus.PUBLISHED)) {
@@ -88,8 +97,7 @@ export class PublicEventsService {
 
     if (
       event.visibility === toDbVisibility(EventVisibility.PRIVATE) &&
-      !guest &&
-      (!accessCode || accessCode !== event.accessCode)
+      !guest
     ) {
       throw new ForbiddenException('This event is private');
     }
@@ -101,8 +109,8 @@ export class PublicEventsService {
    * The guest-facing view of an event: its enabled public modules plus, when a
    * valid invitation token is supplied, the guest that token belongs to.
    */
-  async getBySlug(slug: string, rawToken?: string, accessCode?: string) {
-    const { eventId, guest } = await this.requireAccess(slug, rawToken, accessCode);
+  async getBySlug(slug: string, rawToken?: string) {
+    const { eventId, guest } = await this.requireAccess(slug, rawToken);
 
     const event = await this.prisma.event.findUniqueOrThrow({
       where: { id: eventId },
@@ -169,50 +177,6 @@ export class PublicEventsService {
     return { added: true };
   }
 
-  async discardGeneralRespondent(eventId: string, guestId: string): Promise<void> {
-    await this.prisma.guest.deleteMany({ where: { id: guestId, eventId, groupLabel: 'Shared link' } });
-  }
-
-  async createGeneralRespondent(
-    slug: string,
-    input: { firstName: string; lastName?: string; email?: string; phone?: string },
-  ): Promise<{ eventId: string; guestId: string; invitationId: string; rawToken: string }> {
-    const { eventId } = await this.requireAccess(slug);
-    const rawToken = generateRawToken();
-    const guest = await this.prisma.guest.create({
-      data: {
-        eventId,
-        firstName: input.firstName,
-        lastName: input.lastName,
-        email: input.email,
-        phone: input.phone,
-        groupLabel: 'Shared link',
-        maxPartySize: 20,
-        invitation: {
-          create: {
-            eventId,
-            tokenHash: hashToken(rawToken),
-            channel: toDbInvitationChannel(InvitationChannel.LINK),
-            status: toDbInvitationStatus(InvitationStatus.OPENED),
-            openedAt: new Date(),
-          },
-        },
-      },
-      select: { id: true, invitation: { select: { id: true } } },
-    });
-
-    if (!guest.invitation) {
-      throw new NotFoundException('Invitation not created');
-    }
-
-    return {
-      eventId,
-      guestId: guest.id,
-      invitationId: guest.invitation.id,
-      rawToken,
-    };
-  }
-
   /** Guest context for host preview without opening or issuing an invitation. */
   private async guestForHostPreview(eventId: string, guestId: string): Promise<ResolvedGuest | null> {
     const guest = await this.prisma.guest.findFirst({
@@ -252,12 +216,21 @@ export class PublicEventsService {
 
   /** The photos on a published event, for the gallery section. */
   async gallery(eventId: string) {
-    return this.prisma.mediaAsset.findMany({
+    const galleryModule = await this.prisma.eventModule.findUnique({
+      where: { eventId_key: { eventId, key: 'gallery' } },
+      select: { enabled: true },
+    });
+    if (!galleryModule?.enabled) throw new NotFoundException('Gallery not found');
+    const assets = await this.prisma.mediaAsset.findMany({
       where: { eventId, kind: 'image', isHidden: false },
-      select: { id: true, url: true, caption: true, altText: true, position: true, createdAt: true },
+      select: { id: true, storageKey: true, caption: true, altText: true, position: true, createdAt: true },
       orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
       take: 200,
     });
+    return Promise.all(assets.map(async ({ storageKey, ...asset }) => ({
+      ...asset,
+      url: await this.storage.url(storageKey),
+    })));
   }
 
   /**

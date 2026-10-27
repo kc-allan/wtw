@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Button } from "@/app/_components/ui";
+import { TurnstileWidget } from "@/app/_components/turnstile-widget";
 import { publishEvent } from "@/lib/event-actions";
 import { SITE_ORIGIN } from "@/lib/site";
 
@@ -19,6 +20,7 @@ export function PublishPanel({
 
   return (
     <div className="mt-8 border-t border-rule/50 pt-6">
+      <TurnstileWidget action="event_publish" />
       <p className="text-base text-ink/70">Guests will open the saved page here</p>
       <p className="mt-1 text-base break-all text-forest">
         {SITE_ORIGIN}/e/{slug}

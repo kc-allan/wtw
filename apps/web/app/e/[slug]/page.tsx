@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { EventModuleKey } from "@wtw/shared";
 import { api, ApiError } from "@/lib/api";
+import { SITE_ORIGIN } from "@/lib/site";
 import type { GalleryPhoto, PublicEvent, PublicGame, RegistryForGuests } from "@/lib/types";
 import { EventPageView } from "./event-page-view";
 
-async function load(slug: string, token?: string, code?: string) {
+async function load(slug: string, token?: string) {
   const query = new URLSearchParams();
   if (token) query.set("t", token);
-  if (code) query.set("code", code);
 
   return api<PublicEvent>(`/e/${slug}${query.toString() ? `?${query}` : ""}`, {
     auth: false,
@@ -25,12 +25,13 @@ export async function generateMetadata({
   const data = await load(slug).catch(() => null);
 
   if (!data) {
-    return { title: "Event — Worth the Wait" };
+    return { title: "Event | Worth the Wait", robots: { index: false, follow: false } };
   }
 
   return {
     title: data.event.title,
     description: data.event.tagline ?? data.event.description ?? undefined,
+    alternates: { canonical: `${SITE_ORIGIN}/e/${slug}` },
     // A private event should not be indexable even if the link leaks.
     robots: data.event.visibility === "public" ? undefined : { index: false, follow: false },
   };
@@ -41,11 +42,10 @@ export default async function PublicEventPage({ params, searchParams }: PageProp
   const query = await searchParams;
 
   const token = typeof query.t === "string" ? query.t : undefined;
-  const code = typeof query.code === "string" ? query.code : undefined;
 
   let data: PublicEvent;
   try {
-    data = await load(slug, token, code);
+    data = await load(slug, token);
   } catch (error) {
     if (error instanceof ApiError) {
       if (error.status === 403) {
@@ -64,7 +64,6 @@ export default async function PublicEventPage({ params, searchParams }: PageProp
 
   const access = new URLSearchParams();
   if (token) access.set("t", token);
-  if (code) access.set("code", code);
   const suffix = access.toString() ? `?${access}` : "";
 
   const [registry, photos, games] = await Promise.all([
@@ -91,7 +90,6 @@ export default async function PublicEventPage({ params, searchParams }: PageProp
     <EventPageView
       slug={slug}
       token={token}
-      accessCode={code}
       event={event}
       ceremonies={ceremonies}
       modules={modules}

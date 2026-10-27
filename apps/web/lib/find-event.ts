@@ -7,7 +7,6 @@
 export interface EventLookup {
   slug: string;
   token?: string;
-  code?: string;
 }
 
 const SLUG = /^[a-z0-9][a-z0-9-]{1,59}$/;
@@ -36,15 +35,13 @@ function fromEventLink(value: string): EventLookup | null {
   return {
     slug,
     token: params.get("t") ?? undefined,
-    code: params.get("code") ?? undefined,
   };
 }
 
 /** The address on this site that a lookup resolves to. */
-export function eventLookupHref({ slug, token, code }: EventLookup): string {
+export function eventLookupHref({ slug, token }: EventLookup): string {
   const params = new URLSearchParams();
   if (token) params.set("t", token);
-  if (code) params.set("code", code);
   const query = params.toString();
   return `/e/${slug}${query ? `?${query}` : ""}`;
 }

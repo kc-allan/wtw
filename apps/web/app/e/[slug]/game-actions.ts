@@ -13,10 +13,9 @@ function textValue(formData: FormData, name: string): string | undefined {
   return typeof value === "string" && value.trim() ? value.trim() : undefined;
 }
 
-function accessQuery(token: string, accessCode: string): string {
+function accessQuery(token: string): string {
   const query = new URLSearchParams();
   if (token) query.set("t", token);
-  if (accessCode) query.set("code", accessCode);
   return query.toString() ? `?${query}` : "";
 }
 
@@ -62,7 +61,6 @@ function payloadFor(kind: string, formData: FormData): unknown {
 export async function submitGame(
   slug: string,
   token: string,
-  accessCode: string,
   gameId: string,
   kind: string,
   _state: GameState,
@@ -71,9 +69,10 @@ export async function submitGame(
   const guestName = textValue(formData, "guestName");
 
   try {
-    await api(`/e/${slug}/games/${gameId}${accessQuery(token, accessCode)}`, {
+    await api(`/e/${slug}/games/${gameId}${accessQuery(token)}`, {
       method: "POST",
       auth: false,
+      turnstileToken: String(formData.get("cf-turnstile-response") ?? ""),
       body: {
         ...(guestName ? { guestName } : {}),
         payload: payloadFor(kind, formData),

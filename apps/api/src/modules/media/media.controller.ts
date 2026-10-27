@@ -43,7 +43,7 @@ export class MediaController {
   @ApiBody({
     schema: { type: 'object', properties: { file: { type: 'string', format: 'binary' } } },
   })
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 8 * 1024 * 1024, files: 1 } }))
   upload(
     @CurrentUser() user: AuthenticatedUser,
     @Param('eventId') eventId: string,

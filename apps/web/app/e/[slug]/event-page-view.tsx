@@ -25,7 +25,6 @@ import { BirthdayEditionHero, birthdayEditionStyles, hasBirthdayEdition } from "
 export function EventPageView({
   slug,
   token,
-  accessCode,
   event,
   ceremonies,
   modules,
@@ -37,7 +36,6 @@ export function EventPageView({
 }: {
   slug: string;
   token?: string;
-  accessCode?: string;
   event: PublicEvent["event"];
   ceremonies: PublicEvent["ceremonies"];
   modules: PublicEvent["modules"];
@@ -200,7 +198,6 @@ export function EventPageView({
         <GamesSection
           slug={slug}
           token={token}
-          accessCode={accessCode}
           guest={guest}
           games={games}
           palette={palette}

@@ -1,5 +1,6 @@
 import { API_URL } from "./env";
 import { readAccessToken } from "./session";
+import { clearTurnstileToken, readTurnstileToken, turnstileActionFor } from "./turnstile";
 
 export class ApiError extends Error {
   constructor(
@@ -20,6 +21,7 @@ export interface ApiRequest extends Omit<RequestInit, "body"> {
   /** Passed through to Next's fetch cache; defaults to no caching. */
   revalidate?: number | false;
   tags?: string[];
+  turnstileToken?: string;
 }
 
 /**
@@ -28,20 +30,31 @@ export interface ApiRequest extends Omit<RequestInit, "body"> {
  * re-decided at each call site.
  */
 export async function api<T>(path: string, options: ApiRequest = {}): Promise<T> {
-  const { body, auth = true, revalidate = 0, tags, headers, ...init } = options;
+  const { body, auth = true, revalidate = 0, tags, headers, turnstileToken, ...init } = options;
 
   const token = auth ? await readAccessToken() : undefined;
+  const method = (init.method ?? "GET").toUpperCase();
+  const turnstileAction = turnstileActionFor(method, path);
+  const verifiedToken = turnstileAction
+    ? (turnstileToken || await readTurnstileToken(turnstileAction))
+    : undefined;
 
-  const response = await fetch(`${API_URL}${path}`, {
-    ...init,
-    headers: {
-      ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...headers,
-    },
-    ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
-    next: { revalidate, ...(tags ? { tags } : {}) },
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_URL}${path}`, {
+      ...init,
+      headers: {
+        ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(verifiedToken ? { "X-Turnstile-Token": verifiedToken } : {}),
+        ...headers,
+      },
+      ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
+      next: { revalidate, ...(tags ? { tags } : {}) },
+    });
+  } finally {
+    if (turnstileAction) await clearTurnstileToken(turnstileAction).catch(() => undefined);
+  }
 
   if (response.status === 204) {
     return undefined as T;

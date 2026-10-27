@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { EventModuleKey, EventTypeKey, GameKey } from "@wtw/shared";
 import { BackToEvent } from "../_hub/back-to-event";
 import { Button, Field, Input, Select, Textarea } from "@/app/_components/ui";
+import { TurnstileWidget } from "@/app/_components/turnstile-widget";
 import { api } from "@/lib/api";
 import { formatMoney } from "@/lib/money";
 import { toDateTimeLocalInput } from "@/lib/zoned-datetime";
@@ -198,6 +199,7 @@ function StorySection({ event }: { event: EventDetail }) {
       title="Our Story"
       lead="Add the story entries guests should see on the wedding website. Leave every row blank to hide the section."
     >
+      <TurnstileWidget action="event_module" />
       <form action={saveStory.bind(null, event.id)} className="flex flex-col gap-5">
         {rows.map((row, index) => (
           <div key={index} className="grid gap-4 rounded-xl bg-ivory p-4 md:grid-cols-[1fr_180px]">
@@ -228,6 +230,7 @@ function ScheduleSection({ event }: { event: EventDetail }) {
 
   return (
     <Panel id="schedule" title="Schedule" lead="Build the shared programme guests can read before they RSVP.">
+      <TurnstileWidget action="event_module" />
       <form action={saveTimeline.bind(null, event.id)} className="flex flex-col gap-5">
         <input type="hidden" name="timezone" value={event.timezone} />
         {rows.map((row, index) => (
@@ -266,6 +269,7 @@ function PracticalSection({ event }: { event: EventDetail }) {
 
   return (
     <Panel id="practical" title="Practical information" lead="Answer guest questions, explain the dress code and add stay options when they help.">
+      <TurnstileWidget action="event_module" />
       <div className="grid gap-6">
         {faq ? (
           <form action={savePracticalInfo.bind(null, event.id)} className="rounded-xl bg-ivory p-4">
@@ -342,6 +346,7 @@ function RsvpSection({ event }: { event: EventDetail }) {
 
   return (
     <Panel id="rsvp-settings" title="RSVP settings" lead="Choose what guests can answer and which extra details are relevant.">
+      <TurnstileWidget action="event_module" />
       <form action={saveRsvpSettings.bind(null, event.id)} className="grid gap-4 rounded-xl bg-ivory p-4 md:grid-cols-2">
         <input type="hidden" name="timezone" value={event.timezone} />
         <Field label="Deadline" htmlFor="deadline">
@@ -397,6 +402,8 @@ function RegistrySection({ event, items }: { event: EventDetail; items: Registry
 
   return (
     <Panel id="registry" title="Registry" lead="Add gift items, external registries or cash instructions. Guests claim gifts from the public page.">
+      <TurnstileWidget action="event_module" />
+      <TurnstileWidget action="registry_update" />
       <div className="grid gap-6">
         <form action={saveRegistrySettings.bind(null, event.id)} className="rounded-xl bg-ivory p-4">
           <h3 className="text-lg font-semibold text-black">Gift instructions</h3>
@@ -496,6 +503,9 @@ function RegistrySection({ event, items }: { event: EventDetail; items: Registry
 function GallerySection({ event, media }: { event: EventDetail; media: MediaAsset[] }) {
   return (
     <Panel id="gallery" title="Gallery" lead="Upload photos, add helpful text and choose the order guests see them in.">
+      <TurnstileWidget action="event_module" />
+      <TurnstileWidget action="media_upload" />
+      <TurnstileWidget action="media_update" />
       <form action={uploadGalleryImage.bind(null, event.id)} className="rounded-xl bg-ivory p-4">
         <Field label="Photo" htmlFor="galleryFile" hint="JPEG, PNG, WebP, AVIF or GIF.">
           <Input id="galleryFile" name="file" type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/gif" />
@@ -571,6 +581,8 @@ function GamesSection({
       title="Games"
       lead="Add light games guests can play from the invitation. Start with a template, then adjust the wording if you want."
     >
+      <TurnstileWidget action="game_add" />
+      <TurnstileWidget action="game_update" />
       <div className="grid gap-6">
         <div className="rounded-xl bg-ivory p-4">
           <h3 className="text-lg font-semibold text-black">Add a game</h3>

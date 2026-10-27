@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   EventModuleKey,
   RsvpStatus,
@@ -6,7 +7,16 @@ import {
   type ModuleConfig,
 } from '@wtw/shared';
 import { Prisma } from '@prisma/client';
-import { toDbModuleKey, toDbRsvpStatus } from '../../core/prisma/enums';
+import { createHmac } from 'node:crypto';
+import type { Env } from '../../core/config/env';
+import { hashToken } from '../../core/crypto/tokens';
+import {
+  toDbInvitationChannel,
+  toDbInvitationStatus,
+  toDbModuleKey,
+  toDbRsvpStatus,
+} from '../../core/prisma/enums';
+import { InvitationChannel, InvitationStatus } from '@wtw/shared';
 import { PrismaService } from '../../core/prisma/prisma.service';
 import { paginate, skipTake, type Paginated } from '../../common/pagination';
 import { EventsService } from '../events/events.service';
@@ -30,6 +40,7 @@ export class RsvpService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly events: EventsService,
+    private readonly config: ConfigService<Env, true>,
   ) {}
 
   /**
@@ -42,7 +53,91 @@ export class RsvpService {
     invitationId: string | null,
     input: SubmitRsvpInput,
   ) {
-    const config = await this.rsvpConfig(eventId);
+    return this.prisma.$transaction((tx) =>
+      this.submitInTransaction(tx, eventId, guestId, invitationId, input),
+    );
+  }
+
+  async submitPublicLink(
+    eventId: string,
+    input: SubmitRsvpInput & { firstName: string; lastName?: string; email?: string; phone?: string },
+    idempotencyKey: string,
+  ) {
+    const secret = this.config.get('RSVP_IDEMPOTENCY_SECRET', { infer: true });
+    const keyHash = createHmac('sha256', secret).update(`key:${idempotencyKey}`).digest('hex');
+    const returnToken = createHmac('sha256', secret)
+      .update(`return:${idempotencyKey}`)
+      .digest('base64url');
+
+    const existing = () => this.prisma.publicRsvpSubmission.findUnique({
+      where: { eventId_keyHash: { eventId, keyHash } },
+      include: { guest: { include: { rsvp: true } } },
+    });
+
+    try {
+      const result = await this.prisma.$transaction(async (tx) => {
+        const prior = await tx.publicRsvpSubmission.findUnique({
+          where: { eventId_keyHash: { eventId, keyHash } },
+          include: { guest: { include: { rsvp: true } } },
+        });
+        if (prior) return { response: prior.guest.rsvp, returnToken };
+
+        const guest = await tx.guest.create({
+          data: {
+            eventId,
+            firstName: input.firstName,
+            lastName: input.lastName,
+            email: input.email,
+            phone: input.phone,
+            groupLabel: 'Shared link',
+            maxPartySize: 20,
+          },
+          select: { id: true },
+        });
+        const invitation = await tx.invitation.create({
+          data: {
+            eventId,
+            guestId: guest.id,
+            tokenHash: hashToken(returnToken),
+            channel: toDbInvitationChannel(InvitationChannel.LINK),
+            status: toDbInvitationStatus(InvitationStatus.OPENED),
+            openedAt: new Date(),
+          },
+          select: { id: true },
+        });
+        const response = await this.submitInTransaction(
+          tx,
+          eventId,
+          guest.id,
+          invitation.id,
+          input,
+        );
+        await tx.publicRsvpSubmission.create({
+          data: { eventId, guestId: guest.id, keyHash },
+        });
+        return { response, returnToken };
+      });
+      return result;
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        const prior = await existing();
+        if (prior) return { response: prior.guest.rsvp, returnToken };
+      }
+      throw error;
+    }
+  }
+
+  private async submitInTransaction(
+    tx: Prisma.TransactionClient,
+    eventId: string,
+    guestId: string,
+    invitationId: string | null,
+    input: SubmitRsvpInput,
+  ) {
+    const config = await this.rsvpConfig(tx, eventId);
 
     if (config.deadline && config.deadline.getTime() < Date.now()) {
       throw new BadRequestException('The RSVP deadline has passed');
@@ -51,7 +146,7 @@ export class RsvpService {
       throw new BadRequestException('This event asks for a yes or no');
     }
 
-    const guest = await this.prisma.guest.findFirstOrThrow({
+    const guest = await tx.guest.findFirstOrThrow({
       where: { id: guestId, eventId },
       select: { maxPartySize: true },
     });
@@ -103,14 +198,14 @@ export class RsvpService {
       respondedAt: new Date(),
     };
 
-    const response = await this.prisma.rsvpResponse.upsert({
+    const response = await tx.rsvpResponse.upsert({
       where: { guestId },
       create: { eventId, guestId, invitationId, ...data },
       update: data,
     });
 
     if (invitationId) {
-      await this.prisma.invitation.update({
+      await tx.invitation.update({
         where: { id: invitationId },
         data: { status: 'responded', respondedAt: new Date() },
       });
@@ -201,8 +296,11 @@ export class RsvpService {
   }
 
   /** The event's RSVP settings, with the module's schema defaults applied. */
-  private async rsvpConfig(eventId: string): Promise<ModuleConfig<EventModuleKey.RSVP>> {
-    const row = await this.prisma.eventModule.findUnique({
+  private async rsvpConfig(
+    tx: Prisma.TransactionClient,
+    eventId: string,
+  ): Promise<ModuleConfig<EventModuleKey.RSVP>> {
+    const row = await tx.eventModule.findUnique({
       where: { eventId_key: { eventId, key: toDbModuleKey(EventModuleKey.RSVP) } },
       select: { enabled: true, config: true },
     });

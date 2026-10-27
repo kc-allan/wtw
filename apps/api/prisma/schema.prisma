@@ -73,7 +73,6 @@ enum EventStatus {
 
 enum EventVisibility {
   public
-  unlisted
   private
 }
 
@@ -187,17 +186,20 @@ model User {
 }
 
 model RefreshToken {
-  id        String    @id @default(cuid())
-  userId    String
-  tokenHash String    @unique
-  expiresAt DateTime
-  revokedAt DateTime?
-  userAgent String?
-  createdAt DateTime  @default(now())
+  id                 String    @id @default(cuid())
+  userId             String
+  tokenHash          String    @unique
+  expiresAt          DateTime
+  revokedAt          DateTime?
+  replayTokensCiphertext String?
+  replayExpiresAt    DateTime?
+  userAgent          String?
+  createdAt          DateTime  @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([replayExpiresAt])
   @@map("refresh_tokens")
 }
 
@@ -273,9 +275,9 @@ model Event {
   longitude    Float?
 
   status     EventStatus     @default(draft)
-  visibility EventVisibility @default(unlisted)
-  /// Required alongside an invitation token when visibility is private.
-  accessCode String?
+  visibility EventVisibility @default(private)
+  /// Set for existing events made private by the visibility migration.
+  visibilityReviewPending Boolean @default(false)
 
   /// Lets people add themselves to the guest list from a link the host shares.
   /// Off unless the host turns it on, because the link is as public as the slug.
@@ -295,6 +297,7 @@ model Event {
   guests        Guest[]
   invitations   Invitation[]
   rsvps         RsvpResponse[]
+  publicRsvpSubmissions PublicRsvpSubmission[]
   registryItems RegistryItem[]
   games         GameInstance[]
   media         MediaAsset[]
@@ -373,6 +376,7 @@ model Guest {
   invitation      Invitation?
   ceremonies      GuestCeremony[]
   rsvp            RsvpResponse?
+  publicRsvpSubmission PublicRsvpSubmission?
   claims          RegistryClaim[]
   gameSubmissions GameSubmission[]
 
@@ -438,6 +442,21 @@ model RsvpResponse {
 
   @@index([eventId, status])
   @@map("rsvp_responses")
+}
+
+model PublicRsvpSubmission {
+  id        String   @id @default(cuid())
+  eventId   String
+  guestId   String   @unique
+  keyHash   String
+  createdAt DateTime @default(now())
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  guest Guest @relation(fields: [guestId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, keyHash])
+  @@index([eventId, createdAt])
+  @@map("public_rsvp_submissions")
 }
 
 // ---------------------------------------------------------------------------
@@ -522,6 +541,7 @@ model GameSubmission {
   guest        Guest?       @relation(fields: [guestId], references: [id], onDelete: SetNull)
 
   @@index([gameInstanceId])
+  @@unique([gameInstanceId, guestId])
   @@map("game_submissions")
 }
 

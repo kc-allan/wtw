@@ -1,9 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import {
   ACCESS_COOKIE,
-  ACCESS_MAX_AGE,
   REFRESH_COOKIE,
-  REFRESH_MAX_AGE,
   SESSION_COOKIE_OPTIONS,
 } from "@/lib/session-cookies";
 
@@ -25,14 +23,18 @@ function sessionIsRequired(pathname: string): boolean {
  * which is exactly why the refresh happens out here.
  */
 export async function proxy(request: NextRequest) {
-  if (request.cookies.get(ACCESS_COOKIE)) {
+  const accessToken = request.cookies.get(ACCESS_COOKIE)?.value;
+  if (accessToken && accessTokenExpiry(accessToken) > Date.now() + 60_000) {
     return NextResponse.next();
   }
 
   const required = sessionIsRequired(request.nextUrl.pathname);
   const refreshToken = request.cookies.get(REFRESH_COOKIE)?.value;
   if (!refreshToken) {
-    return required ? redirectToSignIn(request) : NextResponse.next();
+    const response = required ? redirectToSignIn(request) : NextResponse.next();
+    response.cookies.delete(ACCESS_COOKIE);
+    response.cookies.delete(REFRESH_COOKIE);
+    return response;
   }
 
   const refreshed = await fetch(`${API_URL}/auth/refresh`, {
@@ -52,7 +54,19 @@ export async function proxy(request: NextRequest) {
   const tokens = (await refreshed.json()) as {
     accessToken: string;
     refreshToken: string;
+    refreshTokenExpiresAt: number;
   };
+  const accessTokenExpiresAt = accessTokenExpiry(tokens.accessToken);
+  if (
+    accessTokenExpiresAt <= Date.now() ||
+    !Number.isFinite(tokens.refreshTokenExpiresAt) ||
+    tokens.refreshTokenExpiresAt <= Date.now()
+  ) {
+    const response = required ? redirectToSignIn(request) : NextResponse.next();
+    response.cookies.delete(ACCESS_COOKIE);
+    response.cookies.delete(REFRESH_COOKIE);
+    return response;
+  }
 
   // The render below reads the request cookies, not the response's, so the new
   // token has to be put back where it will actually be looked for.
@@ -61,14 +75,30 @@ export async function proxy(request: NextRequest) {
 
   response.cookies.set(ACCESS_COOKIE, tokens.accessToken, {
     ...SESSION_COOKIE_OPTIONS,
-    maxAge: ACCESS_MAX_AGE,
+    maxAge: Math.floor((accessTokenExpiresAt - Date.now()) / 1000),
   });
   response.cookies.set(REFRESH_COOKIE, tokens.refreshToken, {
     ...SESSION_COOKIE_OPTIONS,
-    maxAge: REFRESH_MAX_AGE,
+    maxAge: Math.floor((tokens.refreshTokenExpiresAt - Date.now()) / 1000),
   });
 
   return response;
+}
+
+function accessTokenExpiry(token: string): number {
+  try {
+    const payload = token.split(".")[1];
+    if (!payload) return 0;
+    const encoded = payload.replace(/-/g, "+").replace(/_/g, "/");
+    const parsed: unknown = JSON.parse(atob(encoded.padEnd(Math.ceil(encoded.length / 4) * 4, "=")));
+    if (
+      typeof parsed !== "object" || parsed === null ||
+      typeof (parsed as { exp?: unknown }).exp !== "number"
+    ) return 0;
+    return (parsed as { exp: number }).exp * 1000;
+  } catch {
+    return 0;
+  }
 }
 
 function redirectToSignIn(request: NextRequest) {

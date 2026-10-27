@@ -151,15 +151,33 @@ export class GamesService {
       throw new BadRequestException('Tell us who this is from');
     }
 
-    return this.prisma.gameSubmission.create({
-      data: {
-        gameInstanceId: instance.id,
-        guestId: guest?.id ?? null,
-        guestName,
-        // Validated against the schema for this game's response kind.
-        payload: parseGameSubmission(definition.key, input.payload),
-      },
-    });
+    const payload = parseGameSubmission(definition.key, input.payload);
+    if (guest) {
+      const existing = await this.prisma.gameSubmission.findFirst({
+        where: { gameInstanceId: instance.id, guestId: guest.id },
+        select: { id: true },
+      });
+      if (existing) {
+        return this.prisma.gameSubmission.update({
+          where: { id: existing.id },
+          data: { guestName, payload },
+        });
+      }
+    }
+
+    try {
+      return await this.prisma.gameSubmission.create({
+        data: { gameInstanceId: instance.id, guestId: guest?.id ?? null, guestName, payload },
+      });
+    } catch (error) {
+      if (guest && error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+        return this.prisma.gameSubmission.update({
+          where: { gameInstanceId_guestId: { gameInstanceId: instance.id, guestId: guest.id } },
+          data: { guestName, payload },
+        });
+      }
+      throw error;
+    }
   }
 
   /** Host-side export of everything guests submitted. */

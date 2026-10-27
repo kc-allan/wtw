@@ -4,6 +4,7 @@ import { useActionState, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
 import { CEREMONIES, CEREMONY_ORDER } from "@wtw/shared";
 import { Button, Field, Input, Select, Textarea } from "@/app/_components/ui";
+import { TurnstileWidget } from "@/app/_components/turnstile-widget";
 import { chooseCeremonyTheme, saveCeremonyDetails, setCeremonies } from "@/lib/ceremony-actions";
 import type { Ceremony, EventDetail, Theme } from "@/lib/types";
 import type { FormState } from "@/lib/form-state";
@@ -81,6 +82,7 @@ function WhichCeremonies({ eventId, chosen }: { eventId: string; chosen: Ceremon
 
   return (
     <form action={action} className="rounded-2xl bg-ivory p-6">
+      <TurnstileWidget action="ceremonies" />
       <fieldset>
         <legend className="font-serif text-xl font-semibold text-black">
           Which ceremonies are you having?
@@ -124,6 +126,7 @@ function CeremonyDetails({ eventId, ceremony }: { eventId: string; ceremony: Cer
 
   return (
     <form action={action} className="flex flex-col gap-5">
+      <TurnstileWidget action="ceremony_update" />
       <Field label="Name" htmlFor={`name-${ceremony.id}`}>
         <Input
           id={`name-${ceremony.id}`}
@@ -209,6 +212,7 @@ function CeremonyTheme({
 
   return (
     <div className="mt-6 border-t border-rule/50 pt-6">
+      <TurnstileWidget action="ceremony_update" />
       <Field label="Design" htmlFor={`theme-${ceremony.id}`} className="max-w-[420px]">
         <Select
           id={`theme-${ceremony.id}`}

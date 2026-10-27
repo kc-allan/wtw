@@ -81,6 +81,7 @@ export interface EventSummary {
   longitude: number | null;
   status: EventStatus;
   visibility: EventVisibility;
+  visibilityReviewPending: boolean;
   /** Whether people can add themselves to the guest list from a shared link. */
   guestListFormEnabled: boolean;
   currency: string;
@@ -152,7 +153,7 @@ export interface CurrentUser {
 
 /** The guest-facing view returned by `GET /e/:slug`. */
 export interface PublicEvent {
-  event: Omit<EventSummary, "coverImageId" | "publishedAt" | "createdAt" | "updatedAt"> & {
+  event: Omit<EventSummary, "coverImageId" | "publishedAt" | "createdAt" | "updatedAt" | "visibilityReviewPending"> & {
     theme: Pick<Theme, "key" | "name" | "group" | "palette"> | null;
   };
   /** Narrowed to the ceremonies this guest is asked to, when we know them. */

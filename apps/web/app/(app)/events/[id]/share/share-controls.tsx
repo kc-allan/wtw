@@ -3,23 +3,25 @@
 import { useActionState, useState, useTransition } from "react";
 import { EventVisibility } from "@wtw/shared";
 import { Button } from "@/app/_components/ui";
+import { TurnstileWidget } from "@/app/_components/turnstile-widget";
 import { type FormState } from "@/lib/form-state";
 import { unpublishEvent, updateEventVisibility } from "@/lib/event-actions";
 
 const INITIAL: FormState = {};
 
 const VISIBILITY_COPY: Record<EventVisibility, string> = {
-  [EventVisibility.UNLISTED]: "Anyone with the event link can open it. Search engines should not list it.",
   [EventVisibility.PRIVATE]: "Only personal invitation links can open it. The shared event link asks guests to use their invite.",
-  [EventVisibility.PUBLIC]: "Anyone with the link can open it. This is suitable for open events.",
+  [EventVisibility.PUBLIC]: "Anyone with the link can open it, and search engines may list it.",
 };
 
 export function ShareControls({
   eventId,
   visibility,
+  visibilityReviewPending,
 }: {
   eventId: string;
   visibility: EventVisibility;
+  visibilityReviewPending: boolean;
 }) {
   const [selected, setSelected] = useState(visibility);
   const [state, action, pending] = useActionState(
@@ -31,10 +33,16 @@ export function ShareControls({
 
   return (
     <div className="rounded-2xl bg-white p-6 sm:p-8">
+      {visibilityReviewPending ? (
+        <p className="mb-5 rounded-xl bg-ivory px-4 py-3 text-base text-ink/80" role="status">
+          This event is now private. Review who can open it below. You can make it public if you want anyone with the link to view and RSVP.
+        </p>
+      ) : null}
       <h2 className="font-serif text-xl text-ink/70">Who can open it</h2>
       <p className="mt-3 text-base text-ink/70">{VISIBILITY_COPY[selected]}</p>
 
       <form action={action} className="mt-5 flex flex-col gap-4">
+        <TurnstileWidget action="event_update" />
         <fieldset className="flex flex-col gap-3">
           <legend className="sr-only">Visibility</legend>
           {Object.values(EventVisibility).map((value) => (
@@ -68,6 +76,7 @@ export function ShareControls({
       </form>
 
       <div className="mt-8 border-t border-rule/50 pt-6">
+        <TurnstileWidget action="event_unpublish" />
         <h3 className="text-base font-semibold text-black">Pause sharing</h3>
         <p className="mt-2 text-base text-ink/70">
           Unpublish if you need to withdraw the invitation while you make changes. You can publish it again later.

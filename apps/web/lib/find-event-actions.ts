@@ -10,7 +10,7 @@ export async function findEvent(_state: FormState, formData: FormData): Promise<
   const lookup = parseEventLookup(typeof raw === "string" ? raw : "");
 
   if (!lookup) {
-    return { message: "Paste the link you were sent, or type the code from it." };
+    return { message: "Paste the event link you were sent." };
   }
 
   try {

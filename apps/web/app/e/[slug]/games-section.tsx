@@ -5,13 +5,13 @@ import type { CSSProperties } from "react";
 import { useFormStatus } from "react-dom";
 import type { PublicEvent, PublicGame, ThemePalette } from "@/lib/types";
 import { submitGame, type GameState } from "./game-actions";
+import { TurnstileWidget } from "@/app/_components/turnstile-widget";
 
 const INITIAL: GameState = {};
 
 export function GamesSection({
   slug,
   token,
-  accessCode,
   guest,
   games,
   palette,
@@ -19,7 +19,6 @@ export function GamesSection({
 }: {
   slug: string;
   token?: string;
-  accessCode?: string;
   guest: PublicEvent["guest"];
   games: PublicGame[];
   palette: ThemePalette;
@@ -53,7 +52,6 @@ export function GamesSection({
               key={game.id}
               slug={slug}
               token={token}
-              accessCode={accessCode}
               guest={guest}
               game={game}
               palette={palette}
@@ -69,7 +67,6 @@ export function GamesSection({
 function GameCard({
   slug,
   token,
-  accessCode,
   guest,
   game,
   palette,
@@ -77,7 +74,6 @@ function GameCard({
 }: {
   slug: string;
   token?: string;
-  accessCode?: string;
   guest: PublicEvent["guest"];
   game: PublicGame;
   palette: ThemePalette;
@@ -87,7 +83,6 @@ function GameCard({
     null,
     slug,
     token ?? "",
-    accessCode ?? "",
     game.id,
     game.responseKind,
   );
@@ -138,6 +133,8 @@ function GameCard({
         )}
 
         <GameFields game={game} controlStyle={controlStyle} palette={palette} />
+
+        {!previewMode ? <TurnstileWidget action="game_submit" /> : null}
 
         {previewMode ? (
           <p className="text-sm" style={{ color: palette.muted }}>

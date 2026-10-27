@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { EVENT_TYPES, ALL_EVENT_TYPE_KEYS } from "@wtw/shared";
 import { Button, Field, Input, Select, Textarea } from "@/app/_components/ui";
+import { TurnstileWidget } from "@/app/_components/turnstile-widget";
 import { sendEnquiry, type ContactFormState } from "./actions";
 
 const INITIAL: ContactFormState = { status: "idle" };
@@ -82,6 +83,7 @@ export function ContactForm() {
       ) : null}
 
       <SubmitButton />
+      <TurnstileWidget action="contact" />
     </form>
   );
 }

@@ -22,10 +22,6 @@ export class ContactService {
     this.logger.log({
       message: 'Contact enquiry received',
       id: enquiry.id,
-      name: input.name,
-      contact: input.contact,
-      planning: input.planning ?? null,
-      body: input.message,
       receivedAt: new Date().toISOString(),
     });
     return { received: true, id: enquiry.id };

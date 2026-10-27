@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { Field, Input, Select } from "@/app/_components/ui";
+import { TurnstileWidget } from "@/app/_components/turnstile-widget";
 import type { FormState } from "@/lib/form-state";
 
 const INITIAL: FormState = {};
@@ -45,6 +46,7 @@ export function CredentialsForm({
 
       <form action={formAction} className="mt-5 flex flex-col gap-5">
         <input type="hidden" name="next" value={next} />
+        <TurnstileWidget action={mode === "register" ? "register" : "login"} />
 
         {mode === "register" ? (
           <>

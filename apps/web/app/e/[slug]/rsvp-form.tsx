@@ -1,10 +1,11 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { RsvpStatus } from "@wtw/shared";
 import type { PublicEvent, ThemePalette } from "@/lib/types";
 import { submitRsvp, type RsvpState } from "./rsvp-actions";
+import { TurnstileWidget } from "@/app/_components/turnstile-widget";
 
 const INITIAL: RsvpState = {};
 
@@ -27,6 +28,30 @@ export function RsvpForm({
 }) {
   const action = submitRsvp.bind(null, slug, token ?? "");
   const [state, formAction] = useActionState(action, INITIAL);
+  const [idempotencyKey, setIdempotencyKey] = useState("");
+
+  useEffect(() => {
+    if (guest || token) return;
+    const storageKey = `wtw-rsvp:${slug}`;
+    const stored = sessionStorage.getItem(storageKey);
+    if (stored && /^[A-Za-z0-9_-]{43}$/.test(stored)) {
+      setIdempotencyKey(stored);
+      return;
+    }
+    const bytes = crypto.getRandomValues(new Uint8Array(32));
+    const key = btoa(String.fromCharCode(...bytes))
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/g, "");
+    sessionStorage.setItem(storageKey, key);
+    setIdempotencyKey(key);
+  }, [guest, slug, token]);
+
+  useEffect(() => {
+    if (state.status === "sent" && !token) {
+      sessionStorage.removeItem(`wtw-rsvp:${slug}`);
+    }
+  }, [slug, state.status, token]);
 
   const [status, setStatus] = useState<RsvpStatus | null>(
     (guest?.rsvp?.status as RsvpStatus) ?? null,
@@ -89,6 +114,7 @@ export function RsvpForm({
 
   return (
     <form action={formAction} onSubmit={previewMode ? (event) => event.preventDefault() : undefined} className="mt-6 flex flex-col gap-5">
+      {!guest && !token ? <input type="hidden" name="idempotencyKey" value={idempotencyKey} /> : null}
       {guest ? (
         <p className="text-center text-base opacity-80">
           Replying as {guest.firstName}
@@ -278,6 +304,8 @@ export function RsvpForm({
         </p>
       ) : null}
 
+      {!previewMode ? <TurnstileWidget action="rsvp" /> : null}
+
       {state.message ? (
         <p role="alert" className="text-base" style={{ color: palette.accent }}>
           {state.message}
@@ -288,6 +316,7 @@ export function RsvpForm({
         palette={palette}
         hasReplied={guest?.rsvp !== null && guest?.rsvp !== undefined}
         previewMode={previewMode}
+        waitingForKey={!guest && !token && !idempotencyKey}
       />
     </form>
   );
@@ -297,17 +326,19 @@ function SubmitButton({
   palette,
   hasReplied,
   previewMode,
+  waitingForKey,
 }: {
   palette: ThemePalette;
   hasReplied: boolean;
   previewMode: boolean;
+  waitingForKey: boolean;
 }) {
   const { pending } = useFormStatus();
 
   return (
     <button
       type="submit"
-      disabled={pending || previewMode}
+      disabled={pending || previewMode || waitingForKey}
       className="rounded-full px-6 py-3.5 text-base font-medium disabled:opacity-60"
       style={{ backgroundColor: palette.accent, color: palette.background }}
     >

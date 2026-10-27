@@ -22,6 +22,7 @@ export async function signIn(
     const result = await api<AuthResult>("/auth/login", {
       method: "POST",
       auth: false,
+      turnstileToken: String(formData.get("cf-turnstile-response") ?? ""),
       body: {
         identifier: formData.get("identifier"),
         password: formData.get("password"),
@@ -49,6 +50,7 @@ export async function signUp(
     const result = await api<AuthResult>("/auth/register", {
       method: "POST",
       auth: false,
+      turnstileToken: String(formData.get("cf-turnstile-response") ?? ""),
       body: {
         email: formData.get("email"),
         password: formData.get("password"),

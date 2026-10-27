@@ -29,7 +29,7 @@ export class MediaService {
   async uploadForEvent(userId: string, eventId: string, file: UploadedFile) {
     const event = await this.events.assertCanManage(userId, eventId);
 
-    if (!ALLOWED_IMAGE_TYPES.has(file.mimeType)) {
+    if (!ALLOWED_IMAGE_TYPES.has(file.mimeType) || detectImageType(file.buffer) !== file.mimeType) {
       throw new BadRequestException('Upload a JPEG, PNG, WebP, AVIF or GIF image');
     }
 
@@ -45,8 +45,8 @@ export class MediaService {
         accountId: event.accountId,
         eventId,
         kind: MediaKind.image,
-        position: (last._max.position ?? -1) + 1,
         url: stored.url,
+        position: (last._max.position ?? -1) + 1,
         storageKey: stored.storageKey,
         mimeType: file.mimeType,
         sizeBytes: stored.sizeBytes,
@@ -56,10 +56,11 @@ export class MediaService {
 
   async listForEvent(userId: string, eventId: string) {
     await this.events.assertCanManage(userId, eventId);
-    return this.prisma.mediaAsset.findMany({
+    const assets = await this.prisma.mediaAsset.findMany({
       where: { eventId },
       orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
     });
+    return Promise.all(assets.map(async (asset) => ({ ...asset, url: await this.storage.url(asset.storageKey) })));
   }
 
   async update(userId: string, eventId: string, id: string, input: UpdateMediaInput) {
@@ -99,4 +100,16 @@ export class MediaService {
     }
     return asset;
   }
+}
+
+function detectImageType(buffer: Buffer): string | null {
+  if (buffer.length >= 3 && buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) return 'image/jpeg';
+  if (buffer.length >= 8 && buffer.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))) return 'image/png';
+  if (buffer.length >= 12 && buffer.toString('ascii', 0, 4) === 'RIFF' && buffer.toString('ascii', 8, 12) === 'WEBP') return 'image/webp';
+  if (buffer.length >= 6 && /^GIF8[79]a$/.test(buffer.toString('ascii', 0, 6))) return 'image/gif';
+  if (buffer.length >= 12 && buffer.toString('ascii', 4, 8) === 'ftyp') {
+    const brand = buffer.toString('ascii', 8, 12);
+    if (['avif', 'avis'].includes(brand)) return 'image/avif';
+  }
+  return null;
 }

@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { EVENT_TYPES, EventTypeKey } from "@wtw/shared";
 import { Field, Input, Select } from "@/app/_components/ui";
+import { TurnstileWidget } from "@/app/_components/turnstile-widget";
 import { CITIES, OTHER_CITY } from "@/lib/cities";
 import { saveEventBasics } from "@/lib/create-actions";
 import type { CreateDraft } from "@/lib/create-draft";
@@ -113,6 +114,8 @@ export function EventBasicsForm({
       ) : null}
 
       <div className="mt-8 w-full max-w-[594px] rounded-2xl bg-white p-6 sm:p-8">
+        <TurnstileWidget action="event_create" />
+        <TurnstileWidget action="event_module" />
         <h2 className="text-xl font-semibold text-black">Enter your details</h2>
         <span aria-hidden className="mt-4 block h-px w-full bg-rule/60" />
 

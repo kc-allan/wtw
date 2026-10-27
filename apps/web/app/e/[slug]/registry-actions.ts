@@ -26,6 +26,7 @@ export async function claimGift(
     await api(`/e/${slug}/registry/${itemId}/claim?t=${encodeURIComponent(token)}`, {
       method: "POST",
       auth: false,
+      turnstileToken: String(formData.get("cf-turnstile-response") ?? ""),
       body: {
         guestName: guestName.trim(),
         quantity: Number.isFinite(quantity) && quantity > 0 ? quantity : 1,

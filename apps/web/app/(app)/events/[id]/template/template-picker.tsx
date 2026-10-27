@@ -4,6 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { invitationDesign } from "@/lib/invitation-designs";
 import { InvitationCard, nameLines } from "@/app/_components/invitation-card";
+import { TurnstileWidget } from "@/app/_components/turnstile-widget";
 import { hasDesignedTemplate } from "@/app/_data/templates";
 import { chooseTheme } from "@/lib/event-actions";
 import { formatEventDate } from "@/lib/event-display";
@@ -34,6 +35,7 @@ export function TemplatePicker({ event, themes }: { event: EventDetail; themes: 
 
   return (
     <div className="mt-8">
+      <TurnstileWidget action="event_update" />
       <div className="flex flex-wrap gap-3" role="group" aria-label="Filter by style">
         {groups.map((name) => {
           const isActive = name === group;

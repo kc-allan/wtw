@@ -50,7 +50,11 @@ export default async function ShareStepPage({ params }: PageProps<"/events/[id]/
             dateLabel={formatEventDate(event.startsAt, event.timezone)}
             visibility={event.visibility}
           />
-          <ShareControls eventId={event.id} visibility={event.visibility as EventVisibility} />
+          <ShareControls
+            eventId={event.id}
+            visibility={event.visibility as EventVisibility}
+            visibilityReviewPending={event.visibilityReviewPending}
+          />
           <ReminderPanel
             eventId={event.id}
             url={url}

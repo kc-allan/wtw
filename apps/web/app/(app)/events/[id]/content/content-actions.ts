@@ -7,6 +7,7 @@ import { api, ApiError } from "@/lib/api";
 import { API_URL } from "@/lib/env";
 import { optionalNumber, optionalText } from "@/lib/form-state";
 import { readAccessToken } from "@/lib/session";
+import { clearTurnstileToken, readTurnstileToken } from "@/lib/turnstile";
 import { dateTimeLocalToUtcIso } from "@/lib/zoned-datetime";
 
 function values(formData: FormData, name: string): string[] {
@@ -217,14 +218,23 @@ export async function uploadGalleryImage(eventId: string, formData: FormData): P
   }
 
   const token = await readAccessToken();
+  const turnstileToken = await readTurnstileToken("media_upload");
   const body = new FormData();
   body.set("file", file);
 
-  const response = await fetch(`${API_URL}/events/${eventId}/media`, {
-    method: "POST",
-    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-    body,
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_URL}/events/${eventId}/media`, {
+      method: "POST",
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(turnstileToken ? { "X-Turnstile-Token": turnstileToken } : {}),
+      },
+      body,
+    });
+  } finally {
+    await clearTurnstileToken("media_upload").catch(() => undefined);
+  }
 
   if (!response.ok) {
     const payload = await response.json().catch(() => null);

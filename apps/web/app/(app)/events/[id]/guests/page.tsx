@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { RsvpStatus } from "@wtw/shared";
 import { api } from "@/lib/api";
 import { BackToEvent } from "../_hub/back-to-event";
+import { TurnstileWidget } from "@/app/_components/turnstile-widget";
 import type { EventDetail, Guest, Paginated, RsvpSummary } from "@/lib/types";
 import { AddGuests } from "./add-guests";
 import { GuestFilters } from "./guest-filters";
@@ -77,6 +78,9 @@ export default async function GuestListPage({
   return (
     <main className="w-full px-6 py-8 lg:px-10">
       <BackToEvent eventId={id} />
+      <TurnstileWidget action="guest_update" />
+      <TurnstileWidget action="guest_delete" />
+      <TurnstileWidget action="invitation" />
 
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>

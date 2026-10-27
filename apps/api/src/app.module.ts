@@ -23,6 +23,8 @@ import { RegistryModule } from './modules/registry/registry.module';
 import { RsvpModule } from './modules/rsvp/rsvp.module';
 import { ThemesModule } from './modules/themes/themes.module';
 import { VendorsModule } from './modules/vendors/vendors.module';
+import { TurnstileService } from './core/security/turnstile.service';
+import { TurnstileGuard } from './core/security/turnstile.guard';
 
 @Module({
   imports: [
@@ -65,7 +67,9 @@ import { VendorsModule } from './modules/vendors/vendors.module';
     HealthModule,
   ],
   providers: [
+    TurnstileService,
     { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_GUARD, useClass: TurnstileGuard },
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_FILTER, useClass: AllExceptionsFilter },
   ],

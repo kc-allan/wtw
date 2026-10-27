@@ -33,8 +33,12 @@ export async function submitRsvp(
     Number.isFinite(children);
 
   const firstName = formData.get("firstName");
+  const idempotencyKey = formData.get("idempotencyKey");
   if (!token && (typeof firstName !== "string" || firstName.trim() === "")) {
     return { fieldErrors: { firstName: "Tell us your name so the hosts know who's attending" } };
+  }
+  if (!token && (typeof idempotencyKey !== "string" || !/^[A-Za-z0-9_-]{43}$/.test(idempotencyKey))) {
+    return { message: "Please refresh the page and try again" };
   }
 
   try {
@@ -43,8 +47,10 @@ export async function submitRsvp(
       {
         method: "POST",
         auth: false,
+        turnstileToken: String(formData.get("cf-turnstile-response") ?? ""),
         body: {
           status,
+          ...(!token && typeof idempotencyKey === "string" ? { idempotencyKey } : {}),
           ...(typeof firstName === "string" && firstName.trim()
             ? { firstName: firstName.trim() }
             : {}),

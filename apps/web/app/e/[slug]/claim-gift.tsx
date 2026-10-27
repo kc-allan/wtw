@@ -5,6 +5,7 @@ import { useFormStatus } from "react-dom";
 import type { RegistryItem, ThemePalette } from "@/lib/types";
 import type { FormState } from "@/lib/form-state";
 import { claimGift } from "./registry-actions";
+import { TurnstileWidget } from "@/app/_components/turnstile-widget";
 
 const INITIAL: FormState = {};
 
@@ -109,6 +110,7 @@ export function ClaimGift({
           Cancel
         </button>
       </div>
+      <TurnstileWidget action="registry_claim" />
     </form>
   );
 }

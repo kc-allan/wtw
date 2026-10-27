@@ -36,6 +36,7 @@ const eventSelect = {
   longitude: true,
   status: true,
   visibility: true,
+  visibilityReviewPending: true,
   guestListFormEnabled: true,
   currency: true,
   coverImageId: true,
@@ -183,7 +184,7 @@ export class EventsService {
         ...(input.latitude !== undefined ? { latitude: input.latitude } : {}),
         ...(input.longitude !== undefined ? { longitude: input.longitude } : {}),
         ...(input.currency !== undefined ? { currency: input.currency } : {}),
-        ...(input.accessCode !== undefined ? { accessCode: input.accessCode } : {}),
+        ...(input.visibility !== undefined ? { visibilityReviewPending: false } : {}),
         ...(input.visibility !== undefined
           ? { visibility: toDbVisibility(input.visibility) }
           : {}),

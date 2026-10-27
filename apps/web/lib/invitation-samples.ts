@@ -130,7 +130,7 @@ export function invitationSample(design: InvitationDesign, accent: string): { ev
     tagline: null, typeKey: design.category, startsAt, endsAt: null, timezone: "Africa/Nairobi",
     expectedGuests: null, city: coastal ? "Diani" : "Nairobi", venueName: sample.venue,
     venueAddress: coastal ? "Diani Beach, Kenya" : "Karen, Nairobi, Kenya",
-    latitude: null, longitude: null, status: EventStatus.DRAFT, visibility: EventVisibility.UNLISTED,
+    latitude: null, longitude: null, status: EventStatus.DRAFT, visibility: EventVisibility.PRIVATE,
     guestListFormEnabled: false, currency: "KES",
     theme: { key: design.key, name: design.name, group: design.category, palette: design.palette, isPremium: false },
   };

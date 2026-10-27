@@ -16,6 +16,7 @@ export async function sendEnquiry(
     await api("/contact", {
       method: "POST",
       auth: false,
+      turnstileToken: String(formData.get("cf-turnstile-response") ?? ""),
       body: {
         name: formData.get("name"),
         contact: formData.get("contact"),

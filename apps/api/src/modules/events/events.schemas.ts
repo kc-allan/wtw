@@ -32,7 +32,7 @@ export const createEventSchema = z.object({
   /** Optional preferred address; a unique one is derived from the title otherwise. */
   slug: z.string().min(3).max(60).regex(/^[a-z0-9-]+$/).optional(),
   themeKey: z.string().max(120).optional(),
-  visibility: z.nativeEnum(EventVisibility).default(EventVisibility.UNLISTED),
+  visibility: z.nativeEnum(EventVisibility).default(EventVisibility.PRIVATE),
   /** Lets people add themselves to the guest list from a shared link. */
   guestListFormEnabled: z.boolean().optional(),
   currency: z.string().length(3).default('KES'),
@@ -52,7 +52,6 @@ export const updateEventSchema = createEventSchema
     venueAddress: z.string().max(500).nullable().optional(),
     latitude: z.number().min(-90).max(90).nullable().optional(),
     longitude: z.number().min(-180).max(180).nullable().optional(),
-    accessCode: z.string().min(4).max(40).nullable().optional(),
     /** A MediaAsset on this event; null clears the cover. */
     coverImageId: z.string().min(1).max(60).nullable().optional(),
   });

@@ -5,6 +5,7 @@ import { useFormStatus } from "react-dom";
 import type { ThemePalette } from "@/lib/types";
 import type { FormState } from "@/lib/form-state";
 import { joinGuestList } from "./join-actions";
+import { TurnstileWidget } from "@/app/_components/turnstile-widget";
 
 const INITIAL: FormState = {};
 
@@ -76,6 +77,7 @@ export function JoinForm({ slug, palette }: { slug: string; palette: ThemePalett
       ) : null}
 
       <SubmitButton palette={palette} />
+      <TurnstileWidget action="guest_join" />
     </form>
   );
 }
