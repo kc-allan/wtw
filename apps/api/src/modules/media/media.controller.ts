@@ -22,6 +22,8 @@ import { zodBody } from '../../core/http/zod-validation.pipe';
 import { updateMediaSchema, type UpdateMediaInput } from './media.schemas';
 import { MediaService } from './media.service';
 
+const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
+
 @ApiTags('media')
 @ApiBearerAuth()
 @Controller('events/:eventId/media')
@@ -43,7 +45,7 @@ export class MediaController {
   @ApiBody({
     schema: { type: 'object', properties: { file: { type: 'string', format: 'binary' } } },
   })
-  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 8 * 1024 * 1024, files: 1 } }))
+  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: MAX_UPLOAD_BYTES, files: 1 } }))
   upload(
     @CurrentUser() user: AuthenticatedUser,
     @Param('eventId') eventId: string,

@@ -40,18 +40,20 @@ export class MediaService {
       _max: { position: true },
     });
 
-    return this.prisma.mediaAsset.create({
+    const asset = await this.prisma.mediaAsset.create({
       data: {
         accountId: event.accountId,
         eventId,
         kind: MediaKind.image,
-        url: stored.url,
+        url: stored.url || stored.storageKey,
         position: (last._max.position ?? -1) + 1,
         storageKey: stored.storageKey,
         mimeType: file.mimeType,
         sizeBytes: stored.sizeBytes,
       },
     });
+
+    return { ...asset, url: await this.storage.url(asset.storageKey) };
   }
 
   async listForEvent(userId: string, eventId: string) {
@@ -67,7 +69,7 @@ export class MediaService {
     await this.events.assertCanManage(userId, eventId);
     await this.assertBelongs(eventId, id);
 
-    return this.prisma.mediaAsset.update({
+    const asset = await this.prisma.mediaAsset.update({
       where: { id },
       data: {
         ...(input.caption !== undefined ? { caption: input.caption?.trim() || null } : {}),
@@ -76,6 +78,8 @@ export class MediaService {
         ...(input.isHidden !== undefined ? { isHidden: input.isHidden } : {}),
       },
     });
+
+    return { ...asset, url: await this.storage.url(asset.storageKey) };
   }
 
   async remove(userId: string, eventId: string, id: string): Promise<void> {

@@ -37,6 +37,7 @@ import { TurnstileGuard } from './core/security/turnstile.guard';
           limit: config.get('THROTTLE_LIMIT', { infer: true }),
         },
       ],
+      imports: undefined
     }),
     PrismaModule,
 
@@ -69,9 +70,9 @@ import { TurnstileGuard } from './core/security/turnstile.guard';
   providers: [
     TurnstileService,
     { provide: APP_GUARD, useClass: JwtAuthGuard },
-    { provide: APP_GUARD, useClass: TurnstileGuard },
     { provide: APP_GUARD, useClass: ThrottlerGuard },
+    { provide: APP_GUARD, useClass: TurnstileGuard },
     { provide: APP_FILTER, useClass: AllExceptionsFilter },
   ],
 })
-export class AppModule {}
+export class AppModule { }

@@ -27,12 +27,15 @@ export function TurnstileWidget({ action }: { action: string }) {
     if (!container || !sitekey) return;
 
     let widgetId: string | undefined;
+    let hasIssuedToken = false;
     const name = `wtw_turnstile_${action}`;
     const writeToken = (token: string) => {
+      hasIssuedToken = true;
       const secure = window.location.protocol === "https:" ? "; Secure" : "";
       document.cookie = `${name}=${encodeURIComponent(token)}; Path=/; Max-Age=300; SameSite=Strict${secure}`;
     };
     const clearToken = () => {
+      hasIssuedToken = false;
       document.cookie = `${name}=; Path=/; Max-Age=0; SameSite=Strict`;
     };
     const render = () => {
@@ -50,7 +53,8 @@ export function TurnstileWidget({ action }: { action: string }) {
     window.addEventListener("turnstile-ready", render);
     const tokenCookiePresent = () => document.cookie.split("; ").some((entry) => entry.startsWith(`${name}=`));
     const refreshTimer = window.setInterval(() => {
-      if (!tokenCookiePresent() && widgetId && window.turnstile) {
+      if (hasIssuedToken && !tokenCookiePresent() && widgetId && window.turnstile) {
+        hasIssuedToken = false;
         window.turnstile.reset(widgetId);
       }
     }, 1000);

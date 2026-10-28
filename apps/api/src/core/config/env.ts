@@ -16,6 +16,15 @@ const unset = z
   .optional()
   .transform((value) => (value === '' ? undefined : value));
 
+const booleanFromString = z.preprocess((value) => {
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    if (normalized === 'true' || normalized === '1') return true;
+    if (normalized === 'false' || normalized === '0') return false;
+  }
+  return value;
+}, z.boolean().default(false));
+
 export const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.number().int().positive().default(4100),
@@ -24,7 +33,7 @@ export const envSchema = z.object({
 
   JWT_ACCESS_SECRET: z.string().min(16),
   JWT_REFRESH_SECRET: z.string().min(16),
-  JWT_REFRESH_REPLAY_SECRET: z.string().min(32).default('local-refresh-replay-secret-change-me'),
+  JWT_REFRESH_REPLAY_SECRET: z.string().min(32),
   JWT_ACCESS_TTL: z.string().default('15m'),
   JWT_REFRESH_TTL: z.string().default('30d'),
 
@@ -33,7 +42,7 @@ export const envSchema = z.object({
   TURNSTILE_SITE_KEY: unset,
   TURNSTILE_SECRET_KEY: unset,
   TURNSTILE_HOSTNAME: unset,
-  TURNSTILE_DEV_BYPASS: z.coerce.boolean().default(false),
+  TURNSTILE_DEV_BYPASS: booleanFromString,
 
   WEB_APP_URL: z.string().url().default('http://localhost:3000'),
   CORS_ORIGINS: z
@@ -54,7 +63,7 @@ export const envSchema = z.object({
   R2_SECRET_ACCESS_KEY: unset,
   R2_BUCKET: unset,
   MEDIA_SIGNED_URL_TTL_SECONDS: z.coerce.number().int().min(60).max(600).default(600),
-  MEDIA_MAX_BYTES: z.coerce.number().int().positive().default(8 * 1024 * 1024),
+  MEDIA_MAX_BYTES: z.coerce.number().int().positive().max(8 * 1024 * 1024).default(8 * 1024 * 1024),
 
   THROTTLE_TTL_SECONDS: z.coerce.number().int().positive().default(60),
   THROTTLE_LIMIT: z.coerce.number().int().positive().default(120),

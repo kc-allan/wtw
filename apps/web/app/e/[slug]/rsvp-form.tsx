@@ -33,23 +33,37 @@ export function RsvpForm({
   useEffect(() => {
     if (guest || token) return;
     const storageKey = `wtw-rsvp:${slug}`;
-    const stored = sessionStorage.getItem(storageKey);
-    if (stored && /^[A-Za-z0-9_-]{43}$/.test(stored)) {
-      setIdempotencyKey(stored);
+    try {
+      const stored = sessionStorage.getItem(storageKey);
+      if (stored && /^[A-Za-z0-9_-]{43}$/.test(stored)) {
+        setIdempotencyKey(stored);
+        return;
+      }
+      const bytes = crypto.getRandomValues(new Uint8Array(32));
+      const key = btoa(String.fromCharCode(...bytes))
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=+$/g, "");
+      sessionStorage.setItem(storageKey, key);
+      setIdempotencyKey(key);
       return;
+    } catch {
+      const bytes = crypto.getRandomValues(new Uint8Array(32));
+      const fallback = btoa(String.fromCharCode(...bytes))
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=+$/g, "");
+      setIdempotencyKey(fallback);
     }
-    const bytes = crypto.getRandomValues(new Uint8Array(32));
-    const key = btoa(String.fromCharCode(...bytes))
-      .replace(/\+/g, "-")
-      .replace(/\//g, "_")
-      .replace(/=+$/g, "");
-    sessionStorage.setItem(storageKey, key);
-    setIdempotencyKey(key);
   }, [guest, slug, token]);
 
   useEffect(() => {
     if (state.status === "sent" && !token) {
-      sessionStorage.removeItem(`wtw-rsvp:${slug}`);
+      try {
+        sessionStorage.removeItem(`wtw-rsvp:${slug}`);
+      } catch {
+        // Ignore session storage failures; the in-memory key remains for form state.
+      }
     }
   }, [slug, state.status, token]);
 

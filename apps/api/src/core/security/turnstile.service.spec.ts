@@ -53,6 +53,25 @@ describe('TurnstileService', () => {
     expect(first.response).toBe('response-token');
   });
 
+  it('retries a siteverify internal error and fails if the second attempt still fails', async () => {
+    const fetch = vi.fn()
+      .mockResolvedValueOnce(new Response(JSON.stringify({
+        success: false,
+        'error-codes': ['internal-error'],
+      }), { status: 200 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({
+        success: false,
+        'error-codes': ['internal-error'],
+      }), { status: 200 }));
+    vi.stubGlobal('fetch', fetch);
+
+    await expect(service.verify('response-token', 'contact')).rejects.toThrow('Security check is temporarily unavailable');
+    expect(fetch).toHaveBeenCalledTimes(2);
+    const first = JSON.parse(fetch.mock.calls[0][1].body as string);
+    const second = JSON.parse(fetch.mock.calls[1][1].body as string);
+    expect(first.idempotency_key).toBe(second.idempotency_key);
+  });
+
   it('rejects responses older than five minutes', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({
       success: true,

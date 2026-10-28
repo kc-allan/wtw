@@ -8,6 +8,7 @@ interface SiteverifyResponse {
   hostname?: string;
   action?: string;
   challenge_ts?: string;
+  'error-codes'?: string[];
 }
 
 @Injectable()
@@ -40,6 +41,10 @@ export class TurnstileService {
       }
 
       const result = (await response.json().catch(() => null)) as SiteverifyResponse | null;
+      if (Array.isArray(result?.['error-codes']) && result['error-codes']!.includes('internal-error')) {
+        if (attempt === 0) continue;
+        throw new ServiceUnavailableException('Security check is temporarily unavailable');
+      }
       if (!result?.success || result.hostname !== hostname || result.action !== expectedAction) {
         return false;
       }
